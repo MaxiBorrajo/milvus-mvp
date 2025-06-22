@@ -1,41 +1,55 @@
 from pymilvus import MilvusClient
 from sentence_transformers import SentenceTransformer
-import time
 
 COLLECTION_NAME = "demo_collection"
-DIM = 768
+DIMENSION = 768
 
-client = MilvusClient(uri="http://milvus-standalone:19530")  # Cambia si no es Docker
-
+# Inicializar cliente y modelo
+client = MilvusClient(uri="http://localhost:19530")
 model = SentenceTransformer("paraphrase-albert-small-v2")
 
-if not client.has_collection(collection_name=COLLECTION_NAME):
+# Crear colección limpia
+def setup_collection():
+    if client.has_collection(COLLECTION_NAME):
+        client.drop_collection(COLLECTION_NAME)
     client.create_collection(
         collection_name=COLLECTION_NAME,
-        dimension=DIM,
-        index_params={
-            "field_name": "vector",
-            "index_type": "FLAT",
-            "metric_type": "COSINE",
-            "params": {}
-        }
+        dimension=DIMENSION,
+        auto_id=True,
     )
 
-def insert_texts(texts: list[str]):
-    vectors = model.encode(texts)
-    data = [{"id": i, "vector": vectors[i], "text": texts[i]} for i in range(len(texts))]
+# Insertar documentos
+def insert_documents(items):
+    vectors = model.encode([item.text for item in items])
+    data = [
+        {
+           
+            "vector": vectors[i],
+            "text": items[i].text,
+            "subject": items[i].subject,
+        }
+        for i in range(len(items))
+    ]
     client.insert(collection_name=COLLECTION_NAME, data=data)
-    client.load_collection(COLLECTION_NAME)
+    return len(data)
 
-def search_text(query: str, limit: int = 3):
+# Buscar documentos
+def search_documents(query: str, top_k: int):
     client.load_collection(COLLECTION_NAME)
     query_vector = model.encode([query])
-    results = client.search(
+    res = client.search(
         collection_name=COLLECTION_NAME,
         data=query_vector,
-        anns_field="vector",
-        output_fields=["text"],
-        limit=limit,
-        search_params={"params": {}}
+        limit=top_k,
+        output_fields=["text", "subject"]
     )
-    return [hit["text"] for hit in results[0]]
+
+    return [
+        {
+            "id": hit["id"],
+            "text": hit["entity"]["text"],
+            "subject": hit["entity"]["subject"],
+            "similarity": round(1 - hit["distance"], 4)
+        }
+        for hit in res[0]
+    ]

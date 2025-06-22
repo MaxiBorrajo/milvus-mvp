@@ -9,6 +9,8 @@ Una aplicación FastAPI que proporciona una API REST para búsqueda de similitud
 - **Base de datos vectorial**: Utiliza Milvus para almacenamiento y búsqueda eficiente de vectores
 - **Modelo de embeddings**: Usa `paraphrase-albert-small-v2` para generar vectores de alta calidad
 - **Documentación automática**: Swagger UI integrado para probar la API
+- **Manejo robusto de errores**: Respuestas consistentes y informativas
+- **Endpoints de monitoreo**: Health check y información de la colección
 
 ## 📋 Prerrequisitos
 
@@ -75,6 +77,50 @@ Puedes acceder a la documentación interactiva de la API en:
 
 ## 🔌 Endpoints
 
+### GET /
+
+Endpoint raíz con información básica de la API.
+
+**Response:**
+```json
+{
+  "message": "Milvus Vector Search API",
+  "version": "1.0.0",
+  "docs": "/docs",
+  "health": "/health"
+}
+```
+
+### GET /health
+
+Verifica el estado de salud de la API y la conexión con Milvus.
+
+**Response:**
+```json
+{
+  "status": "healthy",
+  "milvus_connection": true,
+  "collection_exists": true,
+  "collection_name": "demo_collection"
+}
+```
+
+### GET /collection/info
+
+Obtiene información sobre la colección actual.
+
+**Response:**
+```json
+{
+  "collection_name": "demo_collection",
+  "exists": true,
+  "stats": {
+    "row_count": 10
+  },
+  "success": true
+}
+```
+
 ### POST /insert
 
 Inserta uno o más textos en la colección de Milvus. Los textos se convierten automáticamente en vectores usando el modelo de embeddings.
@@ -82,10 +128,19 @@ Inserta uno o más textos en la colección de Milvus. Los textos se convierten a
 **Request Body:**
 ```json
 {
-  "texts": [
-    "La inteligencia artificial está transformando el mundo.",
-    "El sol es la estrella más cercana a la Tierra.",
-    "La programación es el arte de resolver problemas."
+  "items": [
+    {
+      "text": "La inteligencia artificial está transformando el mundo.",
+      "subject": "tecnología"
+    },
+    {
+      "text": "El sol es la estrella más cercana a la Tierra.",
+      "subject": "ciencia"
+    },
+    {
+      "text": "La programación es el arte de resolver problemas.",
+      "subject": "programación"
+    }
   ]
 }
 ```
@@ -93,7 +148,9 @@ Inserta uno o más textos en la colección de Milvus. Los textos se convierten a
 **Response:**
 ```json
 {
-  "inserted": 3
+  "inserted": 3,
+  "success": true,
+  "collection": "demo_collection"
 }
 ```
 
@@ -102,9 +159,15 @@ Inserta uno o más textos en la colección de Milvus. Los textos se convierten a
 curl -X POST "http://localhost:8000/insert" \
   -H "Content-Type: application/json" \
   -d '{
-    "texts": [
-      "La inteligencia artificial está transformando el mundo.",
-      "El sol es la estrella más cercana a la Tierra."
+    "items": [
+      {
+        "text": "La inteligencia artificial está transformando el mundo.",
+        "subject": "tecnología"
+      },
+      {
+        "text": "El sol es la estrella más cercana a la Tierra.",
+        "subject": "ciencia"
+      }
     ]
   }'
 ```
@@ -124,11 +187,23 @@ Busca textos similares a una consulta dada, retornando los `top_k` resultados m�
 **Response:**
 ```json
 {
+  "query": "¿Qué es la inteligencia artificial?",
   "results": [
-    "La inteligencia artificial está transformando el mundo.",
-    "La programación es el arte de resolver problemas.",
-    "El sol es la estrella más cercana a la Tierra."
-  ]
+    {
+      "text": "La inteligencia artificial está transformando el mundo.",
+      "subject": "tecnología",
+      "score": 0.85,
+      "id": 1
+    },
+    {
+      "text": "La programación es el arte de resolver problemas.",
+      "subject": "programación",
+      "score": 0.72,
+      "id": 3
+    }
+  ],
+  "total_found": 2,
+  "success": true
 }
 ```
 
@@ -142,17 +217,32 @@ curl -X POST "http://localhost:8000/search" \
   }'
 ```
 
+### DELETE /collection
+
+Elimina la colección actual (¡CUIDADO: esto elimina todos los datos!).
+
+**Response:**
+```json
+{
+  "collection_name": "demo_collection",
+  "deleted": true,
+  "message": "Colección 'demo_collection' eliminada exitosamente",
+  "success": true
+}
+```
+
 ## 🏗️ Estructura del Proyecto
 
 ```
 milvus-mvp/
 ├── app/
-│   ├── main.py              # Aplicación FastAPI principal
-│   ├── milvus_client.py     # Cliente y operaciones de Milvus
-│   └── data.py              # Funciones de procesamiento de datos
+│   ├── main.py              # Aplicación FastAPI principal (endpoints y lógica de API)
+│   ├── milvus_client.py     # Cliente y operaciones de Milvus (lógica de base de datos)
+│   └── data.py              # Funciones de procesamiento de datos (archivo vacío por ahora)
 ├── docker-compose.yml       # Configuración de servicios Docker
 ├── requirements.txt         # Dependencias de Python
 ├── render.yaml             # Configuración para despliegue en Render
+├── Dockerfile              # Configuración para contenedor Docker
 └── README.md               # Este archivo
 ```
 
@@ -162,10 +252,11 @@ milvus-mvp/
 
 El proyecto utiliza las siguientes configuraciones por defecto:
 
-- **Milvus URI**: `http://milvus-standalone:19530` (para Docker)
+- **Milvus URI**: `http://localhost:19530` (para desarrollo local)
 - **Puerto de la API**: `8000`
 - **Modelo de embeddings**: `paraphrase-albert-small-v2`
 - **Dimensión de vectores**: `768`
+- **Nombre de colección**: `demo_collection`
 
 ### Personalización
 
@@ -173,10 +264,10 @@ Para cambiar la configuración, modifica los valores en `app/milvus_client.py`:
 
 ```python
 # Cambiar la URI de Milvus
-client = MilvusClient(uri="tu_uri_de_milvus")
+milvus_db = MilvusVectorDB(uri="tu_uri_de_milvus")
 
-# Cambiar el modelo de embeddings
-model = SentenceTransformer("tu_modelo_preferido")
+# Cambiar el nombre de la colección
+milvus_db = MilvusVectorDB(collection_name="mi_coleccion")
 ```
 
 ## 🚀 Despliegue
@@ -201,20 +292,34 @@ docker run -p 8000:8000 milvus-api
 
 Para probar la API después de iniciarla:
 
-1. **Insertar algunos textos de ejemplo:**
+1. **Verificar el estado de salud:**
+```bash
+curl http://localhost:8000/health
+```
+
+2. **Insertar algunos textos de ejemplo:**
 ```bash
 curl -X POST "http://localhost:8000/insert" \
   -H "Content-Type: application/json" \
   -d '{
-    "texts": [
-      "La inteligencia artificial revoluciona la tecnología moderna.",
-      "Los algoritmos de machine learning mejoran con más datos.",
-      "La computación en la nube facilita el desarrollo de software."
+    "items": [
+      {
+        "text": "La inteligencia artificial revoluciona la tecnología moderna.",
+        "subject": "tecnología"
+      },
+      {
+        "text": "Los algoritmos de machine learning mejoran con más datos.",
+        "subject": "machine_learning"
+      },
+      {
+        "text": "La computación en la nube facilita el desarrollo de software.",
+        "subject": "cloud_computing"
+      }
     ]
   }'
 ```
 
-2. **Buscar textos similares:**
+3. **Buscar textos similares:**
 ```bash
 curl -X POST "http://localhost:8000/search" \
   -H "Content-Type: application/json" \
@@ -222,6 +327,11 @@ curl -X POST "http://localhost:8000/search" \
     "query": "¿Cómo funciona la IA?",
     "top_k": 2
   }'
+```
+
+4. **Ver información de la colección:**
+```bash
+curl http://localhost:8000/collection/info
 ```
 
 ## 🛑 Detener los Servicios
@@ -257,6 +367,7 @@ Si encuentras algún problema o tienes preguntas:
 1. Revisa la documentación de la API en `http://localhost:8000/docs`
 2. Verifica que todos los servicios de Docker estén ejecutándose
 3. Revisa los logs de Docker: `docker-compose logs`
+4. Verifica el estado de salud: `curl http://localhost:8000/health`
 
 ## 🔗 Enlaces Útiles
 
