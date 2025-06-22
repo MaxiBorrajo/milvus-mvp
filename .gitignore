@@ -3,7 +3,7 @@ __pycache__/
 *.pyc
 *.pyo
 *.pyd
-
+.volumes
 # C extensions
 *.so
 
@@ -133,4 +133,8 @@ venv.bak/
 Thumbs.db
 
 # Docker
-docker-compose.override.yml 
+docker-compose.override.yml
+
+# Docker volumes - NO subir a GitHub
+volumes/
+.volumes/ 
