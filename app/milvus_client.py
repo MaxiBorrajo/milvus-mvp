@@ -1,5 +1,7 @@
 from pymilvus import MilvusClient
 from sentence_transformers import SentenceTransformer
+from app.feature_extractor import FeatureExtractor
+import os
 
 COLLECTION_NAME = "demo_collection"
 DIMENSION = 768
@@ -16,10 +18,21 @@ def setup_collection():
         collection_name=COLLECTION_NAME,
         dimension=DIMENSION,
         auto_id=True,
+        enable_dynamic_field=True
+    )
+    if client.has_collection(collection_name="images"):
+        client.drop_collection(collection_name="images")
+    client.create_collection(
+        collection_name="images",
+        vector_field_name="vector",
+        dimension=512,
+        auto_id=True,
+        enable_dynamic_field=True,
+        metric_type="COSINE",
     )
 
 # Insertar documentos
-def insert_documents(items):
+def insert_documents(items, metadata=None):
     vectors = model.encode([item.text for item in items])
     data = [
         {
@@ -27,6 +40,7 @@ def insert_documents(items):
             "vector": vectors[i],
             "text": items[i].text,
             "subject": items[i].subject,
+            "filename": metadata.get("filename") if metadata else None
         }
         for i in range(len(items))
     ]
@@ -52,4 +66,48 @@ def search_documents(query: str, top_k: int):
             "similarity": round(1 - hit["distance"], 4)
         }
         for hit in res[0]
+    ]
+
+# Insertar imagenes
+def insert_images(images, metadata=None):
+    extractor = FeatureExtractor("resnet34")
+    embeddings = []
+    for image in images:
+        image_embedding = extractor(image)
+        embeddings.append(image_embedding)
+    data = [
+        {
+           
+            "vector": embeddings[i],
+            "filename": metadata.get("filename") if metadata else None
+        }
+        for i in range(len(embeddings))
+    ]
+    client.insert(collection_name="images", data=data)
+    return len(data)
+ 
+def search_similar_images(image_path, top_k: int):
+    extractor = FeatureExtractor("resnet34")
+    vectors = [extractor(image_path)]
+
+    results = client.search(
+        "images",
+        data=vectors,
+        output_fields=["filename"],
+        search_params={"metric_type": "COSINE"},
+        limit=top_k
+    )
+
+    print(results)
+
+    # URL base de tu servidor
+    base_url = "http://localhost:8000/images"
+
+    return [
+        {
+            "filename": hit["entity"]["filename"],
+            "score": round(1 - hit["distance"], 4),
+            "url": f"{base_url}/{hit['entity']['filename']}"
+        }
+        for hit in results[0]
     ]
