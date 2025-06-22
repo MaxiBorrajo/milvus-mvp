@@ -6,3 +6,7 @@ python-docx
 PyMuPDF  # para PDFs (fitz)
 python-multipart
 timm
+torch
+Pillow
+scikit-learn
+pydantic

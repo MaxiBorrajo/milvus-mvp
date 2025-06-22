@@ -3,6 +3,7 @@ from typing import List
 import fitz  # PyMuPDF
 import docx
 import os
+import io
 
 def extract_text_from_file(content: bytes, filename: str) -> List[str]:
     ext = os.path.splitext(filename)[-1].lower()
