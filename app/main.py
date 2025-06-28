@@ -1,3 +1,4 @@
+from http.client import HTTPException
 from fastapi import FastAPI, File, UploadFile
 from pydantic import BaseModel
 from typing import List
@@ -8,6 +9,7 @@ import os
 from pathlib import Path
 from fastapi.responses import FileResponse
 from typing import Annotated
+
 
 IMAGE_DIR = Path("static/images")
 IMAGE_DIR.mkdir(parents=True, exist_ok=True)
