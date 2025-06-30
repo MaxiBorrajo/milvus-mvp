@@ -39,6 +39,8 @@ Espera unos segundos a que todos los servicios se inicien correctamente. Puedes 
 
 ```bash
 docker-compose ps
+o
+docker ps -a
 ```
 
 ### 3. Instalar las dependencias de Python
