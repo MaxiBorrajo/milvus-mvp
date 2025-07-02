@@ -111,3 +111,15 @@ def search_similar_images(image_path, top_k: int):
         }
         for hit in results[0]
     ]
+
+# Obtener todos los vectores y metadatos de la colección principal
+def get_all_vectors():
+    client.load_collection(COLLECTION_NAME)
+    # Obtiene todos los datos de la colección (limit alto por simplicidad, para producción usar paginación)
+    results = client.query(
+        collection_name=COLLECTION_NAME,
+        filter=None,
+        output_fields=["id", "vector", "text", "subject", "filename"],
+        limit=100
+    )
+    return results
