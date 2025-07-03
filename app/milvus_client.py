@@ -111,3 +111,31 @@ def search_similar_images(image_path, top_k: int):
         }
         for hit in results[0]
     ]
+
+# Obtener todos los vectores y metadatos de una colección específica
+def get_all_vectors_from_collection(collection_name, limit=100):
+    client.load_collection(collection_name)
+    results = client.query(
+        collection_name=collection_name,
+        filter=None,
+        output_fields=["id", "vector", "text", "subject", "filename"],
+        limit=limit
+    )
+    return results
+
+# Obtener todos los vectores y metadatos de la colección principal
+def get_all_vectors(limit=100):
+    return get_all_vectors_from_collection(COLLECTION_NAME, limit)
+
+# Obtener vectores de ambas colecciones
+def get_all_vectors_combined(limit=100):
+    texts = get_all_vectors_from_collection(COLLECTION_NAME, limit)
+    images = get_all_vectors_from_collection("images", limit)
+    
+    # Agregar tipo de dato a cada elemento
+    for item in texts:
+        item["type"] = "text"
+    for item in images:
+        item["type"] = "image"
+    
+    return texts + images
