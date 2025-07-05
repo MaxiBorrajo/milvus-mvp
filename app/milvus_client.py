@@ -3,7 +3,7 @@ from sentence_transformers import SentenceTransformer
 from app.feature_extractor import FeatureExtractor
 import os
 
-COLLECTION_NAME = "demo_collection"
+COLLECTION_NAME = "epersgeist"
 DIMENSION = 768
 
 # Inicializar cliente y modelo
@@ -100,7 +100,6 @@ def search_similar_images(image_path, top_k: int):
 
     print(results)
 
-    # URL base de tu servidor
     base_url = "http://localhost:8000/images"
 
     return [
