@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 from pydantic import BaseModel
 from typing import List
 from utils import extract_text_from_file
-from milvus_client import setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined
+from milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, insert_persons
 import tempfile
 import os
 from pathlib import Path
@@ -25,18 +25,71 @@ app = FastAPI()
 # Configurar CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000"],  # Frontend URL
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],  # Frontend URLs
     allow_credentials=True,
-    allow_methods=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
 )
 
 setup_collection()
 
+@app.get("/")
+def read_root():
+    return {"message": "Backend funcionando correctamente", "status": "ok"}
+
+@app.get("/health")
+def health_check():
+    return {"status": "healthy", "timestamp": "2024-01-01T00:00:00Z"}
+
+@app.get("/debug/collections")
+def debug_collections():
+    """Endpoint para debuggear el estado de las colecciones"""
+    try:
+        from milvus_client import client, PERSON_COLLECTION, COLLECTION_NAME
+        
+        collections_info = {}
+        
+        # Verificar colección de personas
+        if client.has_collection(PERSON_COLLECTION):
+            collections_info["person_collection"] = {
+                "exists": True,
+                "name": PERSON_COLLECTION
+            }
+        else:
+            collections_info["person_collection"] = {
+                "exists": False,
+                "name": PERSON_COLLECTION
+            }
+        
+        # Verificar colección principal
+        if client.has_collection(COLLECTION_NAME):
+            collections_info["main_collection"] = {
+                "exists": True,
+                "name": COLLECTION_NAME
+            }
+        else:
+            collections_info["main_collection"] = {
+                "exists": False,
+                "name": COLLECTION_NAME
+            }
+        
+        return collections_info
+        
+    except Exception as e:
+        return {"error": str(e)}
+
 # 🧾 Request schemas
 class TextItem(BaseModel):
     text: str
     subject: str = "general"
+
+
+class PersonaItem(BaseModel):
+    description: str
+    name: str
+
+class InsertPersonRequest(BaseModel):
+    items: List[PersonaItem]
 
 class InsertRequest(BaseModel):
     items: List[TextItem]
@@ -45,10 +98,6 @@ class SearchRequest(BaseModel):
     query: str
     top_k: int = 5
 
-class PersonSearchRequest(BaseModel):
-    question: str
-    top_k: int = 1
-
 # 🔹 Insertar textos
 @app.post("/insert")
 def insert_texts(req: InsertRequest):
@@ -56,24 +105,37 @@ def insert_texts(req: InsertRequest):
     return {"inserted": inserted_count}
 
 # 🔹 Buscar textos
-@app.post("/search")
-def search_text(req: SearchRequest):
-    results = search_documents(req.query, req.top_k)
+@app.get("/search")
+def search_text(query: str, top_k: int = 5):
+    results = search_documents(query, top_k)
     return {
-        "query": req.query,
+        "query": query,
         "results": results
     }
 
-# 🔹 Buscar persona indicada
-@app.post("/find-person")
-def find_person(req: PersonSearchRequest):
-    # Simulación de búsqueda de persona
-   
-    results = search_documents(req.question, req.top_k)
-    return {
-        "query": req.question,
-        "results": results
-    }
+# 🔹 Insertar personas
+@app.post('/insert-person')
+def insert_person(req: InsertPersonRequest):
+    try:
+        inserted_count = insert_persons(req.items)
+        return {"inserted": inserted_count}
+    except Exception as e:
+        return {"error": str(e), "inserted": 0}
+
+@app.get("/find-person")
+def find_person(query: str, top_k: int = 1):
+    try:
+        results = search_person(query, top_k)
+        return {
+            "query": query,
+            "results": results
+        }
+    except Exception as e:
+        return {
+            "query": query,
+            "results": [],
+            "error": str(e)
+        }
 
 
 @app.post("/upload-files")
@@ -129,6 +191,8 @@ def get_image(filename: str):
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Image not found")
     return FileResponse(file_path)
+
+
 
 @app.get('/vectors')
 def get_vectors(dim: int = Query(None, description="Dimensión a la que reducir los vectores (opcional)")):

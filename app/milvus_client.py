@@ -1,14 +1,18 @@
 from pymilvus import MilvusClient
 from sentence_transformers import SentenceTransformer
+from sklearn.preprocessing import normalize
 from feature_extractor import FeatureExtractor
 import os
+import numpy as np
 
 COLLECTION_NAME = "demo_collection"
+PERSON_COLLECTION = 'person'
 DIMENSION = 768
 
 # Inicializar cliente y modelo
 client = MilvusClient(uri="http://localhost:19530")
 model = SentenceTransformer("paraphrase-albert-small-v2")
+PERSON_VECTOR_DIM = model.get_sentence_embedding_dimension()
 
 # Crear colección limpia
 def setup_collection():
@@ -25,11 +29,21 @@ def setup_collection():
     client.create_collection(
         collection_name="images",
         vector_field_name="vector",
-        dimension=512,
+        dimension=384,
         auto_id=True,
         enable_dynamic_field=True,
         metric_type="COSINE",
     )
+
+    if client.has_collection(collection_name=PERSON_COLLECTION):
+        client.drop_collection(collection_name=PERSON_COLLECTION)
+    client.create_collection(
+        collection_name=PERSON_COLLECTION,
+        dimension=DIMENSION,
+        auto_id=True,
+        enable_dynamic_field=True,
+        metric_type='COSINE'  # Volver a COSINE para vectores crudos
+        )
 
 # Insertar documentos
 def insert_documents(items, metadata=None):
@@ -67,6 +81,76 @@ def search_documents(query: str, top_k: int):
         }
         for hit in res[0]
     ]
+
+def insert_persons(persons_list, metadata=None):
+    """
+    Inserts a list of persons into the Milvus collection with their vector embeddings.
+    
+    Args:
+        persons_list: List of Person objects (with .description, .name, .skills attributes)
+        metadata: Optional dictionary of additional metadata (e.g., source_file)
+    
+    Returns:
+        int: Number of persons inserted
+    """
+    try:
+        # Encode person descriptions using model
+        vectors = model.encode([person.description for person in persons_list])
+        query_vector = normalize(vectors, norm='l2')
+        
+        # Prepare data for insertion
+        data = [
+            {
+                "vector": query_vector[i],
+                "name": persons_list[i].name,
+                "description": persons_list[i].description,
+                "metadata": metadata if metadata else None
+            }
+            for i in range(len(persons_list))
+        ]
+        
+        # Insert into Milvus collection
+        client.insert(
+            collection_name=PERSON_COLLECTION,
+            data=data
+        )
+        
+        return len(data)
+    except Exception as e:
+        raise e
+
+
+def search_person(query: str, top_k: int):
+    try:
+        if not client.has_collection(PERSON_COLLECTION):
+            return []
+        
+        client.load_collection(PERSON_COLLECTION)
+        
+        encoded_query = model.encode([query])
+        vectorNormal = normalize(encoded_query, norm='l2')
+        
+        res = client.search(
+            collection_name=PERSON_COLLECTION,
+            data=vectorNormal,
+            limit=top_k,
+            output_fields=["name", "description"]
+        )
+        
+        results = [
+            {
+                "id": hit["id"],
+                "name": hit["entity"]["name"],
+                "description": hit["entity"]["description"],
+                "similarity": round(1 - hit["distance"], 4)
+            }
+            for hit in res[0]
+        ]
+        
+        return results
+        
+    except Exception as e:
+        raise e
 
 # Insertar imagenes
 def insert_images(images, metadata=None):
