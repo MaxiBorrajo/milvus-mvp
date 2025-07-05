@@ -1,6 +1,6 @@
 from pymilvus import MilvusClient
 from sentence_transformers import SentenceTransformer
-from app.feature_extractor import FeatureExtractor
+from feature_extractor import FeatureExtractor
 import os
 
 COLLECTION_NAME = "demo_collection"

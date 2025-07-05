@@ -1,70 +1,146 @@
-# Getting Started with Create React App
+# Milvus MVP - React JSX Frontend
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+This is a React application built with JSX that demonstrates modern React development practices.
 
-## Available Scripts
+## 🚀 Features
 
-In the project directory, you can run:
+- **JSX Components**: All components use JSX syntax for declarative UI
+- **Component Architecture**: Modular, reusable components
+- **State Management**: React hooks for state management
+- **Event Handling**: Interactive components with event handlers
+- **Conditional Rendering**: Dynamic UI based on state
+- **Props System**: Component communication through props
+- **Responsive Design**: Mobile-first responsive layout
+- **Modern Styling**: CSS with gradients, animations, and glassmorphism effects
 
-### `npm start`
+## 📁 Project Structure
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+```
+src/
+├── Components/          # Reusable UI components
+│   ├── Header.jsx      # Navigation header component
+│   ├── Button.jsx      # Custom button component
+│   └── Counter.jsx     # Interactive counter with state
+├── Pages/              # Page components
+│   └── Home.jsx        # Main home page
+├── App.jsx             # Main application component
+├── index.jsx           # Application entry point
+├── App.css             # Application styles
+└── index.css           # Global styles
+```
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🧩 Components
 
-### `npm test`
+### Header Component
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+- Navigation bar with logo and menu
+- Props: `title`, `showLogo`
+- Conditional rendering for logo display
 
-### `npm run build`
+### Button Component
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+- Customizable button with variants
+- Props: `children`, `onClick`, `variant`, `disabled`, `type`
+- Event handling and disabled states
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### Counter Component
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+- Interactive counter with state management
+- Props: `initialValue`, `maxValue`, `minValue`
+- Conditional rendering for limits
+- Event handlers for increment/decrement/reset
 
-### `npm run eject`
+## 🎨 Styling Features
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+- **Glassmorphism**: Translucent backgrounds with blur effects
+- **Gradients**: Beautiful gradient backgrounds and buttons
+- **Animations**: Smooth transitions and hover effects
+- **Responsive**: Mobile-first design with breakpoints
+- **Modern UI**: Clean, modern interface design
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+## 🚀 Getting Started
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+1. Install dependencies:
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+   ```bash
+   npm install
+   ```
 
-## Learn More
+2. Start the development server:
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+   ```bash
+   npm start
+   ```
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+3. Open [http://localhost:3000](http://localhost:3000) to view it in the browser.
 
-### Code Splitting
+## 🔧 Available Scripts
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+- `npm start` - Runs the app in development mode
+- `npm run build` - Builds the app for production
+- `npm test` - Launches the test runner
+- `npm run eject` - Ejects from Create React App
 
-### Analyzing the Bundle Size
+## 📱 JSX Examples
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+### Basic JSX Component
 
-### Making a Progressive Web App
+```jsx
+import React from "react";
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+const MyComponent = ({ title }) => {
+  return (
+    <div className="my-component">
+      <h1>{title}</h1>
+      <p>This is JSX!</p>
+    </div>
+  );
+};
 
-### Advanced Configuration
+export default MyComponent;
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+### JSX with State
 
-### Deployment
+```jsx
+import React, { useState } from "react";
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+const Counter = () => {
+  const [count, setCount] = useState(0);
 
-### `npm run build` fails to minify
+  return (
+    <div>
+      <p>Count: {count}</p>
+      <button onClick={() => setCount(count + 1)}>Increment</button>
+    </div>
+  );
+};
+```
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+### Conditional Rendering
+
+```jsx
+const ConditionalComponent = ({ isVisible }) => {
+  return (
+    <div>
+      {isVisible && <p>This is visible!</p>}
+      {isVisible ? <p>Shown</p> : <p>Hidden</p>}
+    </div>
+  );
+};
+```
+
+## 🎯 JSX Benefits
+
+- **Declarative**: Describe what you want, not how to do it
+- **Component-based**: Reusable, modular code
+- **Type-safe**: Better development experience with TypeScript
+- **Performance**: Optimized rendering with React
+- **Developer Experience**: Better tooling and debugging
+
+## 📚 Learn More
+
+- [React Documentation](https://reactjs.org/)
+- [JSX Introduction](https://reactjs.org/docs/introducing-jsx.html)
+- [React Hooks](https://reactjs.org/docs/hooks-intro.html)
+- [Component Props](https://reactjs.org/docs/components-and-props.html)
