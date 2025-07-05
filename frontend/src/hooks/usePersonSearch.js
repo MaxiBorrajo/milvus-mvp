@@ -5,16 +5,23 @@ const usePersonSearch = () => {
   const { loading, error, data, makeRequest, reset } = useApi();
 
   const searchPerson = useCallback(
-    async (question) => {
+    async (question, topK = 1) => {
       if (!question?.trim()) {
         throw new Error("La pregunta no puede estar vacía");
       }
 
       try {
-        const result = await makeRequest("http://localhost:8000/find-person", {
-          method: "POST",
-          body: JSON.stringify({ question: question.trim() }),
+        const params = new URLSearchParams({
+          query: question.trim(),
+          top_k: topK.toString(),
         });
+
+        const result = await makeRequest(
+          `http://localhost:8000/find-person?${params}`,
+          {
+            method: "GET",
+          }
+        );
 
         return result;
       } catch (err) {
@@ -25,9 +32,9 @@ const usePersonSearch = () => {
     [makeRequest]
   );
 
-  const getPersonName = () => {
-    if (!data) return null;
-    return data.person || data.result || data.name || "Persona no encontrada";
+  const getPersonResults = () => {
+    if (!data) return [];
+    return data.results || [];
   };
 
   return {
@@ -35,7 +42,7 @@ const usePersonSearch = () => {
     error,
     data,
     searchPerson,
-    getPersonName,
+    getPersonResults,
     reset,
   };
 };
