@@ -7,7 +7,7 @@ from matplotlib import pyplot as plt
 from pydantic import BaseModel
 from typing import List
 from utils import extract_text_from_file
-from milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, insert_persons
+from milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION
 import tempfile
 import os
 from pathlib import Path
@@ -195,15 +195,22 @@ def get_image(filename: str):
 
 
 @app.get('/vectors')
-def get_vectors(dim: int = Query(None, description="Dimensión a la que reducir los vectores (opcional)")):
+def get_vectors(
+    collection: str = Query("texts", description="Colección: 'texts', 'images', 'persons' o 'all'"),
+    dim: int = Query(None, description="Dimensión a la que reducir los vectores (opcional)"),
+    limit: int = Query(100, description="Número máximo de vectores a devolver")
+):
     """
-    Devuelve todos los vectores almacenados. Si se pasa 'dim', reduce la dimensionalidad de los vectores a ese valor usando PCA.
+    Devuelve todos los vectores almacenados de la colección especificada con información completa para visualizaciones.
+    Si se pasa 'dim', reduce la dimensionalidad de los vectores a ese valor usando PCA.
     """
-    data = get_all_vectors(100)
+    data = get_vectors_for_visualization(collection, limit)
     if not data:
         return []
+    
     vectors = np.array([d["vector"] for d in data])
     n_samples, n_features = vectors.shape
+    
     if dim is not None and dim < vectors.shape[1]:
         if dim > n_features:
             raise HTTPException(
@@ -221,7 +228,16 @@ def get_vectors(dim: int = Query(None, description="Dimensión a la que reducir 
         
         for i, d in enumerate(data):
             d["vector"] = reduced[i].tolist()
-    return data
+    
+    return {
+        "data": data,
+        "metadata": {
+            "total_vectors": len(data),
+            "original_dimension": n_features,
+            "reduced_dimension": dim if dim else n_features,
+            "collection": collection
+        }
+    }
 
 def get_vectors_by_collection(collection: str, limit: int):
     """Función helper para obtener vectores según la colección especificada"""
@@ -229,21 +245,23 @@ def get_vectors_by_collection(collection: str, limit: int):
         return get_all_vectors_from_collection("demo_collection", limit)
     elif collection.lower() == "images":
         return get_all_vectors_from_collection("images", limit)
+    elif collection.lower() == "persons":
+        return get_all_vectors_from_collection(PERSON_COLLECTION, limit)
     elif collection.lower() == "all":
         return get_all_vectors_combined(limit)
     else:
         raise HTTPException(
             status_code=400, 
-            detail="collection debe ser 'texts', 'images' o 'all'"
+            detail="collection debe ser 'texts', 'images', 'persons' o 'all'"
         )
 
 @app.get("/visualize-2d")
 async def visualize_vectors_2d(
     limit: int = 100, 
-    collection: str = Query("texts", description="Colección: 'texts', 'images' o 'all'")
+    collection: str = Query("texts", description="Colección: 'texts', 'images', 'persons' o 'all'")
 ):
     """Endpoint que devuelve visualización 2D de vectores usando PCA"""
-    data = get_vectors_by_collection(collection, limit)
+    data = get_vectors_for_visualization(collection, limit)
     
     if not data:
         raise HTTPException(status_code=404, detail="No se encontraron vectores")
@@ -262,6 +280,7 @@ async def visualize_vectors_2d(
     if collection.lower() == "all" and len(data) > 0:
         text_indices = [i for i, d in enumerate(data) if d.get("type") == "text"]
         image_indices = [i for i, d in enumerate(data) if d.get("type") == "image"]
+        person_indices = [i for i, d in enumerate(data) if d.get("type") == "person"]
         
         if text_indices:
             plt.scatter(vectors_2d[text_indices, 0], vectors_2d[text_indices, 1], 
@@ -269,6 +288,9 @@ async def visualize_vectors_2d(
         if image_indices:
             plt.scatter(vectors_2d[image_indices, 0], vectors_2d[image_indices, 1], 
                        alpha=0.6, s=50, c='red', label='Imágenes')
+        if person_indices:
+            plt.scatter(vectors_2d[person_indices, 0], vectors_2d[person_indices, 1], 
+                       alpha=0.6, s=50, c='green', label='Personas')
         plt.legend()
     else:
         plt.scatter(vectors_2d[:, 0], vectors_2d[:, 1], alpha=0.6, s=50)
@@ -297,10 +319,10 @@ async def visualize_vectors_2d(
 @app.get("/visualize-3d")
 async def visualize_vectors_3d(
     limit: int = 100, 
-    collection: str = Query("texts", description="Colección: 'texts', 'images' o 'all'")
+    collection: str = Query("texts", description="Colección: 'texts', 'images', 'persons' o 'all'")
 ):
     """Endpoint que devuelve visualización 3D de vectores usando PCA"""
-    data = get_vectors_by_collection(collection, limit)
+    data = get_vectors_for_visualization(collection, limit)
     
     if not data:
         raise HTTPException(status_code=404, detail="No se encontraron vectores")
@@ -320,6 +342,7 @@ async def visualize_vectors_3d(
     if collection.lower() == "all" and len(data) > 0:
         text_indices = [i for i, d in enumerate(data) if d.get("type") == "text"]
         image_indices = [i for i, d in enumerate(data) if d.get("type") == "image"]
+        person_indices = [i for i, d in enumerate(data) if d.get("type") == "person"]
         
         if text_indices:
             ax.scatter(vectors_3d[text_indices, 0], vectors_3d[text_indices, 1], vectors_3d[text_indices, 2], 
@@ -327,6 +350,9 @@ async def visualize_vectors_3d(
         if image_indices:
             ax.scatter(vectors_3d[image_indices, 0], vectors_3d[image_indices, 1], vectors_3d[image_indices, 2], 
                       alpha=0.6, s=50, c='red', label='Imágenes')
+        if person_indices:
+            ax.scatter(vectors_3d[person_indices, 0], vectors_3d[person_indices, 1], vectors_3d[person_indices, 2], 
+                      alpha=0.6, s=50, c='green', label='Personas')
         ax.legend()
     else:
         ax.scatter(vectors_3d[:, 0], vectors_3d[:, 1], vectors_3d[:, 2], alpha=0.6, s=50)
@@ -355,10 +381,10 @@ async def visualize_vectors_3d(
 @app.get("/download-2d")
 async def download_visualization_2d(
     limit: int = 100,
-    collection: str = Query("texts", description="Colección: 'texts', 'images' o 'all'")
+    collection: str = Query("texts", description="Colección: 'texts', 'images', 'persons' o 'all'")
 ):
     """Endpoint que devuelve la visualización 2D como archivo PNG descargable"""
-    data = get_vectors_by_collection(collection, limit)
+    data = get_vectors_for_visualization(collection, limit)
     
     if not data:
         raise HTTPException(status_code=404, detail="No se encontraron vectores")
@@ -414,10 +440,10 @@ async def download_visualization_2d(
 @app.get("/download-3d")
 async def download_visualization_3d(
     limit: int = 100,
-    collection: str = Query("texts", description="Colección: 'texts', 'images' o 'all'")
+    collection: str = Query("texts", description="Colección: 'texts', 'images', 'persons' o 'all'")
 ):
     """Endpoint que devuelve la visualización 3D como archivo PNG descargable"""
-    data = get_vectors_by_collection(collection, limit)
+    data = get_vectors_for_visualization(collection, limit)
     
     if not data:
         raise HTTPException(status_code=404, detail="No se encontraron vectores")
@@ -443,6 +469,7 @@ async def download_visualization_3d(
     if collection.lower() == "all" and len(data) > 0:
         text_indices = [i for i, d in enumerate(data) if d.get("type") == "text"]
         image_indices = [i for i, d in enumerate(data) if d.get("type") == "image"]
+        person_indices = [i for i, d in enumerate(data) if d.get("type") == "person"]
         
         if text_indices:
             ax.scatter(vectors_3d[text_indices, 0], vectors_3d[text_indices, 1], vectors_3d[text_indices, 2], 
@@ -450,6 +477,9 @@ async def download_visualization_3d(
         if image_indices:
             ax.scatter(vectors_3d[image_indices, 0], vectors_3d[image_indices, 1], vectors_3d[image_indices, 2], 
                       alpha=0.6, s=50, c='red', label='Imágenes')
+        if person_indices:
+            ax.scatter(vectors_3d[person_indices, 0], vectors_3d[person_indices, 1], vectors_3d[person_indices, 2], 
+                      alpha=0.6, s=50, c='green', label='Personas')
         ax.legend()
     else:
         ax.scatter(vectors_3d[:, 0], vectors_3d[:, 1], vectors_3d[:, 2], alpha=0.6, s=50)

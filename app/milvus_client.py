@@ -199,27 +199,96 @@ def search_similar_images(image_path, top_k: int):
 # Obtener todos los vectores y metadatos de una colección específica
 def get_all_vectors_from_collection(collection_name, limit=100):
     client.load_collection(collection_name)
-    results = client.query(
-        collection_name=collection_name,
-        filter=None,
-        output_fields=["id", "vector", "text", "subject", "filename"],
-        limit=limit
-    )
-    return results
+    
+    # Definir campos según el tipo de colección
+    if collection_name == COLLECTION_NAME:  # Colección de textos
+        output_fields = ["id", "vector", "text", "subject", "filename"]
+    elif collection_name == "images":  # Colección de imágenes
+        output_fields = ["id", "vector", "filename"]
+    elif collection_name == PERSON_COLLECTION:  # Colección de personas
+        output_fields = ["id", "vector", "name", "description"]
+    else:
+        # Fallback: intentar obtener todos los campos disponibles
+        output_fields = ["id", "vector"]
+    
+    try:
+        results = client.query(
+            collection_name=collection_name,
+            filter=None,
+            output_fields=output_fields,
+            limit=limit
+        )
+        return results
+    except Exception as e:
+        print(f"Error obteniendo vectores de {collection_name}: {e}")
+        return []
 
 # Obtener todos los vectores y metadatos de la colección principal
 def get_all_vectors(limit=100):
     return get_all_vectors_from_collection(COLLECTION_NAME, limit)
 
-# Obtener vectores de ambas colecciones
+# Obtener vectores con información completa para visualizaciones
+def get_vectors_for_visualization(collection_name, limit=100):
+    """
+    Obtiene vectores con información completa para visualizaciones.
+    Incluye labels y tooltips para cada punto.
+    """
+    if collection_name == "all":
+        return get_all_vectors_combined(limit)
+    
+    # Mapear nombres de colección a nombres reales
+    if collection_name.lower() == "texts":
+        actual_collection = COLLECTION_NAME
+    elif collection_name.lower() == "images":
+        actual_collection = "images"
+    elif collection_name.lower() == "persons":
+        actual_collection = PERSON_COLLECTION
+    else:
+        actual_collection = collection_name
+    
+    data = get_all_vectors_from_collection(actual_collection, limit)
+    
+    # Agregar información para visualizaciones según el tipo
+    if collection_name.lower() == "texts":  # Textos
+        for item in data:
+            item["type"] = "text"
+            item["label"] = item.get("text", "Texto")[:50] + "..." if len(item.get("text", "")) > 50 else item.get("text", "Texto")
+            item["tooltip"] = f"Texto: {item.get('text', 'Sin texto')[:100]}..."
+    
+    elif collection_name.lower() == "images":  # Imágenes
+        for item in data:
+            item["type"] = "image"
+            item["label"] = item.get("filename", "Imagen")
+            item["tooltip"] = f"Imagen: {item.get('filename', 'Sin nombre')}"
+    
+    elif collection_name.lower() == "persons":  # Personas
+        for item in data:
+            item["type"] = "person"
+            item["label"] = item.get("name", "Persona")
+            item["tooltip"] = f"Persona: {item.get('name', 'Sin nombre')} - {item.get('description', 'Sin descripción')[:100]}..."
+    
+    return data
+
+# Obtener vectores de todas las colecciones
 def get_all_vectors_combined(limit=100):
     texts = get_all_vectors_from_collection(COLLECTION_NAME, limit)
     images = get_all_vectors_from_collection("images", limit)
+    persons = get_all_vectors_from_collection(PERSON_COLLECTION, limit)
     
-    # Agregar tipo de dato a cada elemento
+    # Agregar tipo de dato y información útil para visualizaciones
     for item in texts:
         item["type"] = "text"
+        item["label"] = item.get("text", "Texto")[:50] + "..." if len(item.get("text", "")) > 50 else item.get("text", "Texto")
+        item["tooltip"] = f"Texto: {item.get('text', 'Sin texto')[:100]}..."
+    
     for item in images:
         item["type"] = "image"
+        item["label"] = item.get("filename", "Imagen")
+        item["tooltip"] = f"Imagen: {item.get('filename', 'Sin nombre')}"
     
-    return texts + images
+    for item in persons:
+        item["type"] = "person"
+        item["label"] = item.get("name", "Persona")
+        item["tooltip"] = f"Persona: {item.get('name', 'Sin nombre')} - {item.get('description', 'Sin descripción')[:100]}..."
+    
+    return texts + images + persons
