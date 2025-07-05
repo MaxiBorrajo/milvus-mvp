@@ -32,27 +32,6 @@ const usePersonSearch = () => {
     [makeRequest]
   );
 
-  const getPersonName = () => {
-    if (!data) return null;
-
-    // Si tenemos resultados en formato lista
-    if (data.results && Array.isArray(data.results)) {
-      if (data.results.length === 1) {
-        return (
-          data.results[0].text ||
-          data.results[0].content ||
-          "Persona no encontrada"
-        );
-      }
-      return data.results
-        .map((result) => result.text || result.content)
-        .join(", ");
-    }
-
-    // Fallback para formato anterior
-    return data.person || data.result || data.name || "Persona no encontrada";
-  };
-
   const getPersonResults = () => {
     if (!data) return [];
     return data.results || [];
@@ -63,7 +42,6 @@ const usePersonSearch = () => {
     error,
     data,
     searchPerson,
-    getPersonName,
     getPersonResults,
     reset,
   };

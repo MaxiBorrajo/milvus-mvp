@@ -69,6 +69,7 @@ def search_documents(query: str, top_k: int):
         collection_name=COLLECTION_NAME,
         data=query_vector,
         limit=top_k,
+       
         output_fields=["text", "subject"]
     )
 

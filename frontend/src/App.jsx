@@ -5,6 +5,7 @@ import Home from "./Pages/Home";
 import PrimerJuego from "./Pages/PrimerJuego";
 import SegundoJuego from "./Pages/SegundoJuego";
 import TercerJuego from "./Pages/TercerJuego";
+
 // Header component is used in individual pages
 
 function App() {

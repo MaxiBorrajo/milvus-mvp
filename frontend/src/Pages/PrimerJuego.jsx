@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import Header from "../Components/Header";
 import usePersonSearch from "../hooks/usePersonSearch";
 import useTestData from "../hooks/useTestData";
+import VectorModal from "../Components/VectorModal";
 
 // Componente Modal
 const PersonModal = ({ person, isOpen, onClose }) => {
@@ -40,8 +41,8 @@ export default function PrimerJuego() {
   const [topK, setTopK] = useState(1);
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const { loading, error, searchPerson, getPersonName, getPersonResults } =
-    usePersonSearch();
+  const [isVectorModalOpen, setIsVectorModalOpen] = useState(false);
+  const { loading, error, searchPerson, getPersonResults } = usePersonSearch();
   const {
     loading: testDataLoading,
     error: testDataError,
@@ -165,6 +166,27 @@ export default function PrimerJuego() {
                     : "📊 Crear Datos de Prueba"}
                 </button>
               </div>
+
+              <div className="visualization-section">
+                <h4>📊 Visualización</h4>
+                <button
+                  onClick={() => setIsVectorModalOpen(true)}
+                  className="visualization-btn"
+                >
+                  🎯 Ver Gráfico de Personas
+                </button>
+                {getPersonResults().length > 0 && (
+                  <p className="visualization-info">
+                    Última búsqueda:{" "}
+                    {getPersonResults()
+                      .slice(0, 3)
+                      .map((r) => r.name)
+                      .join(", ")}
+                    {getPersonResults().length > 3 &&
+                      ` y ${getPersonResults().length - 3} más`}
+                  </p>
+                )}
+              </div>
             </div>
           </div>
 
@@ -237,6 +259,13 @@ export default function PrimerJuego() {
         person={selectedPerson}
         isOpen={isModalOpen}
         onClose={closeModal}
+      />
+
+      {/* Modal de Vectores */}
+      <VectorModal
+        isOpen={isVectorModalOpen}
+        onClose={() => setIsVectorModalOpen(false)}
+        getPersonResults={getPersonResults}
       />
     </div>
   );
