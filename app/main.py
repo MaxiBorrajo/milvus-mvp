@@ -2,11 +2,12 @@ import base64
 from fastapi import HTTPException
 import io
 from fastapi import FastAPI, File, UploadFile, Query
+from fastapi.middleware.cors import CORSMiddleware
 from matplotlib import pyplot as plt
 from pydantic import BaseModel
 from typing import List
-from app.utils import extract_text_from_file
-from app.milvus_client import setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined
+from utils import extract_text_from_file
+from milvus_client import setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined
 import tempfile
 import os
 from pathlib import Path
@@ -20,6 +21,16 @@ IMAGE_DIR = Path("static/images")
 IMAGE_DIR.mkdir(parents=True, exist_ok=True)
 
 app = FastAPI()
+
+# Configurar CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["http://localhost:3000"],  # Frontend URL
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 setup_collection()
 
 # 🧾 Request schemas
@@ -33,6 +44,10 @@ class InsertRequest(BaseModel):
 class SearchRequest(BaseModel):
     query: str
     top_k: int = 5
+
+class PersonSearchRequest(BaseModel):
+    question: str
+    top_k: int = 1
 
 # 🔹 Insertar textos
 @app.post("/insert")
@@ -48,6 +63,18 @@ def search_text(req: SearchRequest):
         "query": req.query,
         "results": results
     }
+
+# 🔹 Buscar persona indicada
+@app.post("/find-person")
+def find_person(req: PersonSearchRequest):
+    # Simulación de búsqueda de persona
+   
+    results = search_documents(req.question, req.top_k)
+    return {
+        "query": req.question,
+        "results": results
+    }
+
 
 @app.post("/upload-files")
 async def upload_files(files: List[UploadFile] = File(...)):
