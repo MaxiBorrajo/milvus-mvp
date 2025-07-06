@@ -123,7 +123,7 @@ export default function PrimerJuego() {
                 />
 
                 <div className="top-k-selector">
-                  <label htmlFor="topK">Cantidad de personas:</label>
+                  <label htmlFor="topK">Cantidad de acólitos:</label>
                   <select
                     id="topK"
                     value={topK}
@@ -131,11 +131,11 @@ export default function PrimerJuego() {
                     className="top-k-select"
                     disabled={loading}
                   >
-                    <option value={1}>1 persona</option>
-                    <option value={2}>2 personas</option>
-                    <option value={3}>3 personas</option>
-                    <option value={5}>5 personas</option>
-                    <option value={10}>10 personas</option>
+                    <option value={1}>1 acólito</option>
+                    <option value={2}>2 acólitos</option>
+                    <option value={3}>3 acólitos</option>
+                    <option value={5}>5 acólitos</option>
+                    <option value={10}>10 acólitos</option>
                   </select>
                 </div>
 
@@ -194,7 +194,7 @@ export default function PrimerJuego() {
                   onClick={() => setIsVectorModalOpen(true)}
                   className="visualization-btn"
                 >
-                  🎯 Ver Gráfico de Personas
+                  🎯 Ver Gráfico de Acólitos
                 </button>
                 {getPersonResults().length > 0 && (
                   <p className="visualization-info">
@@ -223,26 +223,62 @@ export default function PrimerJuego() {
 
               {getPersonResults().length > 0 && !loading && (
                 <div className="result-card">
-                  <h3>🎉 ¡Encontramos a la persona perfecta!</h3>
-                  <div className="person-result">
-                    <span className="person-name">{getPersonName()}</span>
+                  <h3>🕀 ¡Encontramos a los acólitos perfectos!</h3>
+                  <div className="persons-result">
+                    {getPersonResults().map((result, index) => (
+                      <div
+                        key={index}
+                        className="person-item clickable"
+                        onClick={() => handlePersonClick(result)}
+                        title="Haz clic para ver más detalles"
+                      >
+                        <span className="person-rank">#{index + 1}</span>
+                        <span className="person-name">
+                          {result.name || "Acólito no especificado"}
+                        </span>
+                        {result.similarity !== undefined && (
+                          <span className="person-score">
+                            {Math.round(result.similarity * 100)}% similitud
+                          </span>
+                        )}
+                      </div>
+                    ))}
                   </div>
                   <p className="result-description">
-                    Esta persona es ideal para tu consulta. ¡Confía en su
-                    experiencia!
+                    Haz clic en cualquier persona para ver su descripción
+                    completa. ¡Confía completamente en su experiencia!
                   </p>
                 </div>
               )}
+              <div
+                className="placeholder-examples"
+                style={{ marginBottom: "10px" }}
+              >
+                <h3>🕯 ¿Cómo funciona?</h3>
+                <ul>
+                  <li>Escribe una pregunta sobre qué necesitas</li>
+                  <li>Envia tu solicitud al abismo</li>
+                  <li>
+                    Alguien o algo que pertenezca a la oscuridad te dara la
+                    respuesta
+                  </li>
+                  <li>¡Confía ciegamente en la recomendación!</li>
+                </ul>
+              </div>
 
               {!getPersonResults().length && !loading && !error && (
                 <div className="placeholder">
-                  <h3>💡 ¿Cómo funciona?</h3>
-                  <ul>
-                    <li>Escribe una pregunta sobre qué necesitas</li>
-                    <li>Haz clic en "Buscar" o presiona Enter</li>
-                    <li>El sistema encontrará a la persona más indicada</li>
-                    <li>¡Confía en la recomendación!</li>
-                  </ul>
+                  <h3>🎯 ¿Quién es el indicado?</h3>
+
+                  <div className="placeholder-examples">
+                    <h4>💡 Ejemplos de preguntas:</h4>
+                    <ul>
+                      <li>"¿Quién puede organizar una fiesta?"</li>
+                      <li>"¿Quién sabe resolver problemas técnicos?"</li>
+                      <li>"¿Quién es bueno para el marketing?"</li>
+                      <li>"¿Quién puede ayudarme con diseño?"</li>
+                    </ul>
+                  </div>
                 </div>
               )}
             </div>

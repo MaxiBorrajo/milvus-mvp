@@ -81,6 +81,7 @@ const SegundoJuego = () => {
               <div className="result-card" key={result.index}>
                 <img
                   src={result.url}
+                  alt="Result"
                   style={{
                     maxWidth: "100%",
                     borderRadius: "10px",

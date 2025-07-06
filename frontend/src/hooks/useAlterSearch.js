@@ -26,6 +26,7 @@ const useAlterSearch = () => {
         throw err;
       }
     },
+    // eslint-disable-next-line
     [makeRequest]
   );
 
