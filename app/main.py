@@ -123,9 +123,13 @@ def insert_person(req: InsertPersonRequest):
         return {"error": str(e), "inserted": 0}
 
 @app.get("/find-person")
-def find_person(query: str, top_k: int = 1):
+def find_person(
+    query: str, 
+    top_k: int = 1,
+    metric_type: str = Query("COSINE", description="Tipo de métrica: L2, IP, COSINE, HAMMING, JACCARD")
+):
     try:
-        results = search_person(query, top_k)
+        results = search_person(query, top_k, metric_type)
         return {
             "query": query,
             "results": results
@@ -246,13 +250,17 @@ def get_vectors_by_collection(collection: str, limit: int):
     elif collection.lower() == "images":
         return get_all_vectors_from_collection("images", limit)
     elif collection.lower() == "persons":
-        return get_all_vectors_from_collection(PERSON_COLLECTION, limit)
+        # Usar COSINE por defecto para compatibilidad
+        return get_all_vectors_from_collection(f"{PERSON_COLLECTION}_cosine", limit)
+    elif collection.lower().startswith("persons_"):
+        # Manejar colecciones específicas por métrica (persons_cosine, persons_l2, persons_ip)
+        return get_all_vectors_from_collection(collection, limit)
     elif collection.lower() == "all":
         return get_all_vectors_combined(limit)
     else:
         raise HTTPException(
             status_code=400, 
-            detail="collection debe ser 'texts', 'images', 'persons' o 'all'"
+            detail="collection debe ser 'texts', 'images', 'persons', 'persons_cosine', 'persons_l2', 'persons_ip' o 'all'"
         )
 
 @app.get("/visualize-2d")
