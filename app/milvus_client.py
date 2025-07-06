@@ -1,18 +1,15 @@
 from pymilvus import MilvusClient
 from sentence_transformers import SentenceTransformer
 from sklearn.preprocessing import normalize
-from feature_extractor import FeatureExtractor
+from app.feature_extractor import FeatureExtractor
 import os
-<<<<<<< HEAD
 from io import BytesIO
 from PIL import Image
-=======
 import numpy as np
->>>>>>> 6b521d1723308344fd379351591b0b754b0011ed
 
 COLLECTION_NAME = "demo_collection"
 PERSON_COLLECTION = 'person'
-DIMENSION = 768
+DIMENSION = 512
 
 # Inicializar cliente y modelo
 client = MilvusClient(uri="http://localhost:19530")
@@ -35,7 +32,7 @@ def setup_collection():
     client.create_collection(
         collection_name="images",
         vector_field_name="vector",
-        dimension=384,
+        dimension=512,
         auto_id=True,
         enable_dynamic_field=True,
         metric_type="COSINE",
@@ -198,71 +195,11 @@ def search_similar_images(image_path, top_k: int):
         {
             "filename": hit["entity"]["filename"],
             "score": round(1 - hit["distance"], 4),
-            "url": f"{base_url}/{hit['entity']['filename']}"
+            "url": f"{base_url}/{hit['entity']['filename']}",
+            "id": hit.id
         }
         for hit in results[0]
     ]
-<<<<<<< HEAD
-def upsert_with_selection(search_image_path: str, new_image_path: str, selected_filename: str, top_k: int = 5):
-    extractor = FeatureExtractor("resnet34")
-    
-    try:
-        # 1. Buscar imágenes similares
-        search_embedding = extractor(search_image_path)
-        similar_images = client.search(
-            collection_name="images",
-            data=[search_embedding],
-            anns_field="vector",
-            param={"metric_type": "COSINE", "params": {"nprobe": 16}},
-            limit=top_k,
-            output_fields=["id", "filename"],
-            consistency_level="Strong"
-        )[0]
-
-        print(f"Encontradas {len(similar_images)} imágenes similares")
-        
-        # 2. Verificar que la imagen seleccionada esté en los resultados
-        selected_id = None
-        for img in similar_images:
-            if img["entity"]["filename"] == selected_filename:
-                selected_id = img["id"]
-                break
-        
-        if not selected_id:
-            raise ValueError(f"La imagen {selected_filename} no fue encontrada en los resultados")
-        
-        # 3. Eliminar la imagen seleccionada
-        client.delete(
-            collection_name="images",
-            ids=[selected_id],
-            consistency_level="Strong"
-        )
-        
-        # 4. Insertar nueva imagen
-        new_embedding = extractor(new_image_path)
-        new_id = client.insert(
-            collection_name="images",
-            data=[{"vector": new_embedding, "filename": new_image_path.split("/")[-1]}]
-        )["ids"][0]
-        
-        return {
-            "status": "upserted",
-            "new_id": new_id,
-            "deleted_id": selected_id,
-            "similar_images": [
-                {
-                    "filename": img["entity"]["filename"],
-                    "score": round(1 - img["distance"], 4),
-                    "id": img["id"]
-                } 
-                for img in similar_images
-            ]
-        }
-        
-    except Exception as e:
-        print(f"Error en upsert con selección: {str(e)}")
-        raise
-=======
 
 # Obtener todos los vectores y metadatos de una colección específica
 def get_all_vectors_from_collection(collection_name, limit=100):
@@ -360,4 +297,26 @@ def get_all_vectors_combined(limit=100):
         item["tooltip"] = f"Persona: {item.get('name', 'Sin nombre')} - {item.get('description', 'Sin descripción')[:100]}..."
     
     return texts + images + persons
->>>>>>> 6b521d1723308344fd379351591b0b754b0011ed
+
+
+def delete_if_similar(similar_images: list, threshold: float = 0.01):  # Threshold bajo (cerca de 0)
+    if similar_images:
+        top_result = similar_images[0]
+        
+        # Si el score es cercano a 0 (idéntico), borramos
+        if top_result["score"] <= threshold: 
+            client.delete(
+                collection_name="images",
+                ids=[top_result["id"]]
+            )
+            return True, top_result["id"]
+    
+    return False, None
+
+def delete_image(vector_id: int):
+    """Elimina una imagen por su ID vectorial"""
+    client.delete(
+        collection_name="images",
+        ids=[vector_id]  # Corregido: usa el parámetro real
+    )
+

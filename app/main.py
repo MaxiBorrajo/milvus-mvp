@@ -8,10 +8,9 @@ from http.client import HTTPException
 from fastapi import FastAPI, File, Form, UploadFile
 from pydantic import BaseModel
 from typing import List
-from utils import extract_text_from_file
-from milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION
+from app.milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION
 from app.utils import extract_text_from_file
-from app.milvus_client import upsert_with_selection,setup_collection, insert_documents, search_documents, insert_images, search_similar_images
+from app.milvus_client import delete_image,delete_if_similar,setup_collection, insert_documents, search_documents, insert_images, search_similar_images
 import tempfile
 import os
 from pathlib import Path
@@ -512,51 +511,81 @@ async def download_visualization_3d(
         headers={"Content-Disposition": f"attachment; filename=vectors_3d_{collection}_{len(vectors)}_vectors.png"}
     )
 
-
-class ImagePairUpsertRequest(BaseModel):
-    search_image: UploadFile = File(...)
-    new_image: UploadFile = File(...)
-    filename: str  # Nombre único para la nueva imagen
-
-class UpsertSelectionRequest(BaseModel):
-    search_image: UploadFile = File(...)
-    new_image: UploadFile = File(...)
-    selected_filename: str
-    top_k: int = 5
-
-@app.post("/upsert-with-selection")
-async def upsert_with_selection_route(
-    search_image: UploadFile = File(...),
-    new_image: UploadFile = File(...),
-    selected_filename: str = Form(...),
-    top_k: int = Form(5)
-):
+@app.post("/manage-image")
+async def manage_image(file1: UploadFile = File(...), file2: UploadFile = File(...)):
     try:
-        # Validar archivos
-        if not (search_image.content_type.startswith('image/') and 
-                new_image.content_type.startswith('image/')):
-            raise HTTPException(status_code=400, detail="Solo se aceptan imágenes (JPEG/PNG)")
+        # Guardar imágenes temporales
+        suffix1 = os.path.splitext(file1.filename)[1]
+        suffix2 = os.path.splitext(file2.filename)[1]
+        
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix1) as tmp1, \
+             tempfile.NamedTemporaryFile(delete=False, suffix=suffix2) as tmp2:
+            tmp1.write(await file1.read())
+            tmp_path1 = tmp1.name
+            tmp2.write(await file2.read())
+            tmp_path2 = tmp2.name
 
-        # Crear archivos temporales
-        with tempfile.NamedTemporaryFile(delete=False) as tmp_search:
-            tmp_search.write(await search_image.read())
-            search_temp = tmp_search.name
-            
-        with tempfile.NamedTemporaryFile(delete=False) as tmp_new:
-            tmp_new.write(await new_image.read())
-            new_temp = tmp_new.name
-            
-        try:
-            result = upsert_with_selection(
-                search_temp, 
-                new_temp, 
-                selected_filename,
-                top_k
-            )
-            return result
-        finally:
-            os.unlink(search_temp)
-            os.unlink(new_temp)
-                        
+        # Debug: Ver contenido de las imágenes
+        print(f"DEBUG: File1 size: {os.path.getsize(tmp_path1)} bytes")
+        print(f"DEBUG: File2 size: {os.path.getsize(tmp_path2)} bytes")
+
+        # Buscar similitudes para file1
+        similar_images = search_similar_images(tmp_path1, top_k=5)  # Aumenté a 5 resultados
+        print(f"DEBUG: Similar images found: {similar_images}")
+        
+        # Operación de borrado
+        deleted, deleted_filename = delete_if_similar(similar_images, threshold=0)
+        
+        # Siempre insertar file2
+        insert_images([tmp_path2], metadata={"filename": file2.filename})
+
+        return {
+            "file1_deleted": deleted,
+            "deleted_filename": deleted_filename,
+            "file2_inserted": file2.filename,
+            "similarity_results": similar_images  # Devolvemos los resultados para debug
+        }
+
     except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
+        print(f"ERROR: {str(e)}")
+        return {"error": str(e)}
+    
+
+
+@app.post("/replace-closest-image")
+async def replace_closest_image(file: UploadFile = File(...)):
+    """
+    1. Busca la imagen más cercana (aunque no sea muy similar)
+    2. Si existe alguna, la elimina
+    3. Siempre inserta la nueva imagen
+    """
+    try:
+        # Guardar imagen temporal
+        suffix = os.path.splitext(file.filename)[1]
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
+            tmp.write(await file.read())
+            tmp_path = tmp.name
+
+        # Paso 1: Buscar la más cercana
+        similar_images = search_similar_images(tmp_path, top_k=1)
+        
+        # Paso 2: Eliminar si existe
+        deleted = False
+        deleted_id = None
+        if similar_images:  # Esto es más pythonico que similar_images != []
+            deleted_id = similar_images[0]["id"]
+            delete_image(deleted_id)
+            deleted = True
+
+        # Paso 3: Insertar la nueva
+        insert_images([tmp_path], metadata={"filename": file.filename})
+
+        return {
+            "action": "replaced" if deleted else "inserted",
+            "deleted_id": deleted_id,
+            "new_filename": file.filename,
+            "similarity_score": similar_images[0]["score"] if deleted else None
+        }
+
+    except Exception as e:
+        return {"error": str(e)}
