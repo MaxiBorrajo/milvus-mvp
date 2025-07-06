@@ -22,11 +22,11 @@ const PersonModal = ({ person, isOpen, onClose }) => {
           <div className="person-info">
             <h4>📝 Descripción:</h4>
             <p>{person.description}</p>
-            {person.similarity && (
+            {person.similarity !== undefined && (
               <div className="similarity-info">
                 <h4>🎯 Coincidencia:</h4>
-                <p>{Math.round((1 - person.similarity) * 100)}% de similitud</p>
-                <small>(Menor distancia = Mayor similitud)</small>
+                <p>{Math.round(person.similarity * 100)}% de similitud</p>
+                <small>(Mayor similitud = Mejor coincidencia)</small>
               </div>
             )}
           </div>
@@ -39,6 +39,7 @@ const PersonModal = ({ person, isOpen, onClose }) => {
 export default function PrimerJuego() {
   const [query, setQuery] = useState("");
   const [topK, setTopK] = useState(1);
+  const [metricType, setMetricType] = useState("COSINE");
   const [selectedPerson, setSelectedPerson] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isVectorModalOpen, setIsVectorModalOpen] = useState(false);
@@ -56,7 +57,7 @@ export default function PrimerJuego() {
     }
 
     try {
-      await searchPerson(query, topK);
+      await searchPerson(query, topK, metricType);
     } catch (err) {
       // El error ya está manejado en el hook
       console.error("Error en handleSubmit:", err);
@@ -133,6 +134,21 @@ export default function PrimerJuego() {
                   </select>
                 </div>
 
+                <div className="metric-selector">
+                  <label htmlFor="metricType">Algoritmo de búsqueda:</label>
+                  <select
+                    id="metricType"
+                    value={metricType}
+                    onChange={(e) => setMetricType(e.target.value)}
+                    className="metric-select"
+                    disabled={loading}
+                  >
+                    <option value="COSINE">Coseno (Recomendado)</option>
+                    <option value="L2">Distancia Euclidiana</option>
+                    <option value="IP">Producto Interno</option>
+                  </select>
+                </div>
+
                 <button
                   onClick={handleSubmit}
                   className="search-btn"
@@ -184,6 +200,7 @@ export default function PrimerJuego() {
                       .join(", ")}
                     {getPersonResults().length > 3 &&
                       ` y ${getPersonResults().length - 3} más`}
+                    <br />
                   </p>
                 )}
               </div>
@@ -214,10 +231,9 @@ export default function PrimerJuego() {
                         <span className="person-name">
                           {result.name || "Persona no especificada"}
                         </span>
-                        {result.similarity && (
+                        {result.similarity !== undefined && (
                           <span className="person-score">
-                            {Math.round((1 - result.similarity) * 100)}%
-                            similitud
+                            {Math.round(result.similarity * 100)}% similitud
                           </span>
                         )}
                       </div>
