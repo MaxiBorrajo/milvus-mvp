@@ -5,7 +5,7 @@ const usePersonSearch = () => {
   const { loading, error, data, makeRequest, reset } = useApi();
 
   const searchPerson = useCallback(
-    async (question, topK = 1) => {
+    async (question, topK = 1, metricType = "COSINE") => {
       if (!question?.trim()) {
         throw new Error("La pregunta no puede estar vacía");
       }
@@ -14,6 +14,7 @@ const usePersonSearch = () => {
         const params = new URLSearchParams({
           query: question.trim(),
           top_k: topK.toString(),
+          metric_type: metricType,
         });
 
         const result = await makeRequest(

@@ -58,7 +58,7 @@ const useTestData = () => {
           "Ingeniero de sistemas con expertise en arquitectura de software. Diseñador de soluciones escalables y robustas.",
       },
       {
-        name: "Lourdes De La Cuerda",
+        name: "Lourdes De La Cerda",
         description:
           "Especialista en marketing digital y redes sociales. Estratega de contenido y crecimiento de audiencias.",
       },
