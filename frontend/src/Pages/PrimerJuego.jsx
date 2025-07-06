@@ -34,24 +34,29 @@ export default function PrimerJuego() {
 
   return (
     <div className="game-container">
-      <Header title="¿Quién es el indicado?" />
+      <Header title="Primer Ritual" />
 
       <div className="game-content">
-        <h1>🎯 ¿Quién es el indicado?</h1>
-        <p>Haz una pregunta y encuentra a la persona perfecta para la tarea</p>
+        <h1>🗪 ¿Quién ha sido señalado por las sombras?</h1>
+        <p>
+          Susurra tu duda al vacío... y alguien, en algún rincón olvidado,
+          sentirá el llamado.
+        </p>
 
         <div className="game-layout">
           <div className="left-section">
             <div className="search-section">
               <div className="input-group">
-                <label htmlFor="question">¿Quién es el mejor para?</label>
+                <label htmlFor="question">
+                  ¿A quién ha elegido el abismo entre las estrellas?
+                </label>
                 <input
                   id="question"
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Ej: organizar una fiesta, resolver problemas técnicos..."
+                  placeholder="Ej: usar de sacrificio, resolver problemas técnicos..."
                   className="search-input"
                   disabled={loading}
                 />
@@ -61,7 +66,7 @@ export default function PrimerJuego() {
                   className="search-btn"
                   disabled={loading || !query.trim()}
                 >
-                  {loading ? "🔍 Buscando..." : "🔍 Buscar"}
+                  {loading ? "🔍 Consultando..." : "🔍 Consultar"}
                 </button>
               </div>
 
@@ -72,12 +77,12 @@ export default function PrimerJuego() {
               )}
 
               <div className="test-data-section">
-                <h4>🧪 Datos de Prueba</h4>
+                <h4>🌌 Complementa el abismo</h4>
                 <button
                   onClick={handleCreateTestData}
                   className="test-data-btn"
                 >
-                  📊 Crear Datos de Prueba
+                  💀 Alimenta al abismo
                 </button>
               </div>
             </div>
@@ -88,31 +93,34 @@ export default function PrimerJuego() {
               {loading && (
                 <div className="loading">
                   <div className="spinner"></div>
-                  <p>Buscando a la persona indicada...</p>
+                  <p>Buscando respuestas...</p>
                 </div>
               )}
 
               {getPersonName() && !loading && (
                 <div className="result-card">
-                  <h3>🎉 ¡Encontramos a la persona perfecta!</h3>
+                  <h3>🕀 ¡Encontramos al acólito perfecto!</h3>
                   <div className="person-result">
                     <span className="person-name">{getPersonName()}</span>
                   </div>
                   <p className="result-description">
-                    Esta persona es ideal para tu consulta. ¡Confía en su
-                    experiencia!
+                    Esta persona es ideal para tu proposito. ¡Confía
+                    completamente en su experiencia!
                   </p>
                 </div>
               )}
 
               {!getPersonName() && !loading && !error && (
                 <div className="placeholder">
-                  <h3>💡 ¿Cómo funciona?</h3>
+                  <h3>🕯 ¿Cómo funciona?</h3>
                   <ul>
                     <li>Escribe una pregunta sobre qué necesitas</li>
-                    <li>Haz clic en "Buscar" o presiona Enter</li>
-                    <li>El sistema encontrará a la persona más indicada</li>
-                    <li>¡Confía en la recomendación!</li>
+                    <li>Envia tu solicitud al abismo</li>
+                    <li>
+                      Alguien o algo que pertenezca a la oscuridad te dara la
+                      respuesta
+                    </li>
+                    <li>¡Confía ciegamente en la recomendación!</li>
                   </ul>
                 </div>
               )}
@@ -121,7 +129,7 @@ export default function PrimerJuego() {
         </div>
 
         <Link to="/" className="back-btn">
-          ← Volver al Menú Principal
+          ← Volver al calabozo
         </Link>
       </div>
     </div>
