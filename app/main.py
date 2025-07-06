@@ -1,14 +1,20 @@
 from http.client import HTTPException
-from fastapi import FastAPI, File, UploadFile
+from fastapi import FastAPI, File, Form, UploadFile
 from pydantic import BaseModel
 from typing import List
 from app.utils import extract_text_from_file
-from app.milvus_client import setup_collection, insert_documents, search_documents, insert_images, search_similar_images
+from app.milvus_client import upsert_with_selection,setup_collection, insert_documents, search_documents, insert_images, search_similar_images
 import tempfile
 import os
 from pathlib import Path
 from fastapi.responses import FileResponse
 from typing import Annotated
+from fastapi import HTTPException
+import traceback
+import tempfile
+
+
+
 
 
 IMAGE_DIR = Path("static/images")
@@ -97,3 +103,52 @@ def get_image(filename: str):
     if not file_path.exists():
         raise HTTPException(status_code=404, detail="Image not found")
     return FileResponse(file_path)
+
+
+class ImagePairUpsertRequest(BaseModel):
+    search_image: UploadFile = File(...)
+    new_image: UploadFile = File(...)
+    filename: str  # Nombre único para la nueva imagen
+
+class UpsertSelectionRequest(BaseModel):
+    search_image: UploadFile = File(...)
+    new_image: UploadFile = File(...)
+    selected_filename: str
+    top_k: int = 5
+
+@app.post("/upsert-with-selection")
+async def upsert_with_selection_route(
+    search_image: UploadFile = File(...),
+    new_image: UploadFile = File(...),
+    selected_filename: str = Form(...),
+    top_k: int = Form(5)
+):
+    try:
+        # Validar archivos
+        if not (search_image.content_type.startswith('image/') and 
+                new_image.content_type.startswith('image/')):
+            raise HTTPException(status_code=400, detail="Solo se aceptan imágenes (JPEG/PNG)")
+
+        # Crear archivos temporales
+        with tempfile.NamedTemporaryFile(delete=False) as tmp_search:
+            tmp_search.write(await search_image.read())
+            search_temp = tmp_search.name
+            
+        with tempfile.NamedTemporaryFile(delete=False) as tmp_new:
+            tmp_new.write(await new_image.read())
+            new_temp = tmp_new.name
+            
+        try:
+            result = upsert_with_selection(
+                search_temp, 
+                new_temp, 
+                selected_filename,
+                top_k
+            )
+            return result
+        finally:
+            os.unlink(search_temp)
+            os.unlink(new_temp)
+                        
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error: {str(e)}")
