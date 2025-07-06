@@ -1732,18 +1732,18 @@
   padding: 1rem;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 10px;
-  border-left: 4px solid #4ade80;
+  border-left: 4px solid #123720;
 }
 
 .visualization-section h4 {
-  color: #4ade80;
+  color: #ffffff;
   margin-bottom: 1rem;
   font-size: 1.1rem;
 }
 
 .visualization-btn {
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(45deg, #4ade80, #22c55e);
+  background: linear-gradient(45deg, #14171c, #132910);
   color: white;
   border: none;
   border-radius: 8px;
