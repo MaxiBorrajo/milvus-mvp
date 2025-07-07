@@ -378,6 +378,6 @@ def delete_image(vector_id: int):
 def subirImagenes(path, funcion):
     for nombre_archivo in os.listdir(path):
         ruta_completa = os.path.join(path, nombre_archivo)
-        if os.path.isfile(ruta_completa) and nombre_archivo.lower().endswith(('.png', '.jpg', '.jpeg', '.webp', '.bmp', '.gif')):
+        if os.path.isfile(ruta_completa) and nombre_archivo.lower().endswith(('.png', '.jpg', '.jpeg', '.webp', '.bmp', '.gif', 'jfif' )):
             metadata = {"filename": nombre_archivo}  
             funcion([ruta_completa], metadata)       
