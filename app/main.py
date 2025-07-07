@@ -5,19 +5,19 @@ import os
 import json
 import numpy as np
 from fastapi import HTTPException
-from fastapi import FastAPI, File, UploadFile, Query
+from fastapi import FastAPI, File, UploadFile, Query, Form
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, JSONResponse, HTMLResponse, Response
-from http.client import HTTPException
+from fastapi.responses import FileResponse, Response
 from matplotlib import pyplot as plt
 from pydantic import BaseModel, ValidationError
 from pathlib import Path
 from sklearn.decomposition import PCA
 from typing import Annotated, Optional, List
+from datetime import datetime
 
 from app.utils import extract_text_from_file
 from app.milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION
-from app.multimodal_queries import insert_images_multimodal, insert_text_multimodal, setup_multimodal, search_multimodal
+from app.multimodal_queries import insert_multimodal, setup_multimodal, search_multimodal
 
 
 
@@ -52,34 +52,19 @@ def health_check():
 def debug_collections():
     """Endpoint para debuggear el estado de las colecciones"""
     try:
-        from milvus_client import client, PERSON_COLLECTION, COLLECTION_NAME
+        from app.milvus_client import client, PERSON_COLLECTION, COLLECTION_NAME
         
         collections_info = {}
         
-        # Verificar colección de personas
-        if client.has_collection(PERSON_COLLECTION):
-            collections_info["person_collection"] = {
-                "exists": True,
-                "name": PERSON_COLLECTION
-            }
-        else:
-            collections_info["person_collection"] = {
-                "exists": False,
-                "name": PERSON_COLLECTION
-            }
-        
-        # Verificar colección principal
-        if client.has_collection(COLLECTION_NAME):
-            collections_info["main_collection"] = {
-                "exists": True,
-                "name": COLLECTION_NAME
-            }
-        else:
-            collections_info["main_collection"] = {
-                "exists": False,
-                "name": COLLECTION_NAME
-            }
-        
+        collections_info["person_collection"] = {
+            "exists": client.has_collection(PERSON_COLLECTION),
+            "name": PERSON_COLLECTION
+        }
+        collections_info["main_collection"] = {
+            "exists": client.has_collection(COLLECTION_NAME),
+            "name": COLLECTION_NAME
+        }
+    
         return collections_info
         
     except Exception as e:
@@ -100,13 +85,12 @@ class InsertPersonRequest(BaseModel):
 
 class MetadataItem(BaseModel):
     author: str | None = None
-    date: str | None = None
+    date: datetime | None = None
     alt: str | None = None
+    filename: str | None = None
 
 class MultimodalItem(BaseModel):
     data: str
-    alt: str = ""
-    filename: str | None = None
     metadata: MetadataItem
 
 class MultimodalRequest(BaseModel):
@@ -128,23 +112,23 @@ def insert_texts(req: InsertRequest):
 # ===== MULTIMODAL ======
 @app.post("/insert-text-multimodal")
 def post_insert_texts_multimodal(req: MultimodalRequest):
-    inserted_count = insert_text_multimodal(req.items)
+    inserted_count = insert_multimodal(req.items, "text")
     ratio = (inserted_count / len(req.items) * 100)
     return {"inserted": inserted_count, "ratio": f"{ratio:.2f}%"}
 
 
 @app.post("/insert-image-multimodal")
-async def post_insert_images_multimodal(files: List[UploadFile] = File(...), metadatas: str = Form(...)):
+async def post_insert_images_multimodal(files: List[UploadFile] = File(...), metadatas = Form(...)):
 
 
     try:
         json_metadatas = json.loads(metadatas)
         metadatas = [MetadataItem(**metadata) for metadata in json_metadatas]
     except (json.JSONDecodeError, ValidationError):
-        return JSONResponse(status_code=400, content={"error": "Datos de metadata inválidos"})
+        raise HTTPException(status_code=400, detail="Datos de metadata inválidos")
 
     if len(files) != len(metadatas):
-        return JSONResponse(status_code=400,content={"error": f"La cantidad de imagenes no coincide con los metadatos. Hay {len(files)} imágenes pero {len(metadatas)} metadatos"})
+        raise HTTPException(status_code=400,detail=f"La cantidad de imagenes no coincide con los metadatos. Hay {len(files)} imágenes pero {len(metadatas)} metadatos")
     
 
     images = []
@@ -154,19 +138,33 @@ async def post_insert_images_multimodal(files: List[UploadFile] = File(...), met
         with open(file_path, "wb") as f:
             f.write(await file.read())
         metadata = metadatas[i]
+        metadata.filename = file.filename
         images.append(MultimodalItem(
             data=str(file_path),
-            filename=file.filename,
-            author=metadata.author,
-            date=metadata.date,
-            alt=metadata.alt)
+            metadata = metadata)
         )
 
 
-    inserted_count = insert_images_multimodal(images)
+    inserted_count = insert_multimodal(images, "image")
     ratio = (inserted_count / len(images) * 100)
     return {"inserted": inserted_count, "ratio": f"{ratio:.2f}%"}
 
+@app.get("/search-by-text-multimodal")
+def search_multimodal_text(query: str, top_k: int = 5):
+    return search_multimodal(query, "text", top_k) 
+
+@app.post("/search-by-image-multimodal")
+async def search_multimodal_image(file: UploadFile = File(...), top_k: int = 5):
+    file_path = IMAGE_DIR / file.filename
+
+    with open(file_path, "wb") as f:
+        f.write(await file.read())
+
+    return search_multimodal(str(file_path), "image", top_k)
+
+
+
+# ============= MULTIMODAL ==========================
 
 # 🔹 Buscar textos
 @app.get("/search")

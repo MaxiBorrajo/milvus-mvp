@@ -9,7 +9,7 @@ class CLIPMultimodal:
         self.model_processor = CLIPProcessor.from_pretrained(model_processor)
 
     def encode_textos(self, textos: list[str]) -> list[list[float]]:
-        datos = self.model_processor(text=textos, return_tensors="pt", padding=True, truncation=False)
+        datos = self.model_processor(text=textos, return_tensors="pt", padding=True, truncation=True)
         with torch.no_grad():
             vectores = self.model.get_text_features(**datos)
         return vectores.tolist()
