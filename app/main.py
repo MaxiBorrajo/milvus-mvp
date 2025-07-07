@@ -10,7 +10,7 @@ from pydantic import BaseModel
 from typing import List
 from app.milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION
 from app.utils import extract_text_from_file
-from app.milvus_client import delete_image,delete_if_similar,setup_collection, insert_documents, search_documents, insert_images, search_similar_images
+from app.milvus_client import subirImagenes,delete_image,delete_if_similar,setup_collection, insert_documents, search_documents, insert_images, search_similar_images
 import tempfile
 import os
 from pathlib import Path
@@ -43,6 +43,10 @@ app.add_middleware(
 
 setup_collection()
 
+@app.on_event("startup")
+def cargar_imagenes_existentes():
+    subirImagenes(IMAGE_DIR, insert_images)
+    
 @app.get("/")
 def read_root():
     return {"message": "Backend funcionando correctamente", "status": "ok"}
