@@ -1,7 +1,7 @@
 .App {
   text-align: center;
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0d0d0d 0%, #4b0000 100%);
   color: white;
 }
 
@@ -363,7 +363,7 @@
 /* Game Container Styles */
 .game-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0d0d0d 0%, #4b0000 100%);
   color: white;
 }
 
@@ -421,7 +421,7 @@
 
 /* Game Start Button */
 .game-start-btn {
-  background: linear-gradient(45deg, #4ade80, #22c55e);
+  background: linear-gradient(45deg, #14171c, #132910);
   color: white;
   border: none;
   border-radius: 10px;
@@ -467,7 +467,7 @@
 }
 
 .game-instructions li::before {
-  content: "🎯";
+  content: "🔮";
   position: absolute;
   left: 0;
 }
@@ -475,7 +475,7 @@
 /* Back Button */
 .back-btn {
   display: inline-block;
-  background: linear-gradient(45deg, #3b82f6, #1d4ed8);
+  background:linear-gradient(135deg, #0b0f0d 0%, #1f3b2c 100%);
   color: white;
   text-decoration: none;
   padding: 0.75rem 1.5rem;
@@ -638,7 +638,7 @@
 }
 
 .test-data-btn {
-  background: linear-gradient(45deg, #8b5cf6, #7c3aed);
+  background: linear-gradient(45deg, #14171c, #132910);
   color: white;
   border: none;
   border-radius: 8px;
@@ -939,8 +939,8 @@
   font-style: italic;
 }
 
-.placeholder-examples li::before {
-  content: "💭";
+.placeholder li::before {
+  content: "🔮";
   position: absolute;
   left: 0;
   font-style: normal;
@@ -1732,18 +1732,18 @@
   padding: 1rem;
   background: rgba(255, 255, 255, 0.05);
   border-radius: 10px;
-  border-left: 4px solid #4ade80;
+  border-left: 4px solid #123720;
 }
 
 .visualization-section h4 {
-  color: #4ade80;
+  color: #ffffff;
   margin-bottom: 1rem;
   font-size: 1.1rem;
 }
 
 .visualization-btn {
   padding: 0.75rem 1.5rem;
-  background: linear-gradient(45deg, #4ade80, #22c55e);
+  background: linear-gradient(45deg, #14171c, #132910);
   color: white;
   border: none;
   border-radius: 8px;
@@ -1808,3 +1808,49 @@
   font-weight: 600;
   font-size: 0.9rem;
 }
+
+.file-upload-container {
+  text-align: center;
+  padding: 2rem;
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  margin-top: 2rem;
+}
+
+.file-input {
+  padding: 1rem;
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  color: white;
+  font-size: 1rem;
+  width: 100%;
+  max-width: 400px;
+  margin: 0 auto;
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.file-input::file-selector-button {
+  background: linear-gradient(45deg, #14171c, #132910);
+  border: none;
+  border-radius: 8px;
+  color: white;
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.file-input::file-selector-button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
+}
+
+.file-input:focus {
+  outline: none;
+  border-color: #4ade80;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.2);
+}
+

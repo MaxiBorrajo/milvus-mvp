@@ -8,7 +8,7 @@ const Header = ({ title, showLogo = true }) => {
         <div className="logo">
           <Link to="/" className="back-btn">
             <span role="img" aria-label="logo">
-              🚀
+              💀
             </span>
           </Link>
         </div>

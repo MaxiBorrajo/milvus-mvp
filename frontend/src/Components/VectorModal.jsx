@@ -4,6 +4,7 @@ import useSimpleVectors from "../hooks/useSimpleVectors";
 
 const VectorModal = ({ isOpen, onClose, getPersonResults }) => {
   const { loading, error, data, getPersonVectors } = useSimpleVectors();
+  // eslint-disable-next-line
   const [hasLoaded, setHasLoaded] = useState(false);
   const [currentResults, setCurrentResults] = useState([]);
 
@@ -16,6 +17,7 @@ const VectorModal = ({ isOpen, onClose, getPersonResults }) => {
       setCurrentResults(resultNames);
       setHasLoaded(true);
     }
+    // eslint-disable-next-line
   }, [isOpen, getPersonResults]);
 
   const loadVectors = async () => {
@@ -36,7 +38,7 @@ const VectorModal = ({ isOpen, onClose, getPersonResults }) => {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="modal-header">
-          <h3>📊 Visualización de Personas</h3>
+          <h3>📊 Visualización de Acólitos</h3>
           <button className="modal-close" onClick={onClose}>
             ✕
           </button>
