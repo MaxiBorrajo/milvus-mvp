@@ -9,15 +9,15 @@ from fastapi import FastAPI, File, UploadFile, Query
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, HTMLResponse, Response
 from http.client import HTTPException
-from matplotlib import pyplot as plt, Form 
+from matplotlib import pyplot as plt
 from pydantic import BaseModel, ValidationError
-from utils import extract_text_from_file
 from pathlib import Path
 from sklearn.decomposition import PCA
 from typing import Annotated, Optional, List
 
-from milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION
-from multimodal_queries import insert_images_multimodal, insert_text_multimodal, setup_multimodal, search_multimodal
+from app.utils import extract_text_from_file
+from app.milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION
+from app.multimodal_queries import insert_images_multimodal, insert_text_multimodal, setup_multimodal, search_multimodal
 
 
 

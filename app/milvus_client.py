@@ -1,9 +1,9 @@
+import os
+import numpy as np
 from pymilvus import MilvusClient
 from sentence_transformers import SentenceTransformer
 from sklearn.preprocessing import normalize
-from feature_extractor import FeatureExtractor
-import os
-import numpy as np
+from app.feature_extractor import FeatureExtractor
 
 COLLECTION_NAME = "demo_collection"
 PERSON_COLLECTION = 'person'
