@@ -10,5 +10,7 @@ torch
 Pillow
 scikit-learn
 pydantic
+matplotlib
+numpy
 openai
 transformers
