@@ -1,138 +1,97 @@
-import React, { useState } from "react";
+import { useState } from "react";
 import Header from "../Components/Header";
+import useAlterSearch from "../hooks/useAlterSearch";
 
 const SegundoJuego = () => {
-  const [cards, setCards] = useState([]);
-  const [flipped, setFlipped] = useState([]);
-  const [matched, setMatched] = useState([]);
-  const [moves, setMoves] = useState(0);
-  const [isPlaying, setIsPlaying] = useState(false);
+  const [file, setFile] = useState(null);
+  const [result, setResult] = useState(null);
+  const [isUploaded, setIsUploaded] = useState(false);
 
-  const emojis = ["🐶", "🐱", "🐭", "🐹", "🐰", "🦊", "🐻", "🐼"];
+  const { loading, error, searchEgo } = useAlterSearch();
 
-  const initializeGame = () => {
-    const gameCards = [...emojis, ...emojis]
-      .sort(() => Math.random() - 0.5)
-      .map((emoji, index) => ({
-        id: index,
-        emoji,
-        isFlipped: false,
-        isMatched: false,
-      }));
-
-    setCards(gameCards);
-    setFlipped([]);
-    setMatched([]);
-    setMoves(0);
-    setIsPlaying(true);
-  };
-
-  const handleCardClick = (cardId) => {
-    if (
-      !isPlaying ||
-      flipped.length >= 2 ||
-      flipped.includes(cardId) ||
-      matched.includes(cardId)
-    ) {
-      return;
+  const searchAlter = async () => {
+    if (!file) {
+      alert("No cargaste una imagen, vas a enojar al antiguo!");
     }
-
-    const newFlipped = [...flipped, cardId];
-    setFlipped(newFlipped);
-
-    if (newFlipped.length === 2) {
-      setMoves((prev) => prev + 1);
-
-      const [firstId, secondId] = newFlipped;
-      const firstCard = cards.find((card) => card.id === firstId);
-      const secondCard = cards.find((card) => card.id === secondId);
-
-      if (firstCard.emoji === secondCard.emoji) {
-        setMatched((prev) => [...prev, firstId, secondId]);
-        setFlipped([]);
-
-        // Check if game is won
-        if (matched.length + 2 === cards.length) {
-          setTimeout(() => {
-            alert(
-              `¡Felicidades! Completaste el juego en ${moves + 1} movimientos.`
-            );
-            setIsPlaying(false);
-          }, 500);
-        }
-      } else {
-        setTimeout(() => {
-          setFlipped([]);
-        }, 1000);
-      }
+    try {
+      setResult(null);
+      const response = await searchEgo(file);
+      setResult(response.data);
+    } catch (err) {
+      console.error("Error en searchAlter:", err, error);
     }
   };
 
-  const isCardVisible = (cardId) => {
-    return flipped.includes(cardId) || matched.includes(cardId);
+  const handleFileChange = (event) => {
+    const file = event.target.files[0];
+    setFile(file);
+    if (file) {
+      setIsUploaded(true);
+    } else {
+      setIsUploaded(false);
+    }
   };
 
   return (
     <div className="game-container">
-      <Header title="Segundo Juego" />
+      <Header title="Segundo Ritual" />
 
       <div className="game-content">
-        <h1>🧠 Segundo Juego</h1>
-        <p>¡Encuentra las parejas de emojis!</p>
+        <h1>🕮 Segundo Ritual</h1>
+        <p>¡Encontrá tu alter ego espiritual!</p>
 
-        <div className="game-stats">
-          <div className="stat">
-            <span className="stat-label">Movimientos:</span>
-            <span className="stat-value">{moves}</span>
-          </div>
-          <div className="stat">
-            <span className="stat-label">Parejas encontradas:</span>
-            <span className="stat-value">{matched.length / 2}</span>
+        <div className="game-instructions">
+          <h3>Indicaciones:</h3>
+          <ul>
+            <li>Elegi una foto tuya</li>
+            <li>Tirala al abismo para iniciar el ritual</li>
+            <li>¡Pierde la cordura al ver la respuesta!</li>
+          </ul>
+        </div>
+
+        <div className="file-upload-container home-container">
+          <h2>Sube tu foto...</h2>
+          <div className="input-group">
+            <label htmlFor="file-upload">Selecciona un archivo</label>
+            <input
+              type="file"
+              id="file-upload"
+              className="file-input"
+              disabled={loading}
+              onChange={(e) => handleFileChange(e)}
+            />
           </div>
         </div>
 
-        {!isPlaying && cards.length === 0 && (
-          <button className="game-start-btn" onClick={initializeGame}>
-            Comenzar Juego
+        {isUploaded && (
+          <button
+            className="game-start-btn"
+            onClick={searchAlter}
+            onKeyDown={(e) => e.key === "Enter" && searchAlter}
+            disabled={loading}
+          >
+            Consultar al abismo...
           </button>
         )}
 
-        {cards.length > 0 && (
-          <div className="memory-game">
-            <div className="cards-grid">
-              {cards.map((card) => (
-                <div
-                  key={card.id}
-                  className={`memory-card ${
-                    isCardVisible(card.id) ? "flipped" : ""
-                  }`}
-                  onClick={() => handleCardClick(card.id)}
-                >
-                  <div className="card-inner">
-                    <div className="card-front">❓</div>
-                    <div className="card-back">{card.emoji}</div>
-                  </div>
-                </div>
-              ))}
+        {result && (
+          <div className="result-section">
+            <h3>Tu par:</h3>
+            <div className="games-grid">
+              <div className="result-card" key={result.index}>
+                <img
+                  src={result.url}
+                  alt="Result"
+                  style={{
+                    maxWidth: "100%",
+                    borderRadius: "10px",
+                    border: "1px solid rgba(255, 255, 255, 0.2)",
+                  }}
+                />
+              </div>
             </div>
           </div>
         )}
-
-        {cards.length > 0 && (
-          <button className="game-start-btn" onClick={initializeGame}>
-            Reiniciar Juego
-          </button>
-        )}
-
-        <div className="game-instructions">
-          <h3>Instrucciones:</h3>
-          <ul>
-            <li>Haz clic en las cartas para voltearlas</li>
-            <li>Encuentra las parejas de emojis iguales</li>
-            <li>Completa todas las parejas para ganar</li>
-            <li>¡Intenta hacerlo con la menor cantidad de movimientos!</li>
-          </ul>
-        </div>
       </div>
     </div>
   );

@@ -95,30 +95,35 @@ export default function PrimerJuego() {
 
   return (
     <div className="game-container">
-      <Header title="¿Quién es el indicado?" />
+      <Header title="Primer Ritual" />
 
       <div className="game-content">
-        <h1>🎯 ¿Quién es el indicado?</h1>
-        <p>Haz una pregunta y encuentra a la persona perfecta para la tarea</p>
+        <h1>🗪 ¿Quién ha sido señalado por las sombras?</h1>
+        <p>
+          Susurra tu duda al vacío... y alguien, en algún rincón olvidado,
+          sentirá el llamado.
+        </p>
 
         <div className="game-layout">
           <div className="left-section">
             <div className="search-section">
               <div className="input-group">
-                <label htmlFor="question">¿Quién es el mejor para?</label>
+                <label htmlFor="question">
+                  ¿A quién ha elegido el abismo entre las estrellas?
+                </label>
                 <input
                   id="question"
                   type="text"
                   value={query}
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyPress={handleKeyPress}
-                  placeholder="Ej: organizar una fiesta, resolver problemas técnicos..."
+                  placeholder="Ej: usar de sacrificio, resolver problemas técnicos..."
                   className="search-input"
                   disabled={loading}
                 />
 
                 <div className="top-k-selector">
-                  <label htmlFor="topK">Cantidad de personas:</label>
+                  <label htmlFor="topK">Cantidad de acólitos:</label>
                   <select
                     id="topK"
                     value={topK}
@@ -126,11 +131,11 @@ export default function PrimerJuego() {
                     className="top-k-select"
                     disabled={loading}
                   >
-                    <option value={1}>1 persona</option>
-                    <option value={2}>2 personas</option>
-                    <option value={3}>3 personas</option>
-                    <option value={5}>5 personas</option>
-                    <option value={10}>10 personas</option>
+                    <option value={1}>1 acólito</option>
+                    <option value={2}>2 acólitos</option>
+                    <option value={3}>3 acólitos</option>
+                    <option value={5}>5 acólitos</option>
+                    <option value={10}>10 acólitos</option>
                   </select>
                 </div>
 
@@ -154,7 +159,7 @@ export default function PrimerJuego() {
                   className="search-btn"
                   disabled={loading || !query.trim()}
                 >
-                  {loading ? "🔍 Buscando..." : "🔍 Buscar"}
+                  {loading ? "🔍 Consultando..." : "🔍 Consultar"}
                 </button>
               </div>
 
@@ -171,15 +176,15 @@ export default function PrimerJuego() {
               )}
 
               <div className="test-data-section">
-                <h4>🧪 Datos de Prueba</h4>
+                <h4>🌌 Complementa el abismo</h4>
                 <button
                   onClick={handleCreateTestData}
                   className="test-data-btn"
                   disabled={testDataLoading}
                 >
                   {testDataLoading
-                    ? "⏳ Creando..."
-                    : "📊 Crear Datos de Prueba"}
+                    ? "⏳ Alimentando..."
+                    : "💀 Alimenta al abismo"}
                 </button>
               </div>
 
@@ -189,7 +194,7 @@ export default function PrimerJuego() {
                   onClick={() => setIsVectorModalOpen(true)}
                   className="visualization-btn"
                 >
-                  🎯 Ver Gráfico de Personas
+                  🎯 Ver Gráfico de Acólitos
                 </button>
                 {getPersonResults().length > 0 && (
                   <p className="visualization-info">
@@ -212,13 +217,13 @@ export default function PrimerJuego() {
               {loading && (
                 <div className="loading">
                   <div className="spinner"></div>
-                  <p>Buscando a la persona indicada...</p>
+                  <p>Buscando respuestas...</p>
                 </div>
               )}
 
               {getPersonResults().length > 0 && !loading && (
                 <div className="result-card">
-                  <h3>🎉 ¡Encontramos a las personas indicadas!</h3>
+                  <h3>🕀 ¡Encontramos a los acólitos perfectos!</h3>
                   <div className="persons-result">
                     {getPersonResults().map((result, index) => (
                       <div
@@ -229,7 +234,7 @@ export default function PrimerJuego() {
                       >
                         <span className="person-rank">#{index + 1}</span>
                         <span className="person-name">
-                          {result.name || "Persona no especificada"}
+                          {result.name || "Acólito no especificado"}
                         </span>
                         {result.similarity !== undefined && (
                           <span className="person-score">
@@ -241,10 +246,25 @@ export default function PrimerJuego() {
                   </div>
                   <p className="result-description">
                     Haz clic en cualquier persona para ver su descripción
-                    completa. ¡Confía en su experiencia!
+                    completa. ¡Confía completamente en su experiencia!
                   </p>
                 </div>
               )}
+              <div
+                className="placeholder-examples"
+                style={{ marginBottom: "10px" }}
+              >
+                <h3>🕯 ¿Cómo funciona?</h3>
+                <ul>
+                  <li>Escribe una pregunta sobre qué necesitas</li>
+                  <li>Envia tu solicitud al abismo</li>
+                  <li>
+                    Alguien o algo que pertenezca a la oscuridad te dara la
+                    respuesta
+                  </li>
+                  <li>¡Confía ciegamente en la recomendación!</li>
+                </ul>
+              </div>
 
               {!getPersonResults().length && !loading && !error && (
                 <div className="placeholder">
@@ -266,7 +286,7 @@ export default function PrimerJuego() {
         </div>
 
         <Link to="/" className="back-btn">
-          ← Volver al Menú Principal
+          ← Volver al calabozo
         </Link>
       </div>
 
