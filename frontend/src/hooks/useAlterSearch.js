@@ -2,7 +2,7 @@ import { useCallback } from "react";
 import useApi from "./useApi";
 
 const useAlterSearch = () => {
-  const { loading, error, data, makeRequest, reset } = useApi();
+  const { loading, error, makeRequest, reset } = useApi();
 
   const searchEgo = useCallback(
     async (file) => {
@@ -13,14 +13,15 @@ const useAlterSearch = () => {
       try {
         const formData = new FormData();
         formData.append("file", file);
-        formData.append("top_k", "1");
 
-        await makeRequest("http://localhost:8000/search-images", {
-          method: "POST",
-          body: formData,
-        });
-
-        return data;
+        const result = await makeRequest(
+          `http://localhost:8000/search-images?top_k=${1}`,
+          {
+            method: "POST",
+            body: formData,
+          }
+        );
+        return result;
       } catch (err) {
         // El error ya está manejado en useApi
         throw err;

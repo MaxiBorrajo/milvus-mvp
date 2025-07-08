@@ -1,6 +1,7 @@
 import { useState } from "react";
 import Header from "../Components/Header";
 import useAlterSearch from "../hooks/useAlterSearch";
+import { Link } from "react-router-dom";
 
 const SegundoJuego = () => {
   const [file, setFile] = useState(null);
@@ -16,7 +17,8 @@ const SegundoJuego = () => {
     try {
       setResult(null);
       const response = await searchEgo(file);
-      setResult(response.data);
+      console.log(response, "Response");
+      setResult(response[0]);
     } catch (err) {
       console.error("Error en searchAlter:", err, error);
     }
@@ -92,6 +94,10 @@ const SegundoJuego = () => {
             </div>
           </div>
         )}
+
+        <Link to="/" className="back-btn">
+          ← Volver al calabozo
+        </Link>
       </div>
     </div>
   );

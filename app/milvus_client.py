@@ -29,7 +29,7 @@ def setup_collection():
     client.create_collection(
         collection_name="images",
         vector_field_name="vector",
-        dimension=384,
+        dimension=512,
         auto_id=True,
         enable_dynamic_field=True,
         metric_type="COSINE",
