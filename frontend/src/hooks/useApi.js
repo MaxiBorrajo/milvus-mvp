@@ -12,9 +12,9 @@ const useApi = () => {
 
     try {
       const defaultOptions = {
-        headers: {
-          "Content-Type": "application/json",
-        },
+        // headers: {
+        //   "Content-Type": "application/json",
+        // },
         ...options,
       };
 

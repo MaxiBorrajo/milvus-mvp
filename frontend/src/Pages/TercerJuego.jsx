@@ -102,11 +102,11 @@ const TercerJuego = () => {
 
   return (
     <div className="game-container">
-      <Header title="Tercer Juego" />
+      <Header title="Tercer Ritual" />
 
       <div className="game-content">
-        <h1>🎨 Tercer Juego</h1>
-        <p>¡Repite la secuencia de colores!</p>
+        <h1>🕈 Tercer Ritual</h1>
+        <p>Elige tu destino</p>
 
         <div className="game-stats">
           <div className="stat">
