@@ -1203,7 +1203,7 @@
 }
 
 .modal-content {
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #0d0d0d 0%, #4b0000 100%);
   border-radius: 15px;
   padding: 0;
   max-width: 500px;
