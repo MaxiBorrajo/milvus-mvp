@@ -39,6 +39,8 @@ Espera unos segundos a que todos los servicios se inicien correctamente. Puedes 
 
 ```bash
 docker-compose ps
+o
+docker ps -a
 ```
 
 ### 3. Instalar las dependencias de Python
@@ -48,6 +50,9 @@ Crea un entorno virtual (recomendado) e instala las librerías necesarias:
 ```bash
 # Crear entorno virtual
 python -m venv venv
+
+# Puede ser así
+py -m venv venv
 
 # Activar entorno virtual
 # En Windows:
@@ -72,6 +77,7 @@ La API estará disponible en `http://localhost:8000`
 ## 📚 Documentación de la API
 
 Puedes acceder a la documentación interactiva de la API en:
+
 - **Swagger UI**: `http://localhost:8000/docs`
 - **ReDoc**: `http://localhost:8000/redoc`
 
@@ -82,6 +88,7 @@ Puedes acceder a la documentación interactiva de la API en:
 Endpoint raíz con información básica de la API.
 
 **Response:**
+
 ```json
 {
   "message": "Milvus Vector Search API",
@@ -96,6 +103,7 @@ Endpoint raíz con información básica de la API.
 Verifica el estado de salud de la API y la conexión con Milvus.
 
 **Response:**
+
 ```json
 {
   "status": "healthy",
@@ -110,6 +118,7 @@ Verifica el estado de salud de la API y la conexión con Milvus.
 Obtiene información sobre la colección actual.
 
 **Response:**
+
 ```json
 {
   "collection_name": "demo_collection",
@@ -126,6 +135,7 @@ Obtiene información sobre la colección actual.
 Inserta uno o más textos en la colección de Milvus. Los textos se convierten automáticamente en vectores usando el modelo de embeddings.
 
 **Request Body:**
+
 ```json
 {
   "items": [
@@ -146,6 +156,7 @@ Inserta uno o más textos en la colección de Milvus. Los textos se convierten a
 ```
 
 **Response:**
+
 ```json
 {
   "inserted": 3,
@@ -155,6 +166,7 @@ Inserta uno o más textos en la colección de Milvus. Los textos se convierten a
 ```
 
 **Ejemplo con curl:**
+
 ```bash
 curl -X POST "http://localhost:8000/insert" \
   -H "Content-Type: application/json" \
@@ -177,6 +189,7 @@ curl -X POST "http://localhost:8000/insert" \
 Busca textos similares a una consulta dada, retornando los `top_k` resultados más similares.
 
 **Request Body:**
+
 ```json
 {
   "query": "¿Qué es la inteligencia artificial?",
@@ -185,6 +198,7 @@ Busca textos similares a una consulta dada, retornando los `top_k` resultados m�
 ```
 
 **Response:**
+
 ```json
 {
   "query": "¿Qué es la inteligencia artificial?",
@@ -208,6 +222,7 @@ Busca textos similares a una consulta dada, retornando los `top_k` resultados m�
 ```
 
 **Ejemplo con curl:**
+
 ```bash
 curl -X POST "http://localhost:8000/search" \
   -H "Content-Type: application/json" \
@@ -222,6 +237,7 @@ curl -X POST "http://localhost:8000/search" \
 Elimina la colección actual (¡CUIDADO: esto elimina todos los datos!).
 
 **Response:**
+
 ```json
 {
   "collection_name": "demo_collection",
@@ -293,11 +309,13 @@ docker run -p 8000:8000 milvus-api
 Para probar la API después de iniciarla:
 
 1. **Verificar el estado de salud:**
+
 ```bash
 curl http://localhost:8000/health
 ```
 
 2. **Insertar algunos textos de ejemplo:**
+
 ```bash
 curl -X POST "http://localhost:8000/insert" \
   -H "Content-Type: application/json" \
@@ -320,6 +338,7 @@ curl -X POST "http://localhost:8000/insert" \
 ```
 
 3. **Buscar textos similares:**
+
 ```bash
 curl -X POST "http://localhost:8000/search" \
   -H "Content-Type: application/json" \
@@ -330,6 +349,7 @@ curl -X POST "http://localhost:8000/search" \
 ```
 
 4. **Ver información de la colección:**
+
 ```bash
 curl http://localhost:8000/collection/info
 ```
