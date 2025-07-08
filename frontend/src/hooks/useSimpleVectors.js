@@ -1,4 +1,4 @@
-import { useCallback, useState } from "react";
+import { useCallback } from "react";
 import useApi from "./useApi";
 
 const useSimpleVectors = () => {

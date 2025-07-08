@@ -1,13 +1,20 @@
 import os
 import numpy as np
+from pathlib import Path
 from pymilvus import MilvusClient
 from sentence_transformers import SentenceTransformer
 from sklearn.preprocessing import normalize
 from app.feature_extractor import FeatureExtractor
+from io import BytesIO
+from PIL import Image
+import numpy as np
 
 COLLECTION_NAME = "demo_collection"
 PERSON_COLLECTION = 'person'
-DIMENSION = 768
+DIMENSION = 512
+
+IMAGE_DIR = Path("static/images")
+IMAGE_DIR.mkdir(parents=True, exist_ok=True)
 
 # Inicializar cliente y modelo
 client = MilvusClient(uri="http://localhost:19530")
@@ -18,6 +25,7 @@ PERSON_VECTOR_DIM = model.get_sentence_embedding_dimension()
 def setup_collection():
     if client.has_collection(COLLECTION_NAME):
         client.drop_collection(COLLECTION_NAME)
+    
     client.create_collection(
         collection_name=COLLECTION_NAME,
         dimension=DIMENSION,
@@ -29,7 +37,7 @@ def setup_collection():
     client.create_collection(
         collection_name="images",
         vector_field_name="vector",
-        dimension=384,
+        dimension=512,
         auto_id=True,
         enable_dynamic_field=True,
         metric_type="COSINE",
@@ -234,7 +242,8 @@ def search_similar_images(image_path, top_k: int):
         {
             "filename": hit["entity"]["filename"],
             "score": round(1 - hit["distance"], 4),
-            "url": f"{base_url}/{hit['entity']['filename']}"
+            "url": f"{base_url}/{hit['entity']['filename']}",
+            "id": hit.id
         }
         for hit in results[0]
     ]
@@ -341,3 +350,34 @@ def get_all_vectors_combined(limit=100):
         item["tooltip"] = f"Persona: {item.get('name', 'Sin nombre')} - {item.get('description', 'Sin descripción')[:100]}..."
     
     return texts + images + persons
+
+
+def delete_if_similar(similar_images: list, threshold: float = 0.01):  # Threshold bajo (cerca de 0)
+    if similar_images:
+        top_result = similar_images[0]
+        
+        # Si el score es cercano a 0 (idéntico), borramos
+        if top_result["score"] <= threshold: 
+            client.delete(
+                collection_name="images",
+                ids=[top_result["id"]]
+            )
+            return True, top_result["id"]
+    
+    return False, None
+
+def delete_image(vector_id: int):
+    """Elimina una imagen por su ID vectorial"""
+    client.delete(
+        collection_name="images",
+        ids=[vector_id]  # Corregido: usa el parámetro real
+    )
+
+
+
+def subirImagenes(path, funcion):
+    for nombre_archivo in os.listdir(path):
+        ruta_completa = os.path.join(path, nombre_archivo)
+        if os.path.isfile(ruta_completa) and nombre_archivo.lower().endswith(('.png', '.jpg', '.jpeg', '.webp', '.bmp', '.gif', 'jfif' )):
+            metadata = {"filename": nombre_archivo}  
+            funcion([ruta_completa], metadata)       
