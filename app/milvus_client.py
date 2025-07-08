@@ -1,9 +1,10 @@
+import os
+import numpy as np
 from pathlib import Path
 from pymilvus import MilvusClient
 from sentence_transformers import SentenceTransformer
 from sklearn.preprocessing import normalize
 from app.feature_extractor import FeatureExtractor
-import os
 from io import BytesIO
 from PIL import Image
 import numpy as np
@@ -235,7 +236,6 @@ def search_similar_images(image_path, top_k: int):
 
     print(results)
 
-    # URL base de tu servidor
     base_url = "http://localhost:8000/images"
 
     return [
