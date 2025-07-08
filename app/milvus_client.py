@@ -1,8 +1,14 @@
+from http.client import HTTPException
+import json
 from pathlib import Path
-from pymilvus import MilvusClient
+from typing import Dict, List, Optional
+from fastapi import UploadFile, logger
+from pymilvus import Collection, MilvusClient
 from sentence_transformers import SentenceTransformer
 from sklearn.preprocessing import normalize
 from app.feature_extractor import FeatureExtractor
+from app.utils import extract_text_from_file
+
 import os
 from io import BytesIO
 from PIL import Image
@@ -10,7 +16,7 @@ import numpy as np
 
 COLLECTION_NAME = "demo_collection"
 PERSON_COLLECTION = 'person'
-DIMENSION = 512
+DIMENSION = 768
 
 IMAGE_DIR = Path("static/images")
 IMAGE_DIR.mkdir(parents=True, exist_ok=True)
@@ -366,7 +372,7 @@ def delete_if_similar(similar_images: list, threshold: float = 0.01):  # Thresho
     
     return False, None
 
-def delete_image(vector_id: int):
+def delete_image_byId(vector_id: int):
     """Elimina una imagen por su ID vectorial"""
     client.delete(
         collection_name="images",
@@ -374,10 +380,10 @@ def delete_image(vector_id: int):
     )
 
 
-
+    
 def subirImagenes(path, funcion):
     for nombre_archivo in os.listdir(path):
         ruta_completa = os.path.join(path, nombre_archivo)
         if os.path.isfile(ruta_completa) and nombre_archivo.lower().endswith(('.png', '.jpg', '.jpeg', '.webp', '.bmp', '.gif', 'jfif' )):
             metadata = {"filename": nombre_archivo}  
-            funcion([ruta_completa], metadata)       
+            funcion([ruta_completa], metadata)

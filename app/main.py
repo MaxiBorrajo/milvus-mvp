@@ -1,8 +1,10 @@
 import base64
-from fastapi import HTTPException
+from email.quoprimime import unquote
 import io
-from fastapi import FastAPI, File, UploadFile, Query
+from fastapi import FastAPI, File, UploadFile, Query, logger
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi import HTTPException, status
+
 from matplotlib import pyplot as plt
 from http.client import HTTPException
 from fastapi import FastAPI, File, Form, UploadFile
@@ -10,11 +12,11 @@ from pydantic import BaseModel
 from typing import List
 from app.milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION
 from app.utils import extract_text_from_file
-from app.milvus_client import subirImagenes,delete_image,delete_if_similar,setup_collection, insert_documents, search_documents, insert_images, search_similar_images
+from app.milvus_client import get_fragments_by_filename,subirImagenes,delete_image_byId,delete_if_similar,setup_collection, insert_documents, search_documents, insert_images, search_similar_images
 import tempfile
 import os
 from pathlib import Path
-from fastapi.responses import FileResponse, HTMLResponse, Response
+from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
 from typing import Annotated
 from sklearn.decomposition import PCA
 import numpy as np
@@ -154,23 +156,7 @@ def find_person(
             "results": [],
             "error": str(e)
         }
-
-
-@app.post("/upload-files")
-async def upload_files(files: List[UploadFile] = File(...)):
-    results = []
-
-    for file in files:
-        content = extract_text_from_file(await file.read(), file.filename)
-        items = []
-        for fragment in content:
-            item = TextItem(text=fragment, subject="uploaded")
-            items.append(item)
-        inserted_count = insert_documents(items, metadata={"filename": file.filename})
-        results.append({"filename": file.filename, "status": "inserted", "inserted_count": inserted_count})        
-
-    return results
-
+    
 @app.post("/upload-images")
 async def upload_images(files: List[UploadFile] = File(...)):
     results = []
@@ -189,6 +175,22 @@ async def upload_images(files: List[UploadFile] = File(...)):
         })
 
     return results
+
+@app.post("/upload-files")
+async def upload_files(files: List[UploadFile] = File(...)):
+    results = []
+
+    for file in files:
+        content = extract_text_from_file(await file.read(), file.filename)
+        items = []
+        for fragment in content:
+            item = TextItem(text=fragment, subject="uploaded")
+            items.append(item)
+        inserted_count = insert_documents(items, metadata={"filename": file.filename})
+        results.append({"filename": file.filename, "status": "inserted", "inserted_count": inserted_count})        
+
+    return results
+
 
 @app.post("/search-images")
 async def search_images(file: UploadFile = File(...), top_k: int = 5):
@@ -563,6 +565,34 @@ async def manage_image(file1: UploadFile = File(...), file2: UploadFile = File(.
         return {"error": str(e)}
     
 
+@app.delete("/delete-image")
+async def delete_image(file: UploadFile = File (...)):
+
+    try:
+        suffix = os.path.splitext(file.filename)[1]
+        with tempfile.NamedTemporaryFile(delete=False,suffix=suffix) as tmp:
+            tmp.write(await file.read())
+            tmp_path = tmp.name 
+
+        similar_images = search_similar_images(tmp_path, top_k=1)
+        deleted = False 
+        deleted_id = None 
+        if similar_images:
+            deleted_id = similar_images[0]["id"]
+            delete_image_byId(deleted_id)
+            deleted = True 
+
+        return {
+            "action": "deleted" if deleted else "there are not any similar image",
+            "deleted_id": deleted_id if deleted else None,
+            "similarity_score": similar_images[0]["score"] if deleted else None
+        }
+    except Exception as e:
+        return {"error": str(e)}
+    finally:
+        # Limpieza del archivo temporal
+        if 'tmp_path' in locals() and os.path.exists(tmp_path):
+            os.unlink(tmp_path)
 
 @app.post("/replace-closest-image")
 async def replace_closest_image(file: UploadFile = File(...)):
@@ -586,7 +616,7 @@ async def replace_closest_image(file: UploadFile = File(...)):
         deleted_id = None
         if similar_images:  # Esto es más pythonico que similar_images != []
             deleted_id = similar_images[0]["id"]
-            delete_image(deleted_id)
+            delete_image_byId(deleted_id)
             deleted = True
 
         # Paso 3: Insertar la nueva
@@ -601,3 +631,7 @@ async def replace_closest_image(file: UploadFile = File(...)):
 
     except Exception as e:
         return {"error": str(e)}
+
+
+
+
