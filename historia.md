@@ -69,3 +69,50 @@ Nos **invita**.
 ---
 
 **Y así comienza tu historia.**
+
+# 🔮 Ejercicio Final – Consulta Vectorial Multiversal
+
+Tras ser arrastrados al Limbo Vectorial, cada uno de nosotros quedó suspendido en una dimensión sin tiempo ni forma. Aquí, las decisiones no se toman... se calculan.
+
+En este escenario, tu tarea es construir un sistema de consulta interactiva que permita explorar los posibles caminos narrativos fragmentados del multiverso, utilizando una base de datos **vectorial**.
+
+---
+
+## 🎯 Objetivo
+
+Implementar un sistema que, dada una entrada de texto y una fase narrativa, consulte una colección **multimodal** en **Milvus**, y devuelva 3 posibles fragmentos de historia con su metadata asociada:
+
+- Texto narrativo
+- Imagen relacionada
+- Música ambiental
+- Fase narrativa
+
+---
+
+## 🧩 ¿Qué es una historia vectorial?
+
+La historia ha sido fragmentada en múltiples piezas vectorizadas, cada una correspondiente a un momento distinto del relato:
+
+- `introduccion`
+- `nudo`
+- `desenlace`
+- `final`
+
+Cada fragmento fue insertado previamente en Milvus con embeddings generados a partir del texto e indexado por similitud semántica.
+
+---
+
+## 🧱 Requisitos del ejercicio
+
+### 1. Cargar la colección en Milvus
+Debe contener al menos 10 fragmentos por cada fase narrativa.
+
+Cada item insertado en Milvus debe tener el siguiente esquema:
+
+```json
+{
+  "content": "El aire se volvió irrespirable cuando el portal comenzó a latir.",
+  "fase_historia": "nudo",
+  "path_imagen": "assets/nudo_2.png",
+  "path_audio": "assets/audio_siniestro_2.mp3"
+}
