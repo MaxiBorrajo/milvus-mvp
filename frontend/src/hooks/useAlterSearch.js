@@ -1,8 +1,8 @@
 import { useCallback } from "react";
-import useApi from "./useApi";
+import useFileApi from "./useFileApi";
 
 const useAlterSearch = () => {
-  const { loading, error, makeRequest, reset } = useApi();
+  const { loading, error, makeRequest, reset } = useFileApi();
 
   const searchEgo = useCallback(
     async (file) => {
@@ -23,7 +23,6 @@ const useAlterSearch = () => {
         );
         return result;
       } catch (err) {
-        // El error ya está manejado en useApi
         throw err;
       }
     },

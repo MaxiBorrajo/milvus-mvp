@@ -95,11 +95,6 @@ const TercerJuego = () => {
     }
   };
 
-  // Función helper para obtener color por ID (no utilizada actualmente)
-  // const getColorById = (id) => {
-  //   return colors.find((color) => color.id === id);
-  // };
-
   return (
     <div className="game-container">
       <Header title="Tercer Ritual" />

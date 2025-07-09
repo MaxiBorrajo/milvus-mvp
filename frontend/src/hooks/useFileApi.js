@@ -1,6 +1,6 @@
 import { useState, useCallback } from "react";
 
-const useApi = () => {
+const useFileApi = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [data, setData] = useState(null);
@@ -12,9 +12,6 @@ const useApi = () => {
 
     try {
       const defaultOptions = {
-        headers: {
-          "Content-Type": "application/json",
-        },
         ...options,
       };
 
@@ -31,7 +28,7 @@ const useApi = () => {
       const errorMessage =
         err.message || "Error en la conexión con el servidor";
       setError(errorMessage);
-      console.error("API Error:", err);
+      console.error("File API Error:", err);
       throw err;
     } finally {
       setLoading(false);
@@ -53,4 +50,4 @@ const useApi = () => {
   };
 };
 
-export default useApi;
+export default useFileApi;

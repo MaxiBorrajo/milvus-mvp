@@ -21,5 +21,5 @@ class CLIPMultimodal:
             vectores = self.model.get_image_features(**datos)
         return vectores.tolist()
     
-    # El processor siempre recibe una lista de textos/imagenes entonces no tiene sentido hacer un metodo unitario para procesar una sola imagen o texto, se lo puede pasar como una lista de un elemento.
+
 
