@@ -78,25 +78,25 @@ En este escenario, tu tarea es construir un sistema de consulta interactiva que 
 
 ---
 
-## 🎯 Objetivo
+## 🌟 Objetivo
 
 Implementar un sistema que, dada una entrada de texto y una fase narrativa, consulte una colección **multimodal** en **Milvus**, y devuelva 3 posibles fragmentos de historia con su metadata asociada:
 
-- Texto narrativo
-- Imagen relacionada
-- Música ambiental
-- Fase narrativa
+* Texto narrativo
+* Imagen relacionada
+* Música ambiental
+* Fase narrativa
 
 ---
 
-## 🧩 ¿Qué es una historia vectorial?
+## 🧹 ¿Qué es una historia vectorial?
 
 La historia ha sido fragmentada en múltiples piezas vectorizadas, cada una correspondiente a un momento distinto del relato:
 
-- `introduccion`
-- `nudo`
-- `desenlace`
-- `final`
+* `introduccion`
+* `nudo`
+* `desenlace`
+* `final`
 
 Cada fragmento fue insertado previamente en Milvus con embeddings generados a partir del texto e indexado por similitud semántica.
 
@@ -105,6 +105,7 @@ Cada fragmento fue insertado previamente en Milvus con embeddings generados a pa
 ## 🧱 Requisitos del ejercicio
 
 ### 1. Cargar la colección en Milvus
+
 Debe contener al menos 10 fragmentos por cada fase narrativa.
 
 Cada item insertado en Milvus debe tener el siguiente esquema:
@@ -116,3 +117,78 @@ Cada item insertado en Milvus debe tener el siguiente esquema:
   "path_imagen": "assets/nudo_2.png",
   "path_audio": "assets/audio_siniestro_2.mp3"
 }
+```
+
+---
+
+### 2. Crear un endpoint de consulta
+
+El endpoint `/consulta` debe recibir un JSON con este formato:
+
+```json
+{
+  "input": "Quiero saber qué hay detrás del portal",
+  "fase": "desenlace"
+}
+```
+
+Y devolver un array con los 3 fragmentos más cercanos semánticamente al `input`, filtrando por `fase_historia`.
+
+Ejemplo de respuesta:
+
+```json
+[
+  {
+    "content": "Lo que emergió no era el demonio… era su reflejo multiplicado.",
+    "fase_historia": "desenlace",
+    "path_imagen": "assets/fragmento_desenlace_3.png",
+    "path_audio": "assets/ambient_desenlace.mp3"
+  },
+  ...
+]
+```
+
+---
+
+### 3. Frontend (opcional)
+
+Implementar en React un módulo que:
+
+* Permita ingresar texto e indicar la fase narrativa.
+* Muestre los 3 resultados devueltos (texto, imagen y audio).
+* Permita elegir uno de los fragmentos como “siguiente paso” en la historia.
+
+---
+
+## 🧪 Validación del ejercicio
+
+El sistema debe permitir simular una aventura completa seleccionando fragmentos por fase en el orden:
+
+```
+introduccion → nudo → desenlace → final
+```
+
+Sin embargo, se permite romper esta estructura y armar caminos **no lineales** (como piezas de rompecabezas), incentivando el caos narrativo y lo emergente.
+
+---
+
+## ⚙️ Herramientas habilitadas
+
+* [x] Milvus (standalone, Docker)
+* [x] Python (FastAPI o Flask)
+* [x] sentence-transformers u OpenAI embeddings
+* [x] React para frontend
+* [x] Archivos multimedia locales (`assets/`)
+
+---
+
+## 🧠 Desafío conceptual
+
+Este ejercicio no es solo técnico: propone un nuevo modelo narrativo.
+
+Aquí, **la historia no está escrita… está vectorizada**.
+
+Dependerá de cada espectador elegir su camino.
+Dependerá de tu implementación… que ese camino tenga sentido.
+
+---
