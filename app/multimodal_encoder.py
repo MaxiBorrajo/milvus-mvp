@@ -1,23 +1,25 @@
-import torch
-from FlagEmbedding.visual.modeling import Visualized_BGE
+import clip
+from PIL import Image
 
 
-class MultimodalEncoder:
-    def __init__(self, model_name: str, model_path: str):
-        self.model = Visualized_BGE(model_name_bge=model_name, model_weight=model_path)
-        self.model.eval()
-
-    def encode_query(self, image_path: str, text: str) -> list[float]:
-        with torch.no_grad():
-            query_emb = self.model.encode(image=image_path, text=text)
-        return query_emb.tolist()[0]
-
-    def encode_image(self, image_path: str) -> list[float]:
-        with torch.no_grad():
-            query_emb = self.model.encode(image=image_path)
-        return query_emb.tolist()[0]
+model_name = "ViT-B/32"
+model, preprocess = clip.load(model_name)
+model.eval()
 
 
-model_name = "BAAI/bge-base-en-v1.5"
-model_path = "./Visualized_base_en_v1.5.pth"  # Change to your own value if using a different model path
-encoder = Encoder(model_name, model_path)
+def encode_image(image_path):
+    image = preprocess(Image.open(image_path)).unsqueeze(0)
+    image_features = model.encode_image(image)
+    image_features /= image_features.norm(
+        dim=-1, keepdim=True
+    )  # Normalize the image features
+    return image_features.squeeze().tolist()
+
+
+def encode_text(text):
+    text_tokens = clip.tokenize(text)
+    text_features = model.encode_text(text_tokens)
+    text_features /= text_features.norm(
+        dim=-1, keepdim=True
+    )  # Normalize the text features
+    return text_features.squeeze().tolist()

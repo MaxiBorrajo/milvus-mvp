@@ -1,31 +1,34 @@
-# Framework principal
+# FastAPI y servidor web
 fastapi
-uvicorn
+uvicorn[standard]
 
-# Machine Learning y embeddings
-sentence-transformers
-torch
-timm
-transformers
-
-# Milvus (vector DB)
+# Milvus y base de datos vectorial
 pymilvus
+
+# Procesamiento de texto y embeddings
+sentence-transformers
+transformers
+openai
+
+# Procesamiento de imágenes y visión por computadora
+Pillow
+torch
+torchvision
+timm
+clip
+
+# Machine Learning y análisis de datos
+scikit-learn
+numpy
+matplotlib
 
 # Procesamiento de documentos
 python-docx
-PyMuPDF  # para PDFs (fitz)
+PyMuPDF
+
+# Utilidades y herramientas
 python-multipart
-
-# Imágenes y utilidades
-Pillow
-
-# Ciencia de datos y visualización
-scikit-learn
-matplotlib
-numpy
-
-# Validación y modelos
 pydantic
 
-# (Opcional) OpenAI si usas APIs externas de OpenAI
-openai
+# Dependencias adicionales para el proyecto
+pathlib2
