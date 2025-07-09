@@ -1,25 +1,24 @@
-import clip
+from transformers import BlipProcessor, BlipModel
 from PIL import Image
+import torch
 
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
-model_name = "ViT-B/32"
-model, preprocess = clip.load(model_name)
+processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+model = BlipModel.from_pretrained("Salesforce/blip-image-captioning-base").to(device)
 model.eval()
 
+def encode_text(text: str):
+    inputs = processor(text=[text], return_tensors="pt").to(device)
+    with torch.no_grad():
+        outputs = model.text_model(**inputs)
+        embedding = outputs.last_hidden_state.mean(dim=1)  # [batch, hidden_size]
+    return embedding.squeeze().cpu().tolist()
 
-def encode_image(image_path):
-    image = preprocess(Image.open(image_path)).unsqueeze(0)
-    image_features = model.encode_image(image)
-    image_features /= image_features.norm(
-        dim=-1, keepdim=True
-    )  # Normalize the image features
-    return image_features.squeeze().tolist()
-
-
-def encode_text(text):
-    text_tokens = clip.tokenize(text)
-    text_features = model.encode_text(text_tokens)
-    text_features /= text_features.norm(
-        dim=-1, keepdim=True
-    )  # Normalize the text features
-    return text_features.squeeze().tolist()
+def encode_image(image_path: str):
+    image = Image.open(image_path).convert("RGB")
+    inputs = processor(images=image, return_tensors="pt").to(device)
+    with torch.no_grad():
+        outputs = model.vision_model(**inputs)
+        embedding = outputs.last_hidden_state.mean(dim=1)
+    return embedding.squeeze().cpu().tolist()

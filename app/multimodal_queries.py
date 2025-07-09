@@ -14,10 +14,11 @@ def setup_multimodal():
             client.drop_collection(name)
         client.create_collection(
             collection_name=name,
-            dimension=512,
+            dimension=768,  # nuevo tamaño para BLIP base
             auto_id=True,
             enable_dynamic_field=True
         )
+
 
 
 def insert_multimodal(items, data_type):
