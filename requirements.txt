@@ -1,16 +1,31 @@
+# Framework principal
 fastapi
 uvicorn
+
+# Machine Learning y embeddings
 sentence-transformers
+torch
+timm
+transformers
+
+# Milvus (vector DB)
 pymilvus
+
+# Procesamiento de documentos
 python-docx
 PyMuPDF  # para PDFs (fitz)
 python-multipart
-timm
-torch
+
+# Imágenes y utilidades
 Pillow
+
+# Ciencia de datos y visualización
 scikit-learn
-pydantic
 matplotlib
 numpy
+
+# Validación y modelos
+pydantic
+
+# (Opcional) OpenAI si usas APIs externas de OpenAI
 openai
-transformers

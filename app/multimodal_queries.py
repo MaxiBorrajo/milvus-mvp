@@ -1,41 +1,51 @@
 import os
 import time
 
-from pymilvus import MilvusClient
-from app.multimodal_encoder import CLIPMultimodal
+from pymilvus import milvus_client
 
-COLLECTION_NAME = "multimodal"
-COLLECTION_DIMENSION = 512
+
+IMAGE_COLLECTION_NAME = "image_multimodal"
+IMAGE_COLLECTION_DIMENSION = 512
+TEXT_COLLECTION_NAME = "text_multimodal"
+TEXT_COLLECTION_DIMENSION = 512
 
 client = MilvusClient(uri="http://localhost:19530")
-
-
-MODEL_PATH ="openai/clip-vit-base-patch32"
-encoder = CLIPMultimodal(MODEL_PATH, MODEL_PATH)
+model = SentenceTransformer("paraphrase-albert-small-v2")
 
 def setup_multimodal():
     if client.has_collection(COLLECTION_NAME):
         client.drop_collection(COLLECTION_NAME)
     client.create_collection(
-        collection_name= COLLECTION_NAME,
+        collection_name= IMAGE_COLLECTION_NAME,
         vector_field_name="vector",
-        dimension= COLLECTION_DIMENSION,
+        dimension= IMAGE_COLLECTION_DIMENSION,
+        auto_id=True,
+        enable_dynamic_field=True,
+        metric_type="COSINE"
+    )
+    if client.has_collection(COLLECTION_NAME):
+        client.drop_collection(COLLECTION_NAME)
+    client.create_collection(
+        collection_name= TEXT_COLLECTION_NAME,
+        vector_field_name="vector",
+        dimension= TEXT_COLLECTION_DIMENSION,
         auto_id=True,
         enable_dynamic_field=True,
         metric_type="COSINE"
     )
 
+
 def insert_multimodal(items, data_type):
-    vectores = encoder.encode_imagenes([item.data for item in items]) if data_type == "image" else encoder.encode_textos([item.data for item in items])
+    vectores = encode_image([item.data for item in items]) if data_type == "image" else model.encode([item.text for item in items])
     data = [
         {
             "vector": vectores[i],
             "data": items[i].data,
             "type": data_type,
+            "fase_historia": items[i].metadata.fase_historia,
+            "path_imagen": items[i].metadata.path_imagen,
+            "path_audio": items[i].metadata.path_audio,
             "filename": items[i].metadata.filename,
-            "author": items[i].metadata.author,
-            "date": int(time.mktime(items[i].metadata.date.timetuple())) if items[i].metadata.date else None,
-            "alt": items[i].metadata.alt
         }
         for i in range(len(items))
         ]
@@ -43,22 +53,39 @@ def insert_multimodal(items, data_type):
     return res["insert_count"]
 
 
-def search_multimodal(query, type, top_k:int):
-    vector = []
-    if type == "text":
-        vector = encoder.encode_textos([query])
-    elif type == "image":
-        vector = encoder.encode_imagenes([query])
-    else:
-        raise ValueError("Error en tipo")
+def search_multimodal(query, top_k:int):
+     multimodal_vector = encode_query([query])
+     text_vector = model.encode([query])
     
-    resultados = client.search(
-        collection_name = COLLECTION_NAME,
+    image_resultados = client.search(
+        collection_name = IMAGE_COLLECTION_NAME,
         data=vector,
-        output_fields=["filename", "author", "type", "data", "date"],
+        output_fields=[
+            "data",
+            "type",
+            "fase_historia",
+            "path_imagen",
+            "path_audio",
+            "filename"],
         search_params={"metric_type": "COSINE"},
         limit=top_k
-    )[0]
+    )
+
+    text_resultados = client.search(
+        collection_name = TEXT_COLLECTION_NAME,
+        data=vector,
+        output_fields=[
+            "data",
+            "type",
+            "fase_historia",
+            "path_imagen",
+            "path_audio",
+            "filename"],
+        search_params={"metric_type": "COSINE"},
+        limit=top_k
+    )
+
+
 
     host = "http://localhost:8000/images"
 
@@ -73,5 +100,5 @@ def search_multimodal(query, type, top_k:int):
             "data": resultado["entity"].get("data"),
             "url": f"{host}/{resultado['entity']['filename']}" if resultado["entity"]["type"] == "image" else None
         }
-        for resultado in resultados
+        for resultado in image_resultados+text_resultados
     ]

@@ -13,7 +13,7 @@ from matplotlib import pyplot as plt
 from fastapi import FastAPI, File, Form, UploadFile
 from pydantic import BaseModel
 from typing import List
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel, ValidationError, validator
 from pathlib import Path
 from sklearn.decomposition import PCA
 from typing import Annotated, Optional, List
@@ -97,10 +97,16 @@ class InsertPersonRequest(BaseModel):
     items: List[PersonaItem]
 
 class MetadataItem(BaseModel):
-    author: str | None = None
-    date: datetime | None = None
-    alt: str | None = None
+    fase_historia: int | None = None
+    path_imagen: str | None = None
+    path_audio: str | None = None
     filename: str | None = None
+
+    @validator('fase_historia')
+    def fase_historia_must_be_0_1_2_3(cls, v):
+        if v is not None and v not in (0, 1, 2, 3):
+            raise ValueError('fase_historia debe ser uno de: 0, 1, 2, 3')
+        return v
 
 class MultimodalItem(BaseModel):
     data: str
@@ -122,7 +128,8 @@ def insert_texts(req: InsertRequest):
     inserted_count = insert_documents(req.items)
     return {"inserted": inserted_count}
 
-# ===== MULTIMODAL ======
+# ============= MULTIMODAL ==========================
+
 @app.post("/insert-text-multimodal")
 def post_insert_texts_multimodal(req: MultimodalRequest):
     inserted_count = insert_multimodal(req.items, "text")
@@ -166,14 +173,14 @@ async def post_insert_images_multimodal(files: List[UploadFile] = File(...), met
 def search_multimodal_text(query: str, top_k: int = 5):
     return search_multimodal(query, "text", top_k) 
 
-@app.post("/search-by-image-multimodal")
-async def search_multimodal_image(file: UploadFile = File(...), top_k: int = 5):
-    file_path = IMAGE_DIR / file.filename
+# @app.post("/search-by-image-multimodal")
+# async def search_multimodal_image(file: UploadFile = File(...), top_k: int = 5):
+#     file_path = IMAGE_DIR / file.filename
 
-    with open(file_path, "wb") as f:
-        f.write(await file.read())
+#     with open(file_path, "wb") as f:
+#         f.write(await file.read())
 
-    return search_multimodal(str(file_path), "image", top_k)
+#     return search_multimodal(str(file_path), "image", top_k)
 
 
 

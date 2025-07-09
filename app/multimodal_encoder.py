@@ -1,25 +1,23 @@
-from transformers import CLIPModel, CLIPProcessor
-from PIL import Image
 import torch
+from FlagEmbedding.visual.modeling import Visualized_BGE
 
-class CLIPMultimodal:
-    def __init__(self, model_name: str, model_processor: str):
-        self.model = CLIPModel.from_pretrained(model_name)
+
+class MultimodalEncoder:
+    def __init__(self, model_name: str, model_path: str):
+        self.model = Visualized_BGE(model_name_bge=model_name, model_weight=model_path)
         self.model.eval()
-        self.model_processor = CLIPProcessor.from_pretrained(model_processor)
 
-    def encode_textos(self, textos: list[str]) -> list[list[float]]:
-        datos = self.model_processor(text=textos, return_tensors="pt", padding=True, truncation=True)
+    def encode_query(self, image_path: str, text: str) -> list[float]:
         with torch.no_grad():
-            vectores = self.model.get_text_features(**datos)
-        return vectores.tolist()
-    
-    def encode_imagenes(self, imagenes: list[str]) -> list[list[float]]:
-        imagenes = [Image.open(imagen).convert("RGB") for imagen in imagenes]
-        datos = self.model_processor(images=imagenes, return_tensors="pt")
-        with torch.no_grad():
-            vectores = self.model.get_image_features(**datos)
-        return vectores.tolist()
-    
-    # El processor siempre recibe una lista de textos/imagenes entonces no tiene sentido hacer un metodo unitario para procesar una sola imagen o texto, se lo puede pasar como una lista de un elemento.
+            query_emb = self.model.encode(image=image_path, text=text)
+        return query_emb.tolist()[0]
 
+    def encode_image(self, image_path: str) -> list[float]:
+        with torch.no_grad():
+            query_emb = self.model.encode(image=image_path)
+        return query_emb.tolist()[0]
+
+
+model_name = "BAAI/bge-base-en-v1.5"
+model_path = "./Visualized_base_en_v1.5.pth"  # Change to your own value if using a different model path
+encoder = Encoder(model_name, model_path)
