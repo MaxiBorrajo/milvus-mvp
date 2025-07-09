@@ -685,9 +685,17 @@ async def replace_closest_image(file: UploadFile = File(...)):
             tmp.write(await file.read())
             tmp_path = tmp.name
 
+        file_content = await file.read()
+
         # Paso 1: Buscar la más cercana
         similar_images = search_similar_images(tmp_path, top_k=1)
         
+         # Guardar file2 en IMAGE_DIR
+        file_path = IMAGE_DIR / file.filename
+        with open(file_path, "wb") as f:
+            f.write(file_content)  # Usamos el contenido ya leído
+
+
         # Paso 2: Eliminar si existe
         deleted = False
         deleted_id = None
@@ -708,9 +716,6 @@ async def replace_closest_image(file: UploadFile = File(...)):
 
     except Exception as e:
         return {"error": str(e)}
-
-
-
 
 
 
