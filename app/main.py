@@ -12,24 +12,14 @@ from fastapi.responses import FileResponse, Response
 from fastapi import HTTPException, status
 
 from matplotlib import pyplot as plt
-from fastapi import FastAPI, File, Form, UploadFile
-from pydantic import BaseModel
-from typing import List
 from pydantic import BaseModel, ValidationError
-from app.milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION
-from app.utils import extract_text_from_file
-from app.milvus_client import  delete_documents_by_filename_service,delete_vectors_by_ids,vectorsForAFileName,subirImagenes,delete_image_byId,delete_if_similar,setup_collection, insert_documents, search_documents, insert_images, search_similar_images
-import tempfile
-import os
 from pathlib import Path
-from fastapi.responses import FileResponse, HTMLResponse, JSONResponse, Response
-from typing import Annotated
 from sklearn.decomposition import PCA
-from typing import Annotated, Optional, List
+from typing import  List
 from datetime import datetime
 
 from app.utils import extract_text_from_file
-from app.milvus_client import delete_vectors_by_ids,search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, subirImagenes,delete_if_similar, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION
+from app.milvus_client import  delete_if_similar,vectorsForAFileName,subirImagenes,delete_image_byId,delete_documents_by_filename_service,delete_vectors_by_ids,search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, subirImagenes,delete_if_similar, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION
 from app.multimodal_queries import insert_multimodal, setup_multimodal, search_multimodal
 
 
