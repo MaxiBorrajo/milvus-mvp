@@ -1,7 +1,8 @@
 import os
 import numpy as np
 from pathlib import Path
-from pymilvus import MilvusClient
+from typing import List
+from pymilvus import  MilvusClient
 from sentence_transformers import SentenceTransformer
 from sklearn.preprocessing import normalize
 from feature_extractor import FeatureExtractor
@@ -11,7 +12,7 @@ import numpy as np
 
 COLLECTION_NAME = "demo_collection"
 PERSON_COLLECTION = 'person'
-DIMENSION = 512
+DIMENSION = 768
 
 IMAGE_DIR = Path("static/images")
 IMAGE_DIR.mkdir(parents=True, exist_ok=True)
@@ -350,7 +351,7 @@ def delete_if_similar(similar_images: list, threshold: float = 0.01):  # Thresho
     
     return False, None
 
-def delete_image(vector_id: int):
+def delete_image_byId(vector_id: int):
     """Elimina una imagen por su ID vectorial"""
     client.delete(
         collection_name="images",
@@ -358,10 +359,57 @@ def delete_image(vector_id: int):
     )
 
 
-
+    
 def subirImagenes(path, funcion):
     for nombre_archivo in os.listdir(path):
         ruta_completa = os.path.join(path, nombre_archivo)
         if os.path.isfile(ruta_completa) and nombre_archivo.lower().endswith(('.png', '.jpg', '.jpeg', '.webp', '.bmp', '.gif', 'jfif' )):
             metadata = {"filename": nombre_archivo}  
-            funcion([ruta_completa], metadata)       
+            funcion([ruta_completa], metadata)
+
+
+
+def vectorsForAFileName(filename: str):
+    # Cargar la colección (esto puede variar según la versión de Milvus)
+    client.load_collection(COLLECTION_NAME)
+    
+    # Realizar la consulta con filtro
+    res = client.query(
+        collection_name=COLLECTION_NAME,
+        filter=f"filename == '{filename}'",  # Filtro por nombre de archivo
+        output_fields=["text", "filename", "vector","id"]  # Campos a recuperar
+    )
+    
+    return res
+
+# Función nueva para eliminar por IDs
+
+def delete_vectors_by_ids(ids: List[str], batch_size: int = 50):
+    client.load_collection(COLLECTION_NAME)
+    deleted_ids = []
+
+    for i in range(0, len(ids), batch_size):
+        batch = ids[i:i + batch_size]
+        expr = f'id in [{",".join(batch)}]'
+        try:
+            client.delete(collection_name=COLLECTION_NAME, filter=expr)
+            deleted_ids.extend(batch)
+        except Exception as e:
+            print(f"Error deleting batch {batch}: {e}")
+            continue
+
+    return deleted_ids
+
+def delete_documents_by_filename_service(filename: str):
+
+    client.load_collection(COLLECTION_NAME)
+    res = client.delete(
+        collection_name=COLLECTION_NAME,
+        filter=f"filename == '{filename}'"
+    )
+    
+    return {
+        "filename": filename,
+        "deleted_count": res["delete_count"],
+        "method": "direct_filename_filter"
+    }
