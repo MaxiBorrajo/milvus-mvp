@@ -5,7 +5,6 @@ import usePersonSearch from "../hooks/usePersonSearch";
 import useTestData from "../hooks/useTestData";
 import VectorModal from "../Components/VectorModal";
 
-// Componente Modal
 const PersonModal = ({ person, isOpen, onClose }) => {
   if (!isOpen || !person) return null;
 
@@ -59,7 +58,6 @@ export default function PrimerJuego() {
     try {
       await searchPerson(query, topK, metricType);
     } catch (err) {
-      // El error ya está manejado en el hook
       console.error("Error en handleSubmit:", err);
     }
   };

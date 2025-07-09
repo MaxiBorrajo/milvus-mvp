@@ -4,9 +4,24 @@ import useApi from "./useApi";
 const useTestData = () => {
   const { loading, error, data, makeRequest, reset } = useApi();
 
+  const validatePersons = (persons) => {
+    return persons.filter(
+      (p) =>
+        p &&
+        typeof p === "object" &&
+        typeof p.name === "string" &&
+        typeof p.description === "string" &&
+        p.name.trim() &&
+        p.description.trim()
+    );
+  };
+
   const createTestData = useCallback(
     async (testData) => {
       try {
+        if (testData && Array.isArray(testData.items)) {
+          testData.items = validatePersons(testData.items);
+        }
         const result = await makeRequest(
           "http://localhost:8000/insert-person",
           {
@@ -17,7 +32,6 @@ const useTestData = () => {
 
         return result;
       } catch (err) {
-        // El error ya está manejado en useApi
         throw err;
       }
     },

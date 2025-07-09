@@ -19,9 +19,9 @@ from sklearn.decomposition import PCA
 from typing import Annotated, Optional, List
 from datetime import datetime
 
-from app.utils import extract_text_from_file
-from app.milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, subirImagenes,delete_image,delete_if_similar, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION
-from app.multimodal_queries import insert_multimodal, setup_multimodal, search_multimodal
+from utils import extract_text_from_file
+from milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, subirImagenes,delete_image,delete_if_similar, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION
+from multimodal_queries import insert_multimodal, setup_multimodal, search_multimodal
 
 
 
@@ -33,10 +33,9 @@ IMAGE_DIR.mkdir(parents=True, exist_ok=True)
 
 app = FastAPI()
 
-# Configurar CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],  # Frontend URLs
+    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
     allow_credentials=True,
     allow_methods=["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allow_headers=["*"],
@@ -48,9 +47,7 @@ setup_collection()
 def cargar_imagenes_existentes():
     subirImagenes(IMAGE_DIR, insert_images)
     
-# ===== MULTIMODAL ======
 setup_multimodal()
-# ===== MULTIMODAL ======
 
 
 @app.get("/")
@@ -65,7 +62,7 @@ def health_check():
 def debug_collections():
     """Endpoint para debuggear el estado de las colecciones"""
     try:
-        from app.milvus_client import client, PERSON_COLLECTION, COLLECTION_NAME
+        from milvus_client import client, PERSON_COLLECTION, COLLECTION_NAME
         
         collections_info = {}
         
@@ -83,7 +80,6 @@ def debug_collections():
     except Exception as e:
         return {"error": str(e)}
 
-# 🧾 Request schemas
 class TextItem(BaseModel):
     text: str
     subject: str = "general"
@@ -116,7 +112,6 @@ class SearchRequest(BaseModel):
     query: str
     top_k: int = 5
 
-# 🔹 Insertar textos
 @app.post("/insert")
 def insert_texts(req: InsertRequest):
     inserted_count = insert_documents(req.items)
@@ -177,9 +172,6 @@ async def search_multimodal_image(file: UploadFile = File(...), top_k: int = 5):
 
 
 
-# ============= MULTIMODAL ==========================
-
-# 🔹 Buscar textos
 @app.get("/search")
 def search_text(query: str, top_k: int = 5):
     results = search_documents(query, top_k)
@@ -188,7 +180,6 @@ def search_text(query: str, top_k: int = 5):
         "results": results
     }
 
-# 🔹 Insertar personas
 @app.post('/insert-person')
 def insert_person(req: InsertPersonRequest):
     try:
@@ -598,25 +589,17 @@ async def manage_image(file1: UploadFile = File(...), file2: UploadFile = File(.
             tmp2.write(await file2.read())
             tmp_path2 = tmp2.name
 
-        # Debug: Ver contenido de las imágenes
-        print(f"DEBUG: File1 size: {os.path.getsize(tmp_path1)} bytes")
-        print(f"DEBUG: File2 size: {os.path.getsize(tmp_path2)} bytes")
-
-        # Buscar similitudes para file1
-        similar_images = search_similar_images(tmp_path1, top_k=5)  # Aumenté a 5 resultados
-        print(f"DEBUG: Similar images found: {similar_images}")
+        similar_images = search_similar_images(tmp_path1, top_k=5)
         
-        # Operación de borrado
         deleted, deleted_filename = delete_if_similar(similar_images, threshold=0)
         
-        # Siempre insertar file2
         insert_images([tmp_path2], metadata={"filename": file2.filename})
 
         return {
             "file1_deleted": deleted,
             "deleted_filename": deleted_filename,
             "file2_inserted": file2.filename,
-            "similarity_results": similar_images  # Devolvemos los resultados para debug
+            "similarity_results": similar_images
         }
 
     except Exception as e:
@@ -627,11 +610,6 @@ async def manage_image(file1: UploadFile = File(...), file2: UploadFile = File(.
 
 @app.post("/replace-closest-image")
 async def replace_closest_image(file: UploadFile = File(...)):
-    """
-    1. Busca la imagen más cercana (aunque no sea muy similar)
-    2. Si existe alguna, la elimina
-    3. Siempre inserta la nueva imagen
-    """
     try:
         # Guardar imagen temporal
         suffix = os.path.splitext(file.filename)[1]
@@ -639,18 +617,15 @@ async def replace_closest_image(file: UploadFile = File(...)):
             tmp.write(await file.read())
             tmp_path = tmp.name
 
-        # Paso 1: Buscar la más cercana
         similar_images = search_similar_images(tmp_path, top_k=1)
         
-        # Paso 2: Eliminar si existe
         deleted = False
         deleted_id = None
-        if similar_images:  # Esto es más pythonico que similar_images != []
+        if similar_images:
             deleted_id = similar_images[0]["id"]
             delete_image(deleted_id)
             deleted = True
 
-        # Paso 3: Insertar la nueva
         insert_images([tmp_path], metadata={"filename": file.filename})
 
         return {

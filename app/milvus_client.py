@@ -4,7 +4,7 @@ from pathlib import Path
 from pymilvus import MilvusClient
 from sentence_transformers import SentenceTransformer
 from sklearn.preprocessing import normalize
-from app.feature_extractor import FeatureExtractor
+from feature_extractor import FeatureExtractor
 from io import BytesIO
 from PIL import Image
 import numpy as np
@@ -16,12 +16,10 @@ DIMENSION = 512
 IMAGE_DIR = Path("static/images")
 IMAGE_DIR.mkdir(parents=True, exist_ok=True)
 
-# Inicializar cliente y modelo
 client = MilvusClient(uri="http://localhost:19530")
 model = SentenceTransformer("paraphrase-albert-small-v2")
 PERSON_VECTOR_DIM = model.get_sentence_embedding_dimension()
 
-# Crear colección limpia
 def setup_collection():
     if client.has_collection(COLLECTION_NAME):
         client.drop_collection(COLLECTION_NAME)
@@ -43,7 +41,6 @@ def setup_collection():
         metric_type="COSINE",
     )
 
-    # Crear colecciones separadas para cada métrica de personas
     metrics = ["COSINE", "L2", "IP"]
     for metric in metrics:
         collection_name = f"{PERSON_COLLECTION}_{metric.lower()}"
@@ -51,7 +48,7 @@ def setup_collection():
             client.drop_collection(collection_name=collection_name)
         client.create_collection(
             collection_name=collection_name,
-            dimension=DIMENSION,
+            dimension=PERSON_VECTOR_DIM,
             auto_id=True,
             enable_dynamic_field=True,
             metric_type=metric
@@ -73,7 +70,6 @@ def insert_documents(items, metadata=None):
     client.insert(collection_name=COLLECTION_NAME, data=data)
     return len(data)
 
-# Buscar documentos
 def search_documents(query: str, top_k: int):
     client.load_collection(COLLECTION_NAME)
     query_vector = model.encode([query])
@@ -163,12 +159,9 @@ def search_person(query: str, top_k: int, metric_type: str = "COSINE"):
         
         encoded_query = model.encode([query])
         
-        # Apply appropriate normalization for each metric
         if metric_type == "COSINE":
-            # COSINE needs L2 normalization
             query_vector = normalize(encoded_query, norm='l2')
         else:
-            # L2 and IP use raw vectors (no normalization)
             query_vector = encoded_query
         
         res = client.search(
@@ -176,21 +169,16 @@ def search_person(query: str, top_k: int, metric_type: str = "COSINE"):
             data=query_vector,
             limit=top_k,
             output_fields=["name", "description"]
-            # No necesitamos search_params porque la colección ya tiene la métrica correcta
         )
         
         results = []
         for hit in res[0]:
             if metric_type == "COSINE":
-                # Para COSINE, devolver solo la distancia (se multiplicará por 100 en frontend)
                 similarity = hit["distance"]
             elif metric_type == "L2":
                 similarity = max(0, 1 - (hit["distance"] / 1000))
             elif metric_type == "IP":
                 similarity = max(0, min(1, hit["distance"] / 100))
-            
-            # Debug opcional
-            print(f"Nombre: {hit['entity']['name']}, Distancia: {hit['distance']}, Similitud: {similarity}")
 
             results.append({
                 "id": hit["id"],
@@ -204,7 +192,6 @@ def search_person(query: str, top_k: int, metric_type: str = "COSINE"):
     except Exception as e:
         raise e
 
-# Insertar imagenes
 def insert_images(images, metadata=None):
     extractor = FeatureExtractor("resnet34")
     embeddings = []
@@ -248,21 +235,18 @@ def search_similar_images(image_path, top_k: int):
         for hit in results[0]
     ]
 
-# Obtener todos los vectores y metadatos de una colección específica
 def get_all_vectors_from_collection(collection_name, limit=100):
     client.load_collection(collection_name)
     
-    # Definir campos según el tipo de colección
-    if collection_name == COLLECTION_NAME:  # Colección de textos
+    if collection_name == COLLECTION_NAME:
         output_fields = ["id", "vector", "text", "subject", "filename"]
-    elif collection_name == "images":  # Colección de imágenes
+    elif collection_name == "images":
         output_fields = ["id", "vector", "filename"]
-    elif collection_name == PERSON_COLLECTION:  # Colección de personas (usar COSINE por defecto)
+    elif collection_name == PERSON_COLLECTION:
         output_fields = ["id", "vector", "name", "description"]
-    elif collection_name.startswith(PERSON_COLLECTION + "_"):  # Colecciones de personas por métrica
+    elif collection_name.startswith(PERSON_COLLECTION + "_"):
         output_fields = ["id", "vector", "name", "description"]
     else:
-        # Fallback: intentar obtener todos los campos disponibles
         output_fields = ["id", "vector"]
     
     try:
