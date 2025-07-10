@@ -63,7 +63,7 @@ def search_multimodal(query, tipo):
     vector_multimodal = encode_text(query)
     vector_text = model.encode([query])
 
-    output_fields = ["id", "filename", "tipo_fragmento", "type", "data"]
+    output_fields = ["id", "filename", "tipo_fragmento", "type", "data", "historia"]
     client.load_collection(COLLECTION_NAME_MULTIMODAL)
     client.load_collection(COLLECTION_NAME_TEXT)
     # Buscar imagen (multimodal)

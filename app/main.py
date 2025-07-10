@@ -611,17 +611,15 @@ async def delete_documents_by_filename(filename: str):
 @app.get("/count-vectors")
 def count_vectors_endpoint(
     collection: str = Query(..., description="Nombre de la colección"),
-    field: str = Query(..., description="Campo por el que filtrar"),
     value: str = Query(..., description="Valor del campo a buscar")
 ):
     """
     Devuelve la cantidad de vectores en una colección según un atributo específico.
     """
     try:
-        count = count_vectors_by_attribute(collection, field, value)
+        count = count_vectors_by_attribute(collection, value)
         return {
             "collection": collection,
-            "field": field,
             "value": value,
             "count": count
         }
@@ -812,4 +810,66 @@ def list_vectors_in_collection(
             
     except Exception as e:
         return {"error": str(e), "vectors": []}
+
+
+@app.get("/debug-collection")
+def debug_collection_endpoint(
+    collection: str = Query(..., description="Nombre de la colección a debuggear")
+):
+    """
+    Endpoint para debuggear una colección y ver su información.
+    """
+    try:
+        from app.milvus_client import client
+        
+        # Verificar si la colección existe
+        if not client.has_collection(collection):
+            return {
+                "error": f"La colección '{collection}' no existe",
+                "exists": False
+            }
+        
+        # Cargar la colección
+        client.load_collection(collection)
+        
+        try:
+            # Obtener información de la colección
+            collection_info = client.describe_collection(collection)
+            
+            # Contar todos los vectores
+            total_vectors = client.query(
+                collection_name=collection,
+                filter="",
+                output_fields=["id"],
+                limit=1000
+            )
+            
+            # Mostrar algunos ejemplos
+            sample_vectors = client.query(
+                collection_name=collection,
+                filter="",
+                output_fields=["id", "filename", "type", "tipo_fragmento"],
+                limit=5
+            )
+            
+            # Descargar la colección
+            client.release_collection(collection)
+            
+            return {
+                "collection": collection,
+                "exists": True,
+                "collection_info": collection_info,
+                "total_vectors": len(total_vectors),
+                "sample_vectors": sample_vectors
+            }
+                
+        except Exception as query_error:
+            client.release_collection(collection)
+            return {
+                "error": f"Error al consultar la colección: {str(query_error)}",
+                "exists": False
+            }
+            
+    except Exception as e:
+        return {"error": str(e), "exists": False}
 
