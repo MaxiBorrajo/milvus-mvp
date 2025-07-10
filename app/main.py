@@ -6,7 +6,7 @@ import json
 import numpy as np
 import traceback
 
-from fastapi import FastAPI, File, UploadFile, Query, Form, HTTPException
+from fastapi import FastAPI, File, UploadFile, Query, Form, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi import HTTPException
@@ -858,4 +858,25 @@ def cargar_items_json():
         return {"inserted": inserted_count, "total": len(multimodal_items)}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al cargar items.json: {str(e)}")
+
+@app.delete("/delete-vector")
+def delete_vector_by_id(
+    collection: str = Query(..., description="Nombre de la colección"),
+    id: int = Query(..., description="ID del vector a eliminar")
+):
+    """
+    Elimina un vector de una colección por su id.
+    """
+    try:
+        from app.milvus_client import client
+        client.load_collection(collection)
+        res = client.delete(collection_name=collection, ids=[id])
+        return {
+            "collection": collection,
+            "id": id,
+            "delete_count": res.get("delete_count", 0),
+            "success": True
+        }
+    except Exception as e:
+        return {"error": str(e), "success": False}
 

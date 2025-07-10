@@ -2,7 +2,7 @@
   text-align: center;
   min-height: 100vh;
   background: linear-gradient(135deg, #0d0d0d 0%, #4b0000 100%);
-  color: white;
+  color: rgb(246, 223, 223);
 }
 
 .App-logo {
@@ -89,7 +89,7 @@
 
 /* Home Component Styles */
 .home-container {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(78, 63, 58, 0.233);
   backdrop-filter: blur(10px);
   border-radius: 15px;
   padding: 2rem;
@@ -303,13 +303,13 @@
 }
 
 .game-card {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(116, 53, 53, 0.518);
   backdrop-filter: blur(10px);
-  border-radius: 15px;
+  border-radius: 2px;
   padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(192, 172, 172, 0.2);
   text-decoration: none;
-  color: white;
+  color: rgb(176, 153, 153);
   transition: all 0.3s ease;
   text-align: center;
 }
@@ -482,7 +482,6 @@
   border-radius: 8px;
   font-weight: 600;
   transition: all 0.3s ease;
-  margin-top: 2rem;
 }
 
 .back-btn:hover {
@@ -1929,7 +1928,6 @@
 }
 
 .query-input {
-  width: 100%;
   padding: 1rem;
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
@@ -2083,6 +2081,37 @@
   transform: translateY(-2px);
   box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
 }
+
+.libertinus-font {
+  font-family: "Libertinus Mono", monospace;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.great-primer-sc {
+  font-family: "IM Fell Great Primer SC", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.frijole {
+  font-family: "Frijole", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.metal-mania {
+  font-family: "Metal Mania", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.anton-sc {
+  font-family: "Anton SC", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
 
 @media (max-width: 768px) {
   .options-grid {

@@ -107,6 +107,18 @@ const TercerJuego = () => {
     <div className="game-container">
       <Header title="Tercer Ritual" />
 
+      <div className="game-content metal-mania">
+        <h1>⛤ Historia Interactiva ⛤</h1>
+        <p>Continúa la historia con tus propias preguntas</p>
+
+        <div className="story-progress">
+          <div className="progress-bar">
+            <div
+              className="progress-fill"
+              style={{ width: `${((currentStage + 1) / 4) * 100}%` }}
+            ></div>
+          </div>
+          <p>Etapa {currentStage + 1} de 4</p>
       <div className="game-content">
         <h1>📖 Historia Interactiva</h1>
         {baseStory}
@@ -162,8 +174,8 @@ const TercerJuego = () => {
           )}
         </div>
 
-        <div className="story-section">
-          <h3>📚 Historia Actual:</h3>
+        <div className="story-section great-primer-sc">
+          <h3>☠ Historia Actual:</h3>
           <div className="story-text">
             {storyHistory.length === 0 ? (
               <p style={{ color: "#bbb", fontStyle: "italic" }}>
@@ -343,7 +355,6 @@ const TercerJuego = () => {
         </Link>
       </div>
     </div>
-  );
-};
+  )}
 
 export default TercerJuego;
