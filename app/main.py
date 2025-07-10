@@ -18,9 +18,9 @@ from sklearn.decomposition import PCA
 from typing import  List
 from datetime import datetime
 
-from utils import extract_text_from_file
-from milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images,  get_all_vectors_from_collection, get_all_vectors_combined, subirImagenes,delete_image_byId,delete_if_similar, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION
-from multimodal_queries import insert_multimodal, setup_multimodal, search_multimodal
+from app.utils import extract_text_from_file
+from app.milvus_client import vectorsForAFileName,delete_documents_by_filename_service,delete_vectors_by_ids,search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images,  get_all_vectors_from_collection, get_all_vectors_combined, subirImagenes,delete_image_byId,delete_if_similar, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION
+from app.multimodal_queries import insert_multimodal, setup_multimodal, search_multimodal
 
 
 

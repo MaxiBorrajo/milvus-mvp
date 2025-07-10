@@ -2,7 +2,7 @@ import os
 import time
 
 from pymilvus import MilvusClient
-from multimodal_encoder import CLIPMultimodal
+from app.multimodal_encoder import CLIPMultimodal
 
 COLLECTION_NAME = "multimodal"
 COLLECTION_DIMENSION = 512
