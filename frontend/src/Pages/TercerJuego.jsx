@@ -34,8 +34,6 @@ const TercerJuego = () => {
     </>
   );
 
-
-
   // Mostrar información de reordenamiento cuando hay más de una historia
   useEffect(() => {
     if (storyHistory.length > 1 && !showReorderInfo) {
