@@ -412,21 +412,29 @@ def delete_documents_by_filename_service(filename: str):
         "method": "direct_filename_filter"
     }
 
-def count_vectors_by_attribute(collection_name: str, field: str, value: str) -> int:
+def count_vectors_by_attribute(collection_name: str, value: str) -> int:
     """
     Cuenta la cantidad de vectores en una colección según un atributo específico.
     Args:
         collection_name (str): Nombre de la colección.
-        field (str): Nombre del campo por el que filtrar.
         value (str): Valor del campo a buscar.
     Returns:
         int: Cantidad de vectores que cumplen el filtro.
     """
-    client.load_collection(collection_name)
-    filter_expr = f'{field} == "{value}"'
-    results = client.query(
-        collection_name=collection_name,
-        filter=filter_expr,
-        output_fields=[field]
-    )
-    return len(results)
+    try:
+        client.load_collection(collection_name)
+        
+        # Si no hay filtro, necesitamos especificar limit
+        results = client.query(
+            collection_name=collection_name,
+            filter="",  # Filtro vacío
+            output_fields=["id"],  # Solo necesitamos el ID para contar
+            limit=10000  # Límite alto para contar todos
+        )
+        
+        print(f"Total de vectores en {collection_name}: {len(results)}")
+        return len(results)
+        
+    except Exception as e:
+        print(f"Error en count_vectors_by_attribute: {str(e)}")
+        return 0
