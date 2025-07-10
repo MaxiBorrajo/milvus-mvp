@@ -4,20 +4,17 @@ import useSimpleVectors from "../hooks/useSimpleVectors";
 
 const VectorModal = ({ isOpen, onClose, getPersonResults }) => {
   const { loading, error, data, getPersonVectors } = useSimpleVectors();
-  // eslint-disable-next-line
   const [hasLoaded, setHasLoaded] = useState(false);
   const [currentResults, setCurrentResults] = useState([]);
 
   useEffect(() => {
     if (isOpen) {
       loadVectors();
-      // Ejecutar la función para obtener los resultados actuales
       const results = getPersonResults();
       const resultNames = results.map((result) => result.name).filter(Boolean);
       setCurrentResults(resultNames);
       setHasLoaded(true);
     }
-    // eslint-disable-next-line
   }, [isOpen, getPersonResults]);
 
   const loadVectors = async () => {
