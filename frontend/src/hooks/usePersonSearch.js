@@ -26,7 +26,6 @@ const usePersonSearch = () => {
 
         return result;
       } catch (err) {
-        // El error ya está manejado en useApi
         throw err;
       }
     },
