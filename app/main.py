@@ -96,16 +96,8 @@ class InsertPersonRequest(BaseModel):
     items: List[PersonaItem]
 
 class MetadataItem(BaseModel):
-    fase_historia: int | None = None
-    path_imagen: str | None = None
-    path_audio: str | None = None
+    tipo_fragmento: str | None = None
     filename: str | None = None
-
-    @validator('fase_historia')
-    def fase_historia_must_be_0_1_2_3(cls, v):
-        if v is not None and v not in (0, 1, 2, 3):
-            raise ValueError('fase_historia debe ser uno de: 0, 1, 2, 3')
-        return v
 
 class MultimodalItem(BaseModel):
     data: str
@@ -118,8 +110,8 @@ class InsertRequest(BaseModel):
     items: List[TextItem]
  
 class SearchRequest(BaseModel):
-    query: str
-    top_k: int = 5
+    pregunta: str
+    tipo: str
 
 # Modelo de respuesta para la eliminación
 class DeleteResponse(BaseModel):
@@ -171,8 +163,8 @@ async def post_insert_images_multimodal(files: List[UploadFile] = File(...), met
 
 
 @app.get("/search-by-text-multimodal")
-def search_multimodal_text(query: str, top_k: int = 5):
-    return search_multimodal(query, "text", top_k)
+def search_multimodal_text(pregunta: str, tipo: str):
+    return search_multimodal(pregunta, "text", tipo)
 
 # @app.post("/search-by-image-multimodal")
 # async def search_multimodal_image(file: UploadFile = File(...), top_k: int = 5):
