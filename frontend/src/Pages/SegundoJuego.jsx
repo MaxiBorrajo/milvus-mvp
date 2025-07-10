@@ -38,11 +38,11 @@ const SegundoJuego = () => {
     <div className="game-container">
       <Header title="Segundo Ritual" />
 
-      <div className="game-content">
+      <div className="game-content libertinus-font">
         <h1>🕮 Segundo Ritual</h1>
         <p>¡Encontrá tu alter ego espiritual!</p>
 
-        <div className="game-instructions">
+        <div className="game-instructions great-primer-sc">
           <h3>Indicaciones:</h3>
           <ul>
             <li>Elegi una foto tuya</li>
@@ -51,14 +51,14 @@ const SegundoJuego = () => {
           </ul>
         </div>
 
-        <div className="file-upload-container home-container">
+        <div className="file-upload-container home-container great-primer-sc">
           <h2>Sube tu foto...</h2>
           <div className="input-group">
             <label htmlFor="file-upload">Selecciona un archivo</label>
             <input
               type="file"
               id="file-upload"
-              className="file-input"
+              className="file-input great-primer-sc"
               disabled={loading}
               onChange={(e) => handleFileChange(e)}
             />
@@ -67,7 +67,7 @@ const SegundoJuego = () => {
 
         {isUploaded && (
           <button
-            className="game-start-btn"
+            className="game-start-btn great-primer-sc"
             onClick={searchAlter}
             onKeyDown={(e) => e.key === "Enter" && searchAlter}
             disabled={loading}
@@ -79,7 +79,7 @@ const SegundoJuego = () => {
         {result && (
           <div className="result-section">
             <h3>Tu par:</h3>
-            <div className="games-grid">
+            <div className="games-grid great-primer-sc">
               <div className="result-card" key={result.index}>
                 <img
                   src={result.url}
