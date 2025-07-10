@@ -54,6 +54,7 @@ def insert_multimodal(items, data_type):
             }
             for i in range(len(items))
         ]
+        print(data_texto)
         res_texto = client.insert(collection_name=COLLECTION_NAME_TEXT, data=data_texto)
         return res_texto["insert_count"]
 
@@ -63,22 +64,30 @@ def search_multimodal(query, type, tipo):
 
     output_fields = ["filename", "tipo_fragmento", "type", "data"]
 
+    print(tipo)
+
+    # Buscar imagen (multimodal)
     resultados_multimodal = client.search(
         collection_name=COLLECTION_NAME_MULTIMODAL,
         data=[vector_multimodal],
         output_fields=output_fields,
         search_params={"metric_type": "COSINE"},
-        filter=f"tipo_fragmento == {tipo}",
+        filter=f'tipo_fragmento == "{tipo}"',
         limit=1
     )
 
+    # Determinar cuántos resultados de texto buscar
+    num_imagenes = len(resultados_multimodal[0]) if resultados_multimodal and len(resultados_multimodal) > 0 else 0
+    texto_limit = 2 if num_imagenes == 1 else 3
+
+    # Buscar texto
     resultados_texto = client.search(
         collection_name=COLLECTION_NAME_TEXT,
         data=vector_text,
         output_fields=output_fields,
         search_params={"metric_type": "COSINE"},
-        filter=f"tipo_fragmento == {tipo}",
-        limit=2
+        filter=f'tipo_fragmento == "{tipo}"',
+        limit=texto_limit
     )
 
     todos_resultados = []
