@@ -833,14 +833,161 @@ def delete_vector_by_id(
     """
     try:
         from app.milvus_client import client
+        
+        # Verificar si la colección existe
+        if not client.has_collection(collection):
+            return {
+                "error": f"La colección '{collection}' no existe",
+                "success": False
+            }
+        
+        # Cargar la colección
         client.load_collection(collection)
-        res = client.delete(collection_name=collection, ids=[id])
-        return {
-            "collection": collection,
-            "id": id,
-            "delete_count": res.get("delete_count", 0),
-            "success": True
-        }
+        
+        # Verificar si el ID existe antes de eliminar
+        try:
+            # Buscar el vector por ID para verificar que existe
+            # result = client.query(
+            #     collection_name=collection,
+            #     filter=f"id == {id}",
+            #     output_fields=["id"]
+            # )
+            
+            # if not result:
+            #     return {
+            #         "error": f"No se encontró el vector con ID {id} en la colección '{collection}'",
+            #         "success": False
+            #     }
+            
+            # Eliminar el vector
+            res = client.delete(collection_name=collection, ids=[id])
+            
+            # Descargar la colección para liberar memoria
+            client.release_collection(collection)
+            
+            return {
+                "collection": collection,
+                "id": id,
+                "delete_count": res.get("delete_count", 0),
+                "success": True,
+                "message": f"Vector con ID {id} eliminado exitosamente"
+            }
+            
+        except Exception as query_error:
+            client.release_collection(collection)
+            return {
+                "error": f"Error al verificar o eliminar el vector: {str(query_error)}",
+                "success": False
+            }
+            
     except Exception as e:
         return {"error": str(e), "success": False}
+
+
+@app.get("/check-vector")
+def check_vector_exists(
+    collection: str = Query(..., description="Nombre de la colección"),
+    id: int = Query(..., description="ID del vector a verificar")
+):
+    """
+    Verifica si un vector existe en una colección por su id.
+    """
+    try:
+        from app.milvus_client import client
+        
+        # Verificar si la colección existe
+        if not client.has_collection(collection):
+            return {
+                "error": f"La colección '{collection}' no existe",
+                "exists": False
+            }
+        
+        # Cargar la colección
+        client.load_collection(collection)
+        
+        try:
+            # Buscar el vector por ID
+            result = client.query(
+                collection_name=collection,
+                filter=f"id == {id}",
+                output_fields=["id", "filename", "type", "tipo_fragmento"]
+            )
+            
+            # Descargar la colección
+            client.release_collection(collection)
+            
+            if result:
+                return {
+                    "collection": collection,
+                    "id": id,
+                    "exists": True,
+                    "vector_info": result[0]
+                }
+            else:
+                return {
+                    "collection": collection,
+                    "id": id,
+                    "exists": False,
+                    "message": f"No se encontró el vector con ID {id}"
+                }
+                
+        except Exception as query_error:
+            client.release_collection(collection)
+            return {
+                "error": f"Error al verificar el vector: {str(query_error)}",
+                "exists": False
+            }
+            
+    except Exception as e:
+        return {"error": str(e), "exists": False}
+
+
+@app.get("/list-vectors")
+def list_vectors_in_collection(
+    collection: str = Query(..., description="Nombre de la colección"),
+    limit: int = Query(100, description="Número máximo de vectores a listar")
+):
+    """
+    Lista todos los vectores en una colección con sus IDs y metadatos.
+    """
+    try:
+        from app.milvus_client import client
+        
+        # Verificar si la colección existe
+        if not client.has_collection(collection):
+            return {
+                "error": f"La colección '{collection}' no existe",
+                "vectors": []
+            }
+        
+        # Cargar la colección
+        client.load_collection(collection)
+        
+        try:
+            # Obtener todos los vectores con sus metadatos
+            result = client.query(
+                collection_name=collection,
+                filter="",
+                output_fields=["id", "filename", "type", "tipo_fragmento", "data"],
+                limit=limit
+            )
+            
+            # Descargar la colección
+            client.release_collection(collection)
+            
+            return {
+                "collection": collection,
+                "total_vectors": len(result),
+                "vectors": result
+            }
+                
+        except Exception as query_error:
+            client.release_collection(collection)
+            return {
+                "error": f"Error al listar vectores: {str(query_error)}",
+                "vectors": []
+            }
+            
+    except Exception as e:
+        return {"error": str(e), "vectors": []}
 
