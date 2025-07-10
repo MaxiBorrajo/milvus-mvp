@@ -23,7 +23,7 @@ from typing import  List
 from datetime import datetime
 
 from app.utils import extract_text_from_file
-from app.milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, subirImagenes, delete_image_byId, delete_if_similar, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION, vectorsForAFileName, delete_vectors_by_ids, delete_documents_by_filename_service
+from app.milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, subirImagenes, delete_image_byId, delete_if_similar, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION, vectorsForAFileName, delete_vectors_by_ids, delete_documents_by_filename_service, count_vectors_by_attribute
 from app.multimodal_queries import insert_multimodal, setup_multimodal, search_multimodal
 
 
@@ -780,4 +780,24 @@ async def delete_documents_by_filename(filename: str):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al eliminar documentos: {str(e)}"
         )
+
+@app.get("/count-vectors")
+def count_vectors_endpoint(
+    collection: str = Query(..., description="Nombre de la colección"),
+    field: str = Query(..., description="Campo por el que filtrar"),
+    value: str = Query(..., description="Valor del campo a buscar")
+):
+    """
+    Devuelve la cantidad de vectores en una colección según un atributo específico.
+    """
+    try:
+        count = count_vectors_by_attribute(collection, field, value)
+        return {
+            "collection": collection,
+            "field": field,
+            "value": value,
+            "count": count
+        }
+    except Exception as e:
+        return {"error": str(e)}
 

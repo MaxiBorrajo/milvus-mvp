@@ -411,3 +411,22 @@ def delete_documents_by_filename_service(filename: str):
         "deleted_count": res["delete_count"],
         "method": "direct_filename_filter"
     }
+
+def count_vectors_by_attribute(collection_name: str, field: str, value: str) -> int:
+    """
+    Cuenta la cantidad de vectores en una colección según un atributo específico.
+    Args:
+        collection_name (str): Nombre de la colección.
+        field (str): Nombre del campo por el que filtrar.
+        value (str): Valor del campo a buscar.
+    Returns:
+        int: Cantidad de vectores que cumplen el filtro.
+    """
+    client.load_collection(collection_name)
+    filter_expr = f'{field} == "{value}"'
+    results = client.query(
+        collection_name=collection_name,
+        filter=filter_expr,
+        output_fields=[field]
+    )
+    return len(results)
