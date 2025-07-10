@@ -5,7 +5,7 @@ from typing import List
 from pymilvus import  MilvusClient
 from sentence_transformers import SentenceTransformer
 from sklearn.preprocessing import normalize
-from feature_extractor import FeatureExtractor
+from app.feature_extractor import FeatureExtractor
 from io import BytesIO
 from PIL import Image
 import numpy as np
@@ -221,8 +221,6 @@ def search_similar_images(image_path, top_k: int):
         search_params={"metric_type": "COSINE"},
         limit=top_k
     )
-
-    print(results)
 
     base_url = "http://localhost:8000/images"
 

@@ -2,8 +2,8 @@ import os
 import time
 
 from pymilvus import MilvusClient
-from multimodal_encoder import encode_text, encode_image
-from milvus_client import model, client
+from app.multimodal_encoder import encode_text, encode_image
+from app.milvus_client import model, client
 
 COLLECTION_NAME_MULTIMODAL = "multimodal_collection"
 COLLECTION_NAME_TEXT = "text_collection"
@@ -54,7 +54,7 @@ def insert_multimodal(items, data_type):
             }
             for i in range(len(items))
         ]
-        print(data_texto)
+        
         res_texto = client.insert(collection_name=COLLECTION_NAME_TEXT, data=data_texto)
         return res_texto["insert_count"]
 
@@ -63,8 +63,6 @@ def search_multimodal(query, type, tipo):
     vector_text = model.encode([query])
 
     output_fields = ["filename", "tipo_fragmento", "type", "data"]
-
-    print(tipo)
 
     # Buscar imagen (multimodal)
     resultados_multimodal = client.search(
