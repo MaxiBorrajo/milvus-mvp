@@ -2,8 +2,8 @@ import os
 import time
 
 from pymilvus import MilvusClient
-from app.multimodal_encoder import encode_text, encode_image
-from app.milvus_client import model, client
+from multimodal_encoder import encode_text, encode_image
+from milvus_client import model, client
 
 COLLECTION_NAME_MULTIMODAL = "multimodal_collection"
 COLLECTION_NAME_TEXT = "text_collection"

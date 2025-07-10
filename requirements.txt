@@ -15,7 +15,7 @@ Pillow
 torch
 torchvision
 timm
-clip
+git+https://github.com/openai/CLIP.git
 
 # Machine Learning y análisis de datos
 scikit-learn

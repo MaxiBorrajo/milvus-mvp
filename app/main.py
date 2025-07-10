@@ -22,9 +22,9 @@ from sklearn.decomposition import PCA
 from typing import  List
 from datetime import datetime
 
-from app.utils import extract_text_from_file
-from app.milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, subirImagenes, delete_image_byId, delete_if_similar, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION, vectorsForAFileName, delete_vectors_by_ids, delete_documents_by_filename_service
-from app.multimodal_queries import insert_multimodal, setup_multimodal, search_multimodal
+from utils import extract_text_from_file
+from milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, subirImagenes, delete_image_byId, delete_if_similar, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION, vectorsForAFileName, delete_vectors_by_ids, delete_documents_by_filename_service
+from multimodal_queries import insert_multimodal, setup_multimodal, search_multimodal
 
 
 
@@ -65,7 +65,7 @@ def health_check():
 def debug_collections():
     """Endpoint para debuggear el estado de las colecciones"""
     try:
-        from app.milvus_client import client, PERSON_COLLECTION, COLLECTION_NAME
+        from milvus_client import client, PERSON_COLLECTION, COLLECTION_NAME
         
         collections_info = {}
         
