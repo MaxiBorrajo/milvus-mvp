@@ -62,7 +62,7 @@ def search_multimodal(query, type, tipo):
     vector_multimodal = encode_text(query)
     vector_text = model.encode([query])
 
-    output_fields = ["filename", "tipo_fragmento", "type", "data"]
+    output_fields = ["id", "filename", "tipo_fragmento", "type", "data"]
 
     # Buscar imagen (multimodal)
     resultados_multimodal = client.search(
@@ -98,6 +98,7 @@ def search_multimodal(query, type, tipo):
                 entity = r["entity"]
                 url = f"{host}/{entity['filename']}" if entity.get("type") == "image" else None
                 lista.append({
+                    "id": entity.get("id"),
                     "filename": entity.get("filename"),
                     "score": round(r["distance"], 2),
                     "tipo_fragmento": entity.get("tipo_fragmento"),

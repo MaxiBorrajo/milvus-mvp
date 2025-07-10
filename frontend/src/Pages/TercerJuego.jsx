@@ -1,7 +1,10 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import Header from "../Components/Header";
-import useMultimodalSearch from "../hooks/useMultimodalSearch";
+import useMultimodalSearch, {
+  deleteFragmentByFilename,
+  deleteFragmentById,
+} from "../hooks/useMultimodalSearch";
 
 const TercerJuego = () => {
   const [currentStory, setCurrentStory] = useState("");
@@ -10,13 +13,21 @@ const TercerJuego = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [fragmentType, setFragmentType] = useState("lore");
   const [removedOptions, setRemovedOptions] = useState([]);
+  const [uploading, setUploading] = useState(false);
+  const [uploadResult, setUploadResult] = useState(null);
 
   const { loading, error, searchByText, getSearchResults, reset } =
     useMultimodalSearch();
 
   // Historia base inicial
-  const baseStory =
-    "En una noche sin luna, un grupo de amigos descubrió un portal misterioso en el sótano de una antigua biblioteca. El portal emitía una luz tenue y pulsante, como si estuviera vivo. Nadie sabía qué había del otro lado, pero todos sentían una extraña atracción hacia él.";
+  const baseStory = (
+    <>
+      RDJ se desvaneció en el portal, Tomi fue secuestrado por una fuerza
+      desconocida y ahora el grupo está atrapado en el Limbo Vectorial.
+      <br />
+      Solo las preguntas pueden abrir el camino…
+    </>
+  );
 
   useEffect(() => {
     if (!currentStory) {
@@ -36,9 +47,31 @@ const TercerJuego = () => {
     }
   };
 
-  const handleOptionSelect = (option) => {
+  const handleOptionSelect = async (option) => {
     setSelectedOption(option);
-    // Simular llamada a la API para eliminar el fragmento (mock)
+    // Eliminar en backend si tiene id o filename
+    if (option.id) {
+      try {
+        await deleteFragmentById(
+          option.id,
+          option.type === "image" ? "image" : "text"
+        );
+      } catch (err) {
+        alert(
+          "No se pudo eliminar el fragmento en el backend por id: " +
+            err.message
+        );
+      }
+    } else if (option.filename) {
+      try {
+        await deleteFragmentByFilename(option.filename);
+      } catch (err) {
+        alert(
+          "No se pudo eliminar el fragmento en el backend por filename: " +
+            err.message
+        );
+      }
+    }
     setRemovedOptions((prev) => [...prev, option]);
     // Agregar la opción seleccionada a la historia
     const newStoryEntry = {
@@ -76,29 +109,87 @@ const TercerJuego = () => {
 
       <div className="game-content">
         <h1>📖 Historia Interactiva</h1>
-        <p>Continúa la historia con tus propias preguntas</p>
+        {baseStory}
+        {/* Botón para cargar items.json a la BDD */}
+        <div style={{ margin: "16px 0", textAlign: "right" }}>
+          <button
+            onClick={async () => {
+              setUploading(true);
+              setUploadResult(null);
+              try {
+                const res = await fetch(
+                  "http://localhost:8000/cargar-items-json",
+                  { method: "POST" }
+                );
+                const data = await res.json();
+                setUploadResult(
+                  data.inserted
+                    ? `Se insertaron ${data.inserted} fragmentos.`
+                    : JSON.stringify(data)
+                );
+              } catch (err) {
+                setUploadResult("Error: " + err.message);
+              } finally {
+                setUploading(false);
+              }
+            }}
+            disabled={uploading}
+            style={{
+              background: "#222",
+              color: "#ffd700",
+              border: "1.5px solid #ffd700",
+              borderRadius: 8,
+              padding: "6px 18px",
+              fontWeight: 600,
+              fontSize: "1rem",
+              cursor: uploading ? "not-allowed" : "pointer",
+              marginBottom: 8,
+            }}
+          >
+            {uploading
+              ? "Cargando items.json..."
+              : "Cargar items.json a la BDD"}
+          </button>
+          {uploadResult && (
+            <div
+              style={{
+                color: uploadResult.startsWith("Error") ? "red" : "#ffd700",
+                marginTop: 4,
+              }}
+            >
+              {uploadResult}
+            </div>
+          )}
+        </div>
 
         <div className="story-section">
           <h3>📚 Historia Actual:</h3>
           <div className="story-text">
-            {storyHistory.map((entry, index) => (
-              <div key={index} className="story-entry">
-                {entry.type === "image" && entry.url && (
-                  <img
-                    src={entry.url}
-                    alt="Story"
-                    className="story-image"
-                    style={{ maxWidth: "200px", margin: "10px 0" }}
-                  />
-                )}
-                <p>{entry.text}</p>
-                {entry.score && (
-                  <small className="story-score">
-                    Relevancia: {Math.round(entry.score * 100)}%
-                  </small>
-                )}
-              </div>
-            ))}
+            {storyHistory.length === 0 ? (
+              <p style={{ color: "#bbb", fontStyle: "italic" }}>
+                Aquí aparecerán los fragmentos de la historia a medida que
+                avances...
+              </p>
+            ) : (
+              storyHistory.map((entry, index) => (
+                <div key={index} className="story-entry">
+                  {entry.type === "image" && entry.url && (
+                    <img
+                      src={entry.url}
+                      alt="Story"
+                      className="story-image"
+                      style={{ maxWidth: "200px", margin: "10px 0" }}
+                    />
+                  )}
+                  <p>{entry.text}</p>
+                  {entry.score && (
+                    <small className="story-score">
+                      Relevancia: {Math.round(entry.score * 100)}%
+                    </small>
+                  )}
+                </div>
+              ))
+            )}
           </div>
         </div>
 

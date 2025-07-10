@@ -781,3 +781,39 @@ async def delete_documents_by_filename(filename: str):
             detail=f"Error al eliminar documentos: {str(e)}"
         )
 
+@app.delete("/fragmento/{fragment_id}")
+def delete_fragment_by_id(fragment_id: str, tipo: str = Query("text", description="Tipo de fragmento: 'text' o 'image'")):
+    """
+    Endpoint para eliminar un fragmento por su id y tipo (text o image)
+    """
+    try:
+        if tipo == "image":
+            collection = "multimodal_collection"
+        else:
+            collection = "text_collection"
+        from milvus_client import client
+        client.load_collection(collection)
+        client.delete(collection_name=collection, ids=[fragment_id])
+        return {"deleted_id": fragment_id, "collection": collection}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al eliminar fragmento: {str(e)}")
+
+@app.post("/cargar-items-json")
+def cargar_items_json():
+    """
+    Endpoint para cargar los items de static/items.json a la base de datos
+    """
+    try:
+        with open("../static/items.json", "r", encoding="utf-8") as f:
+            items = json.load(f)
+        # Adaptar a MultimodalItem
+        from main import MetadataItem, MultimodalItem
+        multimodal_items = []
+        for item in items:
+            metadata = MetadataItem(**item["metadata"])
+            multimodal_items.append(MultimodalItem(data=item["data"], metadata=metadata))
+        inserted_count = insert_multimodal(multimodal_items, "text")
+        return {"inserted": inserted_count, "total": len(multimodal_items)}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al cargar items.json: {str(e)}")
+

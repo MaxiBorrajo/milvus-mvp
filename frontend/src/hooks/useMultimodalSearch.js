@@ -85,15 +85,43 @@ const useMultimodalSearch = () => {
     setLoading(true);
     setError(null);
     try {
-      await new Promise((resolve) => setTimeout(resolve, 800));
-      // Simular búsqueda por tipo y devolver fragmentos mock
+      // Normalizar tipo para el backend
+      let tipoBackend = tipo;
+      if (tipo === "alternativo") tipoBackend = "alternativo";
+      else if (tipo === "personaje") tipoBackend = "personaje";
+      else tipoBackend = "lore";
+      const params = new URLSearchParams({
+        pregunta: query,
+        tipo: tipoBackend,
+      });
+      const response = await fetch(
+        `http://localhost:8000/search-by-text-multimodal?${params.toString()}`
+      );
+      if (!response.ok) throw new Error("Error en la API");
+      const apiResults = await response.json();
+      // Mapear la respuesta real del backend al formato esperado por el frontend
+      const mapped = (
+        Array.isArray(apiResults) ? apiResults : apiResults.results || []
+      ).map((item) => ({
+        content: item.data,
+        type: item.type,
+        url: item.url,
+        filename: item.filename,
+        score: item.score,
+        metadata: {
+          tipo_fragmento: item.tipo_fragmento,
+          historia: item.tipo_fragmento, // Si tienes un campo historia real, cámbialo aquí
+        },
+      }));
+      setData(mapped.slice(0, topK));
+      return mapped.slice(0, topK);
+    } catch (err) {
+      // Fallback al mock si la API falla
       const fragments = mockFragments[tipo] || [];
       const results = fragments.slice(0, topK);
       setData(results);
+      setError("No se pudo conectar al backend, usando datos simulados.");
       return results;
-    } catch (err) {
-      setError(err.message);
-      throw err;
     } finally {
       setLoading(false);
     }
@@ -121,3 +149,31 @@ const useMultimodalSearch = () => {
 };
 
 export default useMultimodalSearch;
+
+// Eliminar fragmento por filename (por ahora, ya que no hay endpoint directo por ID)
+export async function deleteFragmentByFilename(filename) {
+  const response = await fetch(
+    `http://localhost:8000/documents/by-filenamePorIds/${encodeURIComponent(
+      filename
+    )}`,
+    {
+      method: "DELETE",
+    }
+  );
+  if (!response.ok) throw new Error("No se pudo eliminar el fragmento");
+  return await response.json();
+}
+
+// Eliminar fragmento por id (nuevo endpoint)
+export async function deleteFragmentById(id, tipo = "text") {
+  const response = await fetch(
+    `http://localhost:8000/fragmento/${encodeURIComponent(
+      id
+    )}?tipo=${encodeURIComponent(tipo)}`,
+    {
+      method: "DELETE",
+    }
+  );
+  if (!response.ok) throw new Error("No se pudo eliminar el fragmento por id");
+  return await response.json();
+}
