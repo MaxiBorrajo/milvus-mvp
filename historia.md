@@ -98,6 +98,7 @@ Construir un sistema de consulta interactiva que nos permita, aunque sea por un 
        "data": "El susurro del demonio reveló el destino de Tomi.",
        "metadata": {
           "tipo_fragmento": "lore",
+          "historia": "final_bueno",
           "filename": "image.jpg" (opcional)
        }
      }
@@ -120,7 +121,7 @@ Construir un sistema de consulta interactiva que nos permita, aunque sea por un 
 
    * Caja de texto para la **pregunta** y selector de **tipo de fragmento**.
    * Muestra los 3 resultados como tarjetas con texto o imagen.
-   * Permite “marcar” un fragmento como clave para el siguiente giro narrativo.
+   * Permite “marcar” un fragmento como clave para el siguiente giro narrativo. Luego de marcarlo se borra dicho fragmento. Cada fragmento tiene que se agrupado dentro de su historia.
 
 ---
 
