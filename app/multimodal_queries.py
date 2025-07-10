@@ -100,7 +100,7 @@ def search_multimodal(query, tipo):
         if resultados:
             for r in resultados[0]:
                 entity = deepcopy(r["entity"])  # 👈 importante
-                entity["id"] = r["id"]  # opcional, si querés usar el ID del resultado
+                entity["id"] = str(r["id"])  # opcional, si querés usar el ID del resultado
                 if entity.get("type") == "image" and entity.get("filename"):
                     entity["url"] = f"{host}/{entity['filename']}"
                 else:

@@ -108,7 +108,7 @@ const useMultimodalSearch = () => {
         type: item.type,
         url: item.url,
         filename: item.filename,
-        score: Math.round(item.distance, 2),
+        score: item.score,
         metadata: {
           tipo_fragmento: item.tipo_fragmento,
           historia: item.tipo_fragmento, // Si tienes un campo historia real, cámbialo aquí
