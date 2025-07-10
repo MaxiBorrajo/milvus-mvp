@@ -1,25 +1,24 @@
-from transformers import CLIPModel, CLIPProcessor
+from transformers import BlipProcessor, BlipModel
 from PIL import Image
 import torch
 
-class CLIPMultimodal:
-    def __init__(self, model_name: str, model_processor: str):
-        self.model = CLIPModel.from_pretrained(model_name)
-        self.model.eval()
-        self.model_processor = CLIPProcessor.from_pretrained(model_processor)
+device = "cuda" if torch.cuda.is_available() else "cpu"
 
-    def encode_textos(self, textos: list[str]) -> list[list[float]]:
-        datos = self.model_processor(text=textos, return_tensors="pt", padding=True, truncation=True)
-        with torch.no_grad():
-            vectores = self.model.get_text_features(**datos)
-        return vectores.tolist()
-    
-    def encode_imagenes(self, imagenes: list[str]) -> list[list[float]]:
-        imagenes = [Image.open(imagen).convert("RGB") for imagen in imagenes]
-        datos = self.model_processor(images=imagenes, return_tensors="pt")
-        with torch.no_grad():
-            vectores = self.model.get_image_features(**datos)
-        return vectores.tolist()
-    
+processor = BlipProcessor.from_pretrained("Salesforce/blip-image-captioning-base")
+model = BlipModel.from_pretrained("Salesforce/blip-image-captioning-base").to(device)
+model.eval()
 
+def encode_text(text: str):
+    inputs = processor(text=[text], return_tensors="pt").to(device)
+    with torch.no_grad():
+        outputs = model.text_model(**inputs)
+        embedding = outputs.last_hidden_state.mean(dim=1)  # [batch, hidden_size]
+    return embedding.squeeze().cpu().tolist()
 
+def encode_image(image_path: str):
+    image = Image.open(image_path).convert("RGB")
+    inputs = processor(images=image, return_tensors="pt").to(device)
+    with torch.no_grad():
+        outputs = model.vision_model(**inputs)
+        embedding = outputs.last_hidden_state.mean(dim=1)
+    return embedding.squeeze().cpu().tolist()
