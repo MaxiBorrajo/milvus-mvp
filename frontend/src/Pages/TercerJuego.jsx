@@ -78,8 +78,8 @@ const TercerJuego = () => {
     <div className="game-container">
       <Header title="Tercer Ritual" />
 
-      <div className="game-content">
-        <h1>📖 Historia Interactiva</h1>
+      <div className="game-content metal-mania">
+        <h1>⛤ Historia Interactiva ⛤</h1>
         <p>Continúa la historia con tus propias preguntas</p>
 
         <div className="story-progress">
@@ -92,8 +92,8 @@ const TercerJuego = () => {
           <p>Etapa {currentStage + 1} de 4</p>
         </div>
 
-        <div className="story-section">
-          <h3>📚 Historia Actual:</h3>
+        <div className="story-section great-primer-sc">
+          <h3>☠ Historia Actual:</h3>
           <div className="story-text">
             {storyHistory.map((entry, index) => (
               <div key={index} className="story-entry">
@@ -118,7 +118,7 @@ const TercerJuego = () => {
 
         {!gameCompleted && (
           <div className="query-section">
-            <h3>🤔 ¿Qué quieres saber?</h3>
+            <h3> ⚰️ ¿Qué quieres saber?</h3>
             <div className="input-group">
               <input
                 type="text"
@@ -134,7 +134,7 @@ const TercerJuego = () => {
                 className="query-btn"
                 disabled={loading || !userQuery.trim()}
               >
-                {loading ? "🔍 Buscando..." : "🔍 Consultar"}
+                {loading ? "🕳️ Consultando al abismo..." : "🕳️ Consultar"}
               </button>
             </div>
 

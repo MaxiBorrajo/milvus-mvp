@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 
 const Header = ({ title, showLogo = true }) => {
   return (
-    <header className="app-header">
+    <header className="app-header metal-mania">
       {showLogo && (
         <div className="logo">
           <Link to="/" className="back-btn">
