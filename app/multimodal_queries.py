@@ -2,7 +2,7 @@ import os
 import time
 
 from fastapi.responses import JSONResponse
-from pymilvus import MilvusClient
+from pymilvus import MilvusClient, Collection
 from app.multimodal_encoder import encode_text, encode_image
 from app.milvus_client import model, client
 
@@ -14,7 +14,7 @@ def setup_multimodal():
         client.drop_collection(COLLECTION_NAME_MULTIMODAL)
     client.create_collection(
         collection_name=COLLECTION_NAME_MULTIMODAL,
-        dimension=512,  # CLIP ViT-B/32 produce vectores de 512 dimensiones
+        dimension=512,  
         auto_id=True,
         enable_dynamic_field=True
     )
@@ -22,7 +22,7 @@ def setup_multimodal():
         client.drop_collection(COLLECTION_NAME_TEXT)
     client.create_collection(
         collection_name=COLLECTION_NAME_TEXT,
-        dimension=768,  # CLIP ViT-B/32 produce vectores de 512 dimensiones
+        dimension=768,  
         auto_id=True,
         enable_dynamic_field=True
     )
@@ -59,7 +59,7 @@ def insert_multimodal(items, data_type):
         res_texto = client.insert(collection_name=COLLECTION_NAME_TEXT, data=data_texto)
         return res_texto["insert_count"]
 
-def search_multimodal(query, type, tipo):
+def search_multimodal(query, tipo):
     vector_multimodal = encode_text(query)
     vector_text = model.encode([query])
 
@@ -78,7 +78,7 @@ def search_multimodal(query, type, tipo):
 
     # Determinar cuántos resultados de texto buscar
     num_imagenes = len(resultados_multimodal[0]) if resultados_multimodal and len(resultados_multimodal) > 0 else 0
-    texto_limit = 2 if num_imagenes == 1 else 3
+    texto_limit = 3 - num_imagenes
 
     # Buscar texto
     resultados_texto = client.search(
@@ -95,22 +95,23 @@ def search_multimodal(query, type, tipo):
 
     from copy import deepcopy
 
-    def procesar_resultados(resultados, fuente):
+    def procesar_resultados(resultados):
         lista = []
         if resultados:
             for r in resultados[0]:
                 entity = deepcopy(r["entity"])  # 👈 importante
-                entity["id"] = r["id"]  # opcional, si querés usar el ID del resultado
+                entity["id"] = str(r["id"])  # opcional, si querés usar el ID del resultado
                 if entity.get("type") == "image" and entity.get("filename"):
                     entity["url"] = f"{host}/{entity['filename']}"
                 else:
                     entity["url"] = None
+                entity["score"] = round(r["distance"],2)
                 lista.append(entity)
         return lista
 
 
-    todos_resultados.extend(procesar_resultados(resultados_multimodal, "multimodal"))
-    todos_resultados.extend(procesar_resultados(resultados_texto, "text"))
+    todos_resultados.extend(procesar_resultados(resultados_multimodal))
+    todos_resultados.extend(procesar_resultados(resultados_texto))
 
 
     return JSONResponse(content=todos_resultados)
