@@ -51,144 +51,96 @@ Las reglas físicas fueron reemplazadas por otra lógica.
 
 Una lógica **vectorial**.
 
-Ahora estamos en el **Limbo Vectorial**.  
-Una dimensión donde las historias no se cuentan: se **calculan**.
+Ahora estamos en el **Limbo Vectorial**.
+Aquí las consultas no responden, **encadenan**.
 
-Donde cada decisión activa un vector.  
-Cada consulta es un hechizo.  
-Y cada camino… es solo uno de muchos posibles.
+Cada pregunta abre un laberinto de vectores;
+cada respuesta, un hechizo que nos retiene.
 
-El demonio no nos encadena.  
-Nos **invita**.
+El demonio no nos atrapa:
+nos **condena** a preguntar.
 
-⚠️ Solo queda una elección:  
-**Consultar… o ser consultado.**
+⚠️ Ya no hay salida:
+**Consultar… o quedarse perdido.**
 
 ![Limbo vectorial](/resources/limbo.png)
 
 ---
 
-**Y así comienza tu historia.**
+🔮 **Ejercicio Final – Consulta Eterna en el Limbo Vectorial**
 
-# 🔮 Ejercicio Final – Consulta Vectorial Multiversal
-
-Tras ser arrastrados al Limbo Vectorial, cada uno de nosotros quedó suspendido en una dimensión sin tiempo ni forma. Aquí, las decisiones no se toman... se calculan.
-
-En este escenario, tu tarea es construir un sistema de consulta interactiva que permita explorar los posibles caminos narrativos fragmentados del multiverso, utilizando una base de datos **vectorial**.
+Tras ser absorbidos por la grieta, quedamos condenados a un espacio de consultas infinitas: el **Limbo Vectorial**. Aquí nada se resuelve, todo se enreda. Cada pregunta desata nuevos fragmentos dispersos de nuestro propio relato roto.
 
 ---
 
 ## 🌟 Objetivo
 
-Implementar un sistema que, dada una entrada de texto y una fase narrativa, consulte una colección **multimodal** en **Milvus**, y devuelva 3 posibles fragmentos de historia con su metadata asociada:
+Construir un sistema de consulta interactiva que nos permita, aunque sea por un instante, dar sentido al caos:
 
-* Texto narrativo
-* Imagen relacionada
-* Música ambiental
-* Fase narrativa
+* Explorar fragmentos de lore, finales alternos y piezas de historia dispersas.
+* Recuperar retazos de memoria de RDJ, del demonio y de nuestra propia alma robada.
 
 ---
 
-## 🧹 ¿Qué es una historia vectorial?
+## 🧱 Requisitos
 
-La historia ha sido fragmentada en múltiples piezas vectorizadas, cada una correspondiente a un momento distinto del relato:
+1. **Colección en Milvus**
 
-* `introduccion`
-* `nudo`
-* `desenlace`
-* `final`
+   * Almacenar al menos 8–12 fragmentos por categoría:
 
-Cada fragmento fue insertado previamente en Milvus con embeddings generados a partir del texto e indexado por similitud semántica.
+     * `lore` (preguntas sobre el trasfondo)
+     * `alternativo` (finales hipotéticos)
+     * `personaje` (detalles de RDJ, demonio, compañeros)
+   * Esquema de cada fragmento:
 
----
+     ```json
+     {
+       "data": "El susurro del demonio reveló el destino de Tomi.",
+       "metadata": {
+          "tipo_fragmento": "lore",
+          "filename": "image.jpg" (opcional)
+       }
+     }
+     ```
+    * Si es una imagen, su data es su descripción y filename es obligatorio
 
-## 🧱 Requisitos del ejercicio
+2. **Endpoint `/consulta`**
 
-### 1. Cargar la colección en Milvus
+   * Recibe:
 
-Debe contener al menos 10 fragmentos por cada fase narrativa.
+     ```json
+     {
+       "pregunta": "¿Qué siente RDJ tras cruzar el portal?",
+       "tipo": "personaje"
+     }
+     ```
+   * Devuelve los 3 vectores más afines, con su contenido, imagen y audio.
 
-Cada item insertado en Milvus debe tener el siguiente esquema:
+3. **Frontend (opcional)**
 
-```json
-{
-  "content": "El aire se volvió irrespirable cuando el portal comenzó a latir.",
-  "fase_historia": "nudo",
-  "path_imagen": "assets/nudo_2.png",
-  "path_audio": "assets/audio_siniestro_2.mp3"
-}
-```
-
----
-
-### 2. Crear un endpoint de consulta
-
-El endpoint `/consulta` debe recibir un JSON con este formato:
-
-```json
-{
-  "input": "Quiero saber qué hay detrás del portal",
-  "fase": "desenlace"
-}
-```
-
-Y devolver un array con los 3 fragmentos más cercanos semánticamente al `input`, filtrando por `fase_historia`.
-
-Ejemplo de respuesta:
-
-```json
-[
-  {
-    "content": "Lo que emergió no era el demonio… era su reflejo multiplicado.",
-    "fase_historia": "desenlace",
-    "path_imagen": "assets/fragmento_desenlace_3.png",
-    "path_audio": "assets/ambient_desenlace.mp3"
-  },
-  ...
-]
-```
+   * Caja de texto para la **pregunta** y selector de **tipo de fragmento**.
+   * Muestra los 3 resultados como tarjetas con texto o imagen.
+   * Permite “marcar” un fragmento como clave para el siguiente giro narrativo.
 
 ---
 
-### 3. Frontend (opcional)
+## 🧪 Validación
 
-Implementar en React un módulo que:
-
-* Permita ingresar texto e indicar la fase narrativa.
-* Muestre los 3 resultados devueltos (texto, imagen y audio).
-* Permita elegir uno de los fragmentos como “siguiente paso” en la historia.
+* Probar consultas de **lore**, **alternativo** y **personaje**.
+* Verificar que cada respuesta aporte un retazo coherente (aunque fragmentado) de la historia.
+* Garantizar que el sistema siga funcionando pese a preguntas contradictorias o repetidas: el caos jamás se detiene.
 
 ---
 
-## 🧪 Validación del ejercicio
+## ⚙️ Herramientas
 
-El sistema debe permitir simular una aventura completa seleccionando fragmentos por fase en el orden:
-
-```
-introduccion → nudo → desenlace → final
-```
-
-Sin embargo, se permite romper esta estructura y armar caminos **no lineales** (como piezas de rompecabezas), incentivando el caos narrativo y lo emergente.
+* Milvus (Docker)
+* Python (FastAPI o Flask)
+* sentence-transformers u OpenAI embeddings
+* React (opcional)
+* Multimedia local (`assets/`)
 
 ---
 
-## ⚙️ Herramientas habilitadas
-
-* [x] Milvus (standalone, Docker)
-* [x] Python (FastAPI o Flask)
-* [x] sentence-transformers u OpenAI embeddings
-* [x] React para frontend
-* [x] Archivos multimedia locales (`assets/`)
-
----
-
-## 🧠 Desafío conceptual
-
-Este ejercicio no es solo técnico: propone un nuevo modelo narrativo.
-
-Aquí, **la historia no está escrita… está vectorizada**.
-
-Dependerá de cada espectador elegir su camino.
-Dependerá de tu implementación… que ese camino tenga sentido.
-
----
+> **Nota conceptual:**
+> En el Limbo Vectorial, no buscamos cerrar arcos, sino **descubrir** cuántos hilos de narrativa aún resisten. Cada consulta es un acto de resistencia contra el olvido.

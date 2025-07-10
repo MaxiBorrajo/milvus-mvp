@@ -57,18 +57,19 @@ def insert_multimodal(items, data_type):
         res_texto = client.insert(collection_name=COLLECTION_NAME_TEXT, data=data_texto)
         return res_texto["insert_count"]
 
-def search_multimodal(query, type, fase_historia):
+def search_multimodal(query, type, tipo):
     vector_multimodal = encode_text(query)
     vector_text = model.encode([query])
 
-    output_fields = ["filename", "path_audio", "path_imagen", "fase_historia", "type", "data"]
+    output_fields = ["filename", "tipo_fragmento", "type", "data"]
 
     resultados_multimodal = client.search(
         collection_name=COLLECTION_NAME_MULTIMODAL,
         data=[vector_multimodal],
         output_fields=output_fields,
         search_params={"metric_type": "COSINE"},
-        #filter=f"fase_historia == {fase_historia}",
+        filter=f"tipo_fragmento == {tipo}",
+        limit=1
     )
 
     resultados_texto = client.search(
@@ -76,7 +77,8 @@ def search_multimodal(query, type, fase_historia):
         data=vector_text,
         output_fields=output_fields,
         search_params={"metric_type": "COSINE"},
-        #filter=f"fase_historia == {fase_historia}",
+        filter=f"tipo_fragmento == {tipo}",
+        limit=2
     )
 
     todos_resultados = []
@@ -91,9 +93,7 @@ def search_multimodal(query, type, fase_historia):
                 lista.append({
                     "filename": entity.get("filename"),
                     "score": round(r["distance"], 2),
-                    "path_imagen": entity.get("path_imagen"),
-                    "path_audio": entity.get("path_audio"),
-                    "fase_historia": entity.get("fase_historia"),
+                    "tipo_fragmento": entity.get("tipo_fragmento"),
                     "type": entity.get("type"),
                     "data": entity.get("data"),
                     "url": url
