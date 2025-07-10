@@ -2,76 +2,112 @@ import os
 import time
 
 from pymilvus import MilvusClient
-from app.multimodal_encoder import CLIPMultimodal
+from app.multimodal_encoder import encode_text, encode_image
+from app.milvus_client import model, client
 
-COLLECTION_NAME = "multimodal"
-COLLECTION_DIMENSION = 512
-
-client = MilvusClient(uri="http://localhost:19530")
-
-
-MODEL_PATH ="openai/clip-vit-base-patch32"
-encoder = CLIPMultimodal(MODEL_PATH, MODEL_PATH)
+COLLECTION_NAME_MULTIMODAL = "multimodal_collection"
+COLLECTION_NAME_TEXT = "text_collection"
 
 def setup_multimodal():
-    if client.has_collection(COLLECTION_NAME):
-        client.drop_collection(COLLECTION_NAME)
+    if client.has_collection(COLLECTION_NAME_MULTIMODAL):
+        client.drop_collection(COLLECTION_NAME_MULTIMODAL)
     client.create_collection(
-        collection_name= COLLECTION_NAME,
-        vector_field_name="vector",
-        dimension= COLLECTION_DIMENSION,
+        collection_name=COLLECTION_NAME_MULTIMODAL,
+        dimension=512,  # CLIP ViT-B/32 produce vectores de 512 dimensiones
         auto_id=True,
-        enable_dynamic_field=True,
-        metric_type="COSINE"
+        enable_dynamic_field=True
+    )
+    if client.has_collection(COLLECTION_NAME_TEXT):
+        client.drop_collection(COLLECTION_NAME_TEXT)
+    client.create_collection(
+        collection_name=COLLECTION_NAME_TEXT,
+        dimension=768,  # CLIP ViT-B/32 produce vectores de 512 dimensiones
+        auto_id=True,
+        enable_dynamic_field=True
     )
 
+
 def insert_multimodal(items, data_type):
-    vectores = encoder.encode_imagenes([item.data for item in items]) if data_type == "image" else encoder.encode_textos([item.data for item in items])
-    data = [
-        {
-            "vector": vectores[i],
-            "data": items[i].data,
-            "type": data_type,
-            "filename": items[i].metadata.filename,
-            "author": items[i].metadata.author,
-            "date": int(time.mktime(items[i].metadata.date.timetuple())) if items[i].metadata.date else None,
-            "alt": items[i].metadata.alt
-        }
-        for i in range(len(items))
+    if data_type == "image":
+        vectores = encode_image([item.data for item in items])
+        data = [
+            {
+                "vector": vectores[i],
+                "data": items[i].data,
+                "type": data_type,
+                **vars(items[i].metadata)
+            }
+            for i in range(len(items))
         ]
-    res = client.insert(collection_name=COLLECTION_NAME, data=data)
-    return res["insert_count"]
+        res = client.insert(collection_name=COLLECTION_NAME_MULTIMODAL, data=data)
+        return res["insert_count"]
 
+    elif data_type == "text":
+        textos = [item.data for item in items]
+        vectores_texto = model.encode(textos)
+        data_texto = [
+            {
+                "vector": vectores_texto[i],
+                "data": textos[i],
+                "type": data_type,
+                **vars(items[i].metadata)
+            }
+            for i in range(len(items))
+        ]
+        
+        res_texto = client.insert(collection_name=COLLECTION_NAME_TEXT, data=data_texto)
+        return res_texto["insert_count"]
 
-def search_multimodal(query, type, top_k:int):
-    vector = []
-    if type == "text":
-        vector = encoder.encode_textos([query])
-    elif type == "image":
-        vector = encoder.encode_imagenes([query])
-    else:
-        raise ValueError("Error en tipo")
-    
-    resultados = client.search(
-        collection_name = COLLECTION_NAME,
-        data=vector,
-        output_fields=["filename", "author", "type", "data", "date"],
+def search_multimodal(query, type, tipo):
+    vector_multimodal = encode_text(query)
+    vector_text = model.encode([query])
+
+    output_fields = ["filename", "tipo_fragmento", "type", "data"]
+
+    # Buscar imagen (multimodal)
+    resultados_multimodal = client.search(
+        collection_name=COLLECTION_NAME_MULTIMODAL,
+        data=[vector_multimodal],
+        output_fields=output_fields,
         search_params={"metric_type": "COSINE"},
-        limit=top_k
-    )[0]
+        filter=f'tipo_fragmento == "{tipo}"',
+        limit=1
+    )
 
+    # Determinar cuántos resultados de texto buscar
+    num_imagenes = len(resultados_multimodal[0]) if resultados_multimodal and len(resultados_multimodal) > 0 else 0
+    texto_limit = 2 if num_imagenes == 1 else 3
+
+    # Buscar texto
+    resultados_texto = client.search(
+        collection_name=COLLECTION_NAME_TEXT,
+        data=vector_text,
+        output_fields=output_fields,
+        search_params={"metric_type": "COSINE"},
+        filter=f'tipo_fragmento == "{tipo}"',
+        limit=texto_limit
+    )
+
+    todos_resultados = []
     host = "http://localhost:8000/images"
 
+    def procesar_resultados(resultados):
+        lista = []
+        if resultados:
+            for r in resultados[0]:
+                entity = r["entity"]
+                url = f"{host}/{entity['filename']}" if entity.get("type") == "image" else None
+                lista.append({
+                    "filename": entity.get("filename"),
+                    "score": round(r["distance"], 2),
+                    "tipo_fragmento": entity.get("tipo_fragmento"),
+                    "type": entity.get("type"),
+                    "data": entity.get("data"),
+                    "url": url
+                })
+        return lista
 
-    return [
-        {
-            "filename": resultado["entity"].get("filename"),
-            "score": round(resultado["distance"], 2),
-            "author": resultado["entity"].get("author"),
-            "date": resultado["entity"].get("date"),
-            "type": resultado["entity"].get("type"),
-            "data": resultado["entity"].get("data"),
-            "url": f"{host}/{resultado['entity']['filename']}" if resultado["entity"]["type"] == "image" else None
-        }
-        for resultado in resultados
-    ]
+    todos_resultados.extend(procesar_resultados(resultados_multimodal))
+    todos_resultados.extend(procesar_resultados(resultados_texto))
+
+    return todos_resultados

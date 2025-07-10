@@ -7,8 +7,8 @@ import io
 def extract_text_from_file(content: bytes, filename: str) -> List[str]:
     ext = os.path.splitext(filename)[-1].lower()
     text = ""
-
-    if ext == ".pdf":
+ 
+    if ext == ".pdf": 
         doc = fitz.open(stream=content, filetype="pdf")
         for page in doc:
             text += page.get_text()

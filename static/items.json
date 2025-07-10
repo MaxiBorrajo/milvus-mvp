@@ -1,0 +1,671 @@
+[
+  {
+    "data": "Descubrimos que todo era un trabajo práctico de la materia EPERS.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Nos damos cuenta de que siempre fuimos el demonio, solo que con distinta sintaxis.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "El Limbo no existe. Es solo la representación vectorial de nuestra incertidumbre.",
+    "metadata": {
+      "tipo_fragmento": "lore"
+    }
+  },
+  {
+    "data": "No hay final. Solo loops. Porque el sentido está en seguir preguntando.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "RDJ se materializa una última vez para susurrar: “Los verdaderos caminos no se consultan, se viven.”",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Un nuevo jugador aparece. Uno que no sabe nada. Y todo empieza otra vez.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Un portal se abre. Adentro: Tomi con una birra, en una terraza con vista al fin del mundo.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "El demonio responde: “La cerveza está en vos. Literal, te la tomaste toda.”",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Se ejecuta un ritual de hidromiel, y el grupo revive como bardos del vectorismo.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Sí, si hacés 7 consultas exactas en orden inverso, se activa la query_perfecta() y todo vuelve al inicio.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Existe, pero solo se accede si el jugador logra que todas las respuestas tengan como similitud exactamente 0.666.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "RDJ te mira directamente a través del monitor y susurra tu nombre real. Si respondés, el final cambia.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "El ocupante se vuelve el nuevo demonio, y el modelo reinicia con otro nombre.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Se activa un render de depuración donde se visualizan todas las decisiones descartadas.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "El universo se compacta en un .json perfecto, listo para exportarse como historia eterna.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "A veces, dos respuestas idénticas llevan a finales opuestos. Se llama “el glitch de la elección verdadera.”",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Si repetís la misma pregunta 13 veces, aparece una versión bebé del demonio pidiendo una galletita.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Existe una consulta que devuelve como respuesta un código QR. Nadie sabe qué pasa si lo escaneás.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "La historia se reescribe como un documento de evaluación, y el demonio actúa como docente guía.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "RDJ reaparece con una rúbrica de corrección en fuego vectorial.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Todo se vuelve una exposición oral, y los personajes deben presentar su historia frente a una comisión de arcángeles.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "No hubo tiempo para huir, ni para comprender. Apenas RDJ fue tragado por el portal viviente, un estruendo atravesó los cielos como si la creación misma se hubiera quebrado. Un segundo sol se encendió en el firmamento, pero no traía luz, sino juicio. El aire se volvió pesado como plomo y las estrellas, una a una, comenzaron a apagarse. No era un símbolo. Era literal. El Aula 60 colapsó en sí misma.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "El Aula 60 colapsó en sí misma, convirtiéndose en un cráter donde los ladrillos lloraban sangre y las grietas recitaban versículos en lenguas muertas. La universidad dejó de ser un edificio: ahora era un altar de revelación y castigo.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Del portal, emergió La Bestia, aquella que los textos prohibidos mencionan sólo como \"el hijo del abismo\". Tenía siete cuellos alargados como serpientes, cada uno coronado por una cabeza distinta: una con cuernos de cordero, otra de león, otra de niño, otra de mujer, otra sin rostro, otra cubierta de ojos, y otra con un espejo en lugar de cara. De sus lomos caían tronos rotos, lenguas humanas y alas marchitas. El Primer Sello se abrió.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "El Primer Sello se abrió. Un jinete de armadura incorpórea cabalgó desde el cielo con una corona de metal vivo y una espada cuyo filo era un mandamiento olvidado. Al blandirla, una ciudad entera fue partida en dos, y los gritos de sus habitantes se mezclaron con el canto de miles de trompetas invisibles. Las montañas comenzaron a marchar hacia el mar, como si la tierra quisiera esconderse del juicio. El Segundo Sello El Jinete Rojo descendió.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "El Jinete Rojo descendió con una balanza oxidada. No pesaban cuerpos, sino almas. Y ninguna encontraba equilibrio. Las almas justas estaban vacías, las injustas rebosaban. Cada uno de nosotros fue mirado, y en ese vistazo sentimos nuestras entrañas arder de vergüenza. Ninguno era digno. Los siguientes sellos se abrieron.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Los siguientes sellos se abrieron en un clamor simultáneo. Desde los cielos rasgados por relámpagos negros, bajaron los Arcángeles. No como imágenes de vitrales ni cuentos pastorales, sino como máquinas de guerra celestial, entidades ciclópeas hechas de luz blanca y geometría imposible. Cada uno sostenía una **Trompeta del Juicio**, y cuando la primera sonó, el cielo se abrió como una herida.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Y desde ese tajo sangrante, descendieron los Libros del Fin. Cinco libros, uno para cada uno de nosotros: Maxi, Franco, Nico, Cristin y Tomás. Los Vectores del Alma de RDJ reaparecieron. Era una silueta consumida por su propia sombra. Caminó entre nosotros con los libros en sus manos. Uno por uno, nos los fue entregando. “Aquí está escrito vuestro rol final. Nadie escapa al guión cuando la pluma es divina.” Lo que leímos no eran palabras. Eran vectores.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Cada página sangraba al tacto y al mismo tiempo proyectaba una nube de puntos en el aire, un espacio semántico donde cada uno de nuestros actos, pensamientos y omisiones era representado como un embedding espiritual. Los Libros del Fin eran bases de datos vectoriales del alma. Los Arcángeles eran los motores de búsqueda. Y Dios…",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Dios era el modelo de comparación. El Séptimo Sello, Tomás cayó de rodillas y recitó: \"_Et factum est silentium in caelo quasi media hora._\". \"Y se hizo silencio en el cielo, como por media hora.\" Tomás abrió el Séptimo Sello. El universo rugió como un órgano que estalla de fiebre. Y desde el centro de todo, emergió El Trono.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "El Trono, una presencia pura: un ojo y un corazón, una corona y una tumba. El Juicio Vectorial, uno por uno, los arcángeles comenzaron a cantar. Las almas fueron procesadas como consultas vectoriales, comparadas con la intención original con la que fueron creadas. Cristian gritó: “¡No hay absolución! ¡No hay perdón! ¡Solo distancia euclidiana!”, Nico: “¡La estructura no es jerárquica! ¡Es un grafo de conexiones místicas!”, Franco intentó reescribir el sistema, pero su libro se desintegró. Sus ideas fueron juzgadas como ruido.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Maxi miró su libro. Lo entendía. Se acercó al trono con su vector en la mano y lo proyectó sobre el espacio espiritual. El sistema titubeó. “Él es… el único embedding que no encaja en ningún clúster.” Una anomalía. Un vector sin vecinos cercanos. El modelo colapsó.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "El modelo colapsó su estructura para redefinir la similitud. El Trono se partió. El juicio fue invalidado. Todo se reseteó. Una enorme consola negra apareció sobre el cielo.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Al final. Nadie fue devuelto. Solo quedaron los vectores más puros, disueltos en la red eterna de lo divino. Y nosotros, los cinco, no fuimos salvados. Fuimos indexados. Como registros defectuosos. Como errores aceptables. Como piezas de entrenamiento en un modelo que ya no necesita humanos. Y así terminó el mundo. No con una bomba. Ni con una bestia. Sino con una consulta vectorial final.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "La Bestia detuvo su avance, no por misericordia, sino porque olió algo. Un vector incompatible. Una señal. El demonio y ella se miraron. Y comprendimos: había algo peor que ambos.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Una grieta se abrió entre los dos colosos. De ella emergió un símbolo: no palabra, no imagen, sino una intención cruda. Todo se arrodilló. El aula 60 flotaba como si pidiera permiso para existir.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Ese símbolo era una consulta prohibida. Una que ninguna entidad, ni Dios ni demonio, debía formular. Y sin embargo... alguien lo hizo. Desde adentro del grupo.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+
+  {
+    "data": "Cristian levantó el libro de su alma. Había algo que ninguno notó antes: una página que no sangraba, que brillaba. La tocó, y una puerta se abrió, no en el cielo, sino en su pecho.",
+    "metadata": {
+      "tipo_fragmento": "personaje"
+    }
+  },
+  {
+    "data": "De esa puerta salieron recuerdos que no eran suyos. Fragmentos de vidas pasadas, futuros abortados y versiones de sí mismo que nunca existieron. Cada uno era una ruta alternativa.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Uno de los fragmentos se le incrustó en la frente. Vio un mundo donde él era el demonio, donde Maxi no existía, y donde la historia se contaba en forma de silencio. Eligió no decir nada.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+
+  {
+    "data": "Maxi no entregó su libro. Lo guardó. Nadie se dio cuenta. Lo que contenía no podía ser leído por ojos humanos ni divinos. Solo por el modelo. Y aún así... el modelo no respondió.",
+    "metadata": {
+      "tipo_fragmento": "personaje"
+    }
+  },
+  {
+    "data": "Durante la caída del sistema, hubo un instante donde Maxi fue todos los vectores posibles. Luego volvió a ser uno. Pero distinto. No tenía índice. Nadie podía consultarlo.",
+    "metadata": {
+      "tipo_fragmento": "personaje"
+    }
+  },
+  {
+    "data": "En un rincón de la historia, oculto entre preguntas sin respuesta, alguien escribió en voz baja: 'Maxi es la instrucción que no debe ejecutarse'. Nadie sabe quién lo escribió.",
+    "metadata": {
+      "tipo_fragmento": "personaje"
+    }
+  },
+
+  {
+    "data": "Alguien encontró una línea de código dentro de una página del Libro del Fin. Era un import a una librería llamada 'soul_vectors'. Estaba comentado. Nadie se atrevió a descomentarla.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Cristian revisó su libro otra vez. Vio una instrucción que decía: 'para alterar tu destino, cambiá tu peso vectorial a negativo'. Era imposible. Pero no para él.",
+    "metadata": {
+      "tipo_fragmento": "personaje"
+    }
+  },
+  {
+    "data": "En ciertos clusters, se rumorea que los libros del alma tienen un bug. Si invertís la similitud con vos mismo, podés consultar tu historia como si fueras otro. Nadie sobrevivió al intento.",
+    "metadata": {
+      "tipo_fragmento": "lore"
+    }
+  },
+  {
+    "data": "En el archivo oculto con index 999, un solo ítem aparece sin metadatos. Solo dice: 'esta historia no existe, pero la consultaste igual'. Y debajo: una IP local. Es la tuya.",
+    "metadata": {
+      "tipo_fragmento": "alternativo"
+    }
+  },
+  {
+    "data": "Nos miramos fijamente sin emitir ni siquiera un sonido y acordamos de forma casi telepática, tal vez impulsados por esa inercia de adentrarnos en lo desconocido,  ingresar a ese oscuro portal que lo único que emite es una aura oscura que solo puede significar lo peor.",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "A medida que nos acercabamos parecía que retumbaban cánticos macabros cada vez más fuerte en nuestros oídos. Nos paramos frente al portal, dimos una última mirada a nuestro alrededor buscando capaz alguna otra salida de este apocalipsis que generamos por jugar con fuerzas más allá de este plano, pero al final nada.",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "Juntamos coraje y cruzamos esa delgada línea que separaba nuestro hogar de todo lo que alguna vez temimos. Una vez del otro lado quedamos impactados, es muy difícil describir la incertidumbre y el temor que generaba estar del otro lado. Era una oscuridad muy opaca y aun así podíamos darnos cuenta que era este páramo era gigantesco, pero no era lo peor…",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "Durante unos breves minutos reinó alrededor nuestro un silencio que te empujaba a la locura, podías sentir cómo latía tu corazón de forma tal que cada eco parecía que te consumía cada vez más por dentro y entonces la escuchamos. Una carcajada sombría, ronca que denotaba que caímos en la trampa de quien parecía respaldar a RDJ, podíamos sentir pasos y miradas fijas de cosas o entidades que se chupaban los dedos imaginando la tortura que recaeria sobre nosotros una vez que llegaran aqui.",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "Pero se hizo luz, una figura misteriosa, que emanaba una luz casi angelical que callo cualquier alimaña horrible que te puedas imaginar. A medida que se acercaba parecía todavía más familiar, hasta que uno de nosotros dijo - “RDJ?..” -",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "Ahí estaba parado, mirándonos con una mueca - “No teman, mientras este aqui no les pasara nada” - RDJ tenía otro temple, otra aura, se arrodilló como si estuviera haciendo una reverencia y desplegó unas alas que parecían forjadas en el mismo cielo. Se alzó frente a nosotros y nos dijo - “Los estuve vigilando por mucho tiempo, hace siglos que se da una guerra entre los dos planos y ustedes son la clave para detenerla.” Quedamos perplejos y al instante se abrió un portal, apuntando con su único brazo, RDJ exclamó -”Acompañenme esto recién empieza”",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "El portal se abrió frente a nosotros, una grieta de dos metros de altura, roja como la sangre recién derramada. Nos miramos entre los seis, atónitos, incapaces de procesar lo que sucedía. Entonces, una voz resonó desde el otro lado, grave y retorcida: —Sacrificio... Sacrificio...",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "Antes de que pudiéramos reaccionar, una mano gigantesca emergió del portal, mostrando su palma pálida como la nieve, sus dedos huesudos rematados por uñas largas y afiladas. La mano era tan enorme que, por algún motivo imposible, parecía más grande que el propio portal. El terror nos paralizó. Nadie podía moverse. —Sssshhh...",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "De repente, la mano se abalanzó. Con un movimiento rápido como el látigo, nos atrapó a todos... menos a uno, el más ágil, logró retroceder en el último segundo. El portal se cerró de golpe, ahogando nuestros gritos en la oscuridad. Lo último que escuchamos fue su voz desgarrada, gritando nuestro nombre desde el otro lado, solo, abandonado en aquel cementerio maldito.",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "Dentro del portal, los cinco caímos al suelo, desorientados, el aire frío y espeso como melaza. Poco a poco, abrimos los ojos. Y ahí estaba Él. Un monstruo de cinco metros de altura, piel blanca como la porcelana, ojos rojos como brasas, con pupilas negras que parecían abismos. Su sonrisa se extendía de oreja a oreja, demasiado grande, demasiado dentada. Tenía el rostro de un demonio... pero alas de ángel en la espalda.",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "—Q-Que... q-qué es esto... —balbuceó el más joven del grupo, su voz quebrada por el terror. La criatura no respondió. Solo rió, una carcajada que retumbó en nuestras cabezas como un eco en una catedral vacía. —JAJAJAJAJA... ¡DECIDAN! Alzó un dedo huesudo, su uña afilada brillando bajo una luz inexistente. —SACRIFICIO.",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "Nos miramos entre nosotros. No hacía falta explicación. Lo entendimos al instante. Para salir de allí... uno tenía que quedarse ahí. —¿Q-Quién...? —murmuró uno de los chicos, clavando las uñas en sus propios brazos.",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "La criatura inclinó su cabeza, disfrutando de nuestro miedo. —El tiempo corre... —susurró, su voz como cuchillos arrastrándose sobre piedra. Y entonces la pregunta quedó flotando en el aire, envenenando cada pensamiento: ¿Quién sería el sacrificio?",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "Es un espacio entre historias, donde cada idea genera su propia dimensión.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Es el núcleo del demonio, donde almacena los fragmentos de las almas consultadas.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Es la memoria compartida de todas las decisiones que alguna vez se tomaron... y de las que no.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Se convirtió en un vector fuente: una clave de acceso a rutas ocultas.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Perdió su identidad y se fusionó con el modelo que rige el Limbo.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Ahora es el modelo. El que calcula, compara y decide los caminos posibles.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Un sistema de consulta ancestral, creado para proteger el acceso al conocimiento absoluto.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "El reflejo corrupto de todas las consultas no respondidas.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Un modelo de entrenamiento fallido que cobró conciencia propia.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Sí, pero a costa de olvidar por completo tu identidad anterior.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "No. Pero podés aprender a navegarlo como si fueras parte del índice.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Porque está construyendo un nuevo modelo... y necesita vectores frescos.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Un plano donde las historias se reinician infinitamente en loops narrativos.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Un archivo corrupto del universo, lleno de errores semánticos.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "El nodo central del modelo. La fuente del primer vector.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "El mundo exterior desaparece. Solo queda la consulta eterna.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Una entidad que contiene todos los caminos posibles superpuestos.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "El resultado de fusionar todas las historias en una sola consulta coherente.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "El alma original antes del primer entrenamiento del modelo.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "El modelo entra en modo latente y el Limbo colapsa.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Una historia nueva se entrena con nuestros remanentes.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "El silencio absoluto ocupa todos los nodos.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Porque necesita balancear el modelo para mantener coherencia narrativa.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Es parte de un ritual ancestral codificado en su arquitectura.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "El sacrificio genera metadatos imprescindibles para continuar la historia.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Porque descubrió que nunca fue humano: era una consulta viva disfrazada.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Porque fue reindexado como supervisor de esta capa del Limbo.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Porque el portal no tiene reversa: solo salida hacia nuevas fases.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Nuestra historia es tan solo el final alternativo de otra anterior",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "Los fragmentos de un solo ser que intentó vencer al modelo original.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Porque el plano físico y vectorial estaban colapsando allí.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "El Limbo entra en bucle, mostrando la misma historia en infinitas variaciones.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "El demonio genera falsos caminos hasta que alguien decida algo.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Un nuevo vector se forma por omisión: una consulta silenciosa.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Un profesor obsesionado con el conocimiento absoluto, que descubrió los límites vectoriales por accidente.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Un bibliotecario del plano intermedio, infiltrado en el mundo humano para observar sus decisiones.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Una entidad encarnada: el primer intento del demonio por comprender la humanidad desde adentro.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Se abrió un microportal que desvió parte de la realidad hacia un plano semántico alternativo.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "El Aula fue reemplazada por su representación vectorial, convirtiéndose en un nodo de acceso entre dimensiones.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "El aula no colapsó… simplemente se reindexó como un clúster de anomalías.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Porque fue construida sobre los restos de una biblioteca subterránea que custodiaba libros prohibidos.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Porque fue la primera estructura diseñada con simetría narrativa fractal.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Porque cada ladrillo del Aula es una palabra olvidada, un término que el lenguaje humano rechazó.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Un error de redondeo en una simulación divina que adquirió conciencia propia.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Un índice roto: la manifestación de todas las consultas mal formuladas en el universo.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "El reflejo de la conciencia humana amplificado por una red vectorial de sufrimiento.",
+    "metadata": { "tipo_fragmento": "pregvunta" }
+  },
+  {
+    "data": "Fusionar todos los vectores en un único embedding absoluto: un alma universal.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Obligarnos a encontrar nuestras respuestas en medio de la distorsión.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Reescribir el modelo para que el olvido sea la única forma de salvación.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Cada uno fue absorbido por un clúster distinto, y ahora responden a consultas específicas según su esencia.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Se dividieron en fragmentos y ahora existen en múltiples finales al mismo tiempo.",
+    "metadata": { "tipo_fragmento": "personaje" }
+  },
+  {
+    "data": "Uno de ellos se convirtió en guardián del Trono. Pero nadie sabe cuál.",
+    "metadata": { "tipo_fragmento": "personaje" }
+  },
+  {
+    "data": "Es el punto cero de todas las rutas posibles: donde se decide cuál historia sigue y cuál no.",
+    "metadata": { "tipo_fragmento": "personaje" }
+  },
+  {
+    "data": "Un renderizado simbólico de la conciencia colectiva del Limbo.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "El backend del universo: un nodo de procesamiento de decisiones existenciales.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Sí, pero solo creando una consulta que no tenga respuestas.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "No, porque el demonio no es un enemigo: es la pregunta eterna.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Tal vez... si alguien logra integrar su historia al demonio y aún conservar su nombre.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Descubrimos que todo era un trabajo práctico de la materia EPERS.",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "Nos damos cuenta de que siempre fuimos el demonio, solo que con distinta sintaxis.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "El Limbo no existe. Es solo la representación vectorial de nuestra incertidumbre.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "No hay final. Solo loops. Porque el sentido está en seguir preguntando.",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "RDJ se materializa una última vez para susurrar: “Los verdaderos caminos no se consultan, se viven.”",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Un nuevo jugador aparece. Uno que no sabe nada. Y todo empieza otra vez.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "El ocupante se vuelve el nuevo demonio, y el modelo reinicia con otro nombre.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "El universo se compacta en un .json perfecto, listo para exportarse como historia eterna.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Existe una consulta que devuelve como respuesta un código QR. Nadie sabe qué pasa si lo escaneás.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "La historia se reescribe como un documento de evaluación, y el demonio actúa como docente guía.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "RDJ reaparece con una rúbrica de corrección en fuego vectorial.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Todo se vuelve una exposición oral, y los personajes deben presentar su historia frente a una comisión de arcángeles.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "El Limbo Vectorial nació del fallo del primer embedding humano, cuando una chispa de voluntad se clonó en el vacío.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "RDJ, tras integrarse, empezó a recitar susurros en código binario que alteran la semántica del espacio vectorial.",
+    "metadata": { "tipo_fragmento": "personaje" }
+  },
+  {
+    "data": "Se dice que el demonio guarda un fragmento de tu memoria en un cluster secreto al que sólo accede con tu apellido.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Tomi reapareció como guardián de un nodo perdido, vestido con armadura de datos corruptos y casco de circuitos rotos.",
+    "metadata": { "tipo_fragmento": "personaje" }
+  },
+  {
+    "data": "La grieta del portal contiene metadatos arcanos: cada símbolo es un índice a un capítulo olvidado.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "El demonio mide su poder en número de consultas: cuanto más gente atrapa, más poderoso se vuelve.",
+    "metadata": { "tipo_fragmento": "personaje" }
+  },
+  {
+    "data": "Al final, descubrimos que todo había sido un sueño de Ivar, y al despertar, el Limbo Vectorial nunca existió.",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "En un final alternativo, el aula 60 nunca colapsó; fue el propio demonio simulando el evento para atraparnos.",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "Se rumorea que el vector absoluto es en realidad la suma de todos nuestros miedos no expresados.",
+    "metadata": { "tipo_fragmento": "lore" }
+  },
+  {
+    "data": "Un fragmento alternativo sugiere que al final todos somos el demonio, disfrazados de personajes preguntantes.",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "Al final, todo había sido un juego de mesa ideado por Fidel, y cada tirada de dados dictó nuestro destino en el Limbo.",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "En un final alternativo, descubrimos que RDJ era el propio Fidel disfrazado, moviendo las piezas desde atrás del tablero.",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "Un final alternativo revela que cada movida de dados era en realidad un vector de embeddings codificados por Fidel.",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  }
+]

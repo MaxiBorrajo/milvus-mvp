@@ -6,12 +6,16 @@ import json
 import numpy as np
 import traceback
 
-from fastapi import FastAPI, File, UploadFile, Query, Form, HTTPException, logger
+from fastapi import FastAPI, File, UploadFile, Query, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse, Response
-from fastapi import HTTPException, status
+from fastapi import HTTPException
+from fastapi import status
 
 from matplotlib import pyplot as plt
+from fastapi import FastAPI, File, Form, UploadFile
+from pydantic import BaseModel
+from typing import List
 from pydantic import BaseModel, ValidationError
 from pathlib import Path
 from sklearn.decomposition import PCA
@@ -19,7 +23,7 @@ from typing import  List
 from datetime import datetime
 
 from app.utils import extract_text_from_file
-from app.milvus_client import vectorsForAFileName,delete_documents_by_filename_service,delete_vectors_by_ids,search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images,  get_all_vectors_from_collection, get_all_vectors_combined, subirImagenes,delete_image_byId,delete_if_similar, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION
+from app.milvus_client import vectorsForAFileName,delete_documents_by_filename_service,delete_vectors_by_ids,search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, subirImagenes, delete_image_byId, delete_if_similar, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION, vectorsForAFileName, delete_vectors_by_ids, delete_documents_by_filename_service
 from app.multimodal_queries import insert_multimodal, setup_multimodal, search_multimodal
 
 
@@ -61,7 +65,7 @@ def health_check():
 def debug_collections():
     """Endpoint para debuggear el estado de las colecciones"""
     try:
-        from milvus_client import client, PERSON_COLLECTION, COLLECTION_NAME
+        from app.milvus_client import client, PERSON_COLLECTION, COLLECTION_NAME
         
         collections_info = {}
         
@@ -92,9 +96,7 @@ class InsertPersonRequest(BaseModel):
     items: List[PersonaItem]
 
 class MetadataItem(BaseModel):
-    author: str | None = None
-    date: datetime | None = None
-    alt: str | None = None
+    tipo_fragmento: str | None = None
     filename: str | None = None
 
 class MultimodalItem(BaseModel):
@@ -108,8 +110,8 @@ class InsertRequest(BaseModel):
     items: List[TextItem]
  
 class SearchRequest(BaseModel):
-    query: str
-    top_k: int = 5
+    pregunta: str
+    tipo: str
 
 # Modelo de respuesta para la eliminación
 class DeleteResponse(BaseModel):
@@ -123,9 +125,13 @@ def insert_texts(req: InsertRequest):
     inserted_count = insert_documents(req.items)
     return {"inserted": inserted_count}
 
-# ===== MULTIMODAL ======
+# ============= MULTIMODAL ==========================
+
 @app.post("/insert-text-multimodal")
 def post_insert_texts_multimodal(req: MultimodalRequest):
+    if not req.items:
+        return {"inserted": 0, "ratio": "0.00%"}
+
     inserted_count = insert_multimodal(req.items, "text")
     ratio = (inserted_count / len(req.items) * 100)
     return {"inserted": inserted_count, "ratio": f"{ratio:.2f}%"}
@@ -133,48 +139,41 @@ def post_insert_texts_multimodal(req: MultimodalRequest):
 
 @app.post("/insert-image-multimodal")
 async def post_insert_images_multimodal(files: List[UploadFile] = File(...), metadatas = Form(...)):
-
-
     try:
         json_metadatas = json.loads(metadatas)
         metadatas = [MetadataItem(**metadata) for metadata in json_metadatas]
     except (json.JSONDecodeError, ValidationError):
-        raise HTTPException(status_code=400, detail="Datos de metadata inválidos")
+        raise HTTPException(status_code=400, detail="Datos de metadata inv\u00e1lidos")
 
     if len(files) != len(metadatas):
-        raise HTTPException(status_code=400,detail=f"La cantidad de imagenes no coincide con los metadatos. Hay {len(files)} imágenes pero {len(metadatas)} metadatos")
-    
+        raise HTTPException(status_code=400, detail=f"Cantidad de imágenes y metadatos no coinciden. Hay {len(files)} imágenes pero {len(metadatas)} metadatos")
 
     images = []
     for i, file in enumerate(files):
         file_path = IMAGE_DIR / file.filename
-
         with open(file_path, "wb") as f:
             f.write(await file.read())
         metadata = metadatas[i]
         metadata.filename = file.filename
-        images.append(MultimodalItem(
-            data=str(file_path),
-            metadata = metadata)
-        )
-
+        images.append(MultimodalItem(data=str(file_path), metadata=metadata))
 
     inserted_count = insert_multimodal(images, "image")
     ratio = (inserted_count / len(images) * 100)
     return {"inserted": inserted_count, "ratio": f"{ratio:.2f}%"}
 
+
 @app.get("/search-by-text-multimodal")
-def search_multimodal_text(query: str, top_k: int = 5):
-    return search_multimodal(query, "text", top_k) 
+def search_multimodal_text(pregunta: str, tipo: str):
+    return search_multimodal(pregunta, "text", tipo)
 
-@app.post("/search-by-image-multimodal")
-async def search_multimodal_image(file: UploadFile = File(...), top_k: int = 5):
-    file_path = IMAGE_DIR / file.filename
+# @app.post("/search-by-image-multimodal")
+# async def search_multimodal_image(file: UploadFile = File(...), top_k: int = 5):
+#     file_path = IMAGE_DIR / file.filename
 
-    with open(file_path, "wb") as f:
-        f.write(await file.read())
+#     with open(file_path, "wb") as f:
+#         f.write(await file.read())
 
-    return search_multimodal(str(file_path), "image", top_k)
+#     return search_multimodal(str(file_path), "image", top_k)
 
 
 

@@ -222,8 +222,6 @@ def search_similar_images(image_path, top_k: int):
         limit=top_k
     )
 
-    print(results)
-
     base_url = "http://localhost:8000/images"
 
     return [
