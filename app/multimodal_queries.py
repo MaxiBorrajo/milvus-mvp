@@ -1,6 +1,7 @@
 import os
 import time
 
+from fastapi.responses import JSONResponse
 from pymilvus import MilvusClient
 from multimodal_encoder import encode_text, encode_image
 from milvus_client import model, client
@@ -91,7 +92,9 @@ def search_multimodal(query, type, tipo):
     todos_resultados = []
     host = "http://localhost:8000/images"
 
-    def procesar_resultados(resultados):
+    from copy import deepcopy
+
+    def procesar_resultados(resultados, fuente):
         lista = []
         if resultados:
             for r in resultados[0]:
@@ -108,7 +111,9 @@ def search_multimodal(query, type, tipo):
                 })
         return lista
 
-    todos_resultados.extend(procesar_resultados(resultados_multimodal))
-    todos_resultados.extend(procesar_resultados(resultados_texto))
 
-    return todos_resultados
+    todos_resultados.extend(procesar_resultados(resultados_multimodal, "multimodal"))
+    todos_resultados.extend(procesar_resultados(resultados_texto, "text"))
+
+
+    return JSONResponse(content=todos_resultados)

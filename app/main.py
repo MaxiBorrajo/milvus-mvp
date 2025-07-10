@@ -8,7 +8,7 @@ import traceback
 
 from fastapi import FastAPI, File, UploadFile, Query, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi import HTTPException
 from fastapi import status
 
@@ -22,9 +22,9 @@ from sklearn.decomposition import PCA
 from typing import  List
 from datetime import datetime
 
-from utils import extract_text_from_file
-from milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, subirImagenes, delete_image_byId, delete_if_similar, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION, vectorsForAFileName, delete_vectors_by_ids, delete_documents_by_filename_service
-from multimodal_queries import insert_multimodal, setup_multimodal, search_multimodal
+from app.utils import extract_text_from_file
+from app.milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, subirImagenes, delete_image_byId, delete_if_similar, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION, vectorsForAFileName, delete_vectors_by_ids, delete_documents_by_filename_service, count_vectors_by_attribute
+from app.multimodal_queries import insert_multimodal, setup_multimodal, search_multimodal
 
 
 
@@ -133,9 +133,10 @@ def post_insert_texts_multimodal(req: MultimodalRequest):
         return {"inserted": 0, "ratio": "0.00%"}
 
     inserted_count = insert_multimodal(req.items, "text")
-    ratio = (inserted_count / len(req.items) * 100)
+    if inserted_count is None:
+        inserted_count = 0
+    ratio = (inserted_count / len(req.items) * 100) if len(req.items) > 0 else 0
     return {"inserted": inserted_count, "ratio": f"{ratio:.2f}%"}
-
 
 @app.post("/insert-image-multimodal")
 async def post_insert_images_multimodal(files: List[UploadFile] = File(...), metadatas = Form(...)):
@@ -150,7 +151,9 @@ async def post_insert_images_multimodal(files: List[UploadFile] = File(...), met
 
     images = []
     for i, file in enumerate(files):
-        file_path = IMAGE_DIR / file.filename
+        if file.filename is None:
+            raise HTTPException(status_code=400, detail="El archivo no tiene nombre.")
+        file_path = IMAGE_DIR / str(file.filename)
         with open(file_path, "wb") as f:
             f.write(await file.read())
         metadata = metadatas[i]
@@ -158,9 +161,10 @@ async def post_insert_images_multimodal(files: List[UploadFile] = File(...), met
         images.append(MultimodalItem(data=str(file_path), metadata=metadata))
 
     inserted_count = insert_multimodal(images, "image")
-    ratio = (inserted_count / len(images) * 100)
+    if inserted_count is None:
+        inserted_count = 0
+    ratio = (inserted_count / len(images) * 100) if len(images) > 0 else 0
     return {"inserted": inserted_count, "ratio": f"{ratio:.2f}%"}
-
 
 @app.get("/search-by-text-multimodal")
 def search_multimodal_text(pregunta: str, tipo: str):
@@ -217,7 +221,9 @@ async def upload_images(files: List[UploadFile] = File(...)):
     results = []
 
     for file in files:
-        file_path = IMAGE_DIR / file.filename
+        if not file.filename:
+            continue  # Omitir archivos sin nombre
+        file_path = IMAGE_DIR / str(file.filename)
 
         with open(file_path, "wb") as f:
             f.write(await file.read())
@@ -236,7 +242,12 @@ async def upload_files(files: List[UploadFile] = File(...)):
     results = []
 
     for file in files:
-        content = extract_text_from_file(await file.read(), file.filename)
+        if not file.filename:
+            continue  # Omitir archivos sin nombre
+        contenido_bytes = await file.read()
+        # Nos aseguramos de que file.filename es str, nunca None
+        filename = str(file.filename)
+        content = extract_text_from_file(contenido_bytes, filename)
         items = []
         for fragment in content:
             item = TextItem(text=fragment, subject="uploaded")
@@ -251,7 +262,11 @@ async def upload_files(files: List[UploadFile] = File(...)):
 async def search_images(file: UploadFile = File(...), top_k: int = 5):
     
     try:
-        suffix = os.path.splitext(file.filename)[1]
+        if not file.filename:
+            raise ValueError("El archivo no tiene nombre.")
+        # Asegurarse de que file.filename es str y no None
+        filename = str(file.filename)
+        suffix = os.path.splitext(filename)[1]
         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
             tmp.write(await file.read())
             tmp_path = tmp.name
@@ -395,196 +410,197 @@ async def visualize_vectors_2d(
         "original_dimension": vectors.shape[1]
     }
 
-@app.get("/visualize-3d")
-async def visualize_vectors_3d(
-    limit: int = 100, 
-    collection: str = Query("texts", description="Colección: 'texts', 'images', 'persons' o 'all'")
-):
-    """Endpoint que devuelve visualización 3D de vectores usando PCA"""
-    data = get_vectors_for_visualization(collection, limit)
+# @app.get("/visualize-3d")
+# async def visualize_vectors_3d(
+#     limit: int = 100, 
+#     collection: str = Query("texts", description="Colección: 'texts', 'images', 'persons' o 'all'")
+# ):
+#     """Endpoint que devuelve visualización 3D de vectores usando PCA"""
+#     data = get_vectors_for_visualization(collection, limit)
     
-    if not data:
-        raise HTTPException(status_code=404, detail="No se encontraron vectores")
+#     if not data:
+#         raise HTTPException(status_code=404, detail="No se encontraron vectores")
     
-    # Extraer solo los vectores
-    vectors = np.array([d["vector"] for d in data])
+#     # Extraer solo los vectores
+#     vectors = np.array([d["vector"] for d in data])
     
-    # Reducción a 3D usando PCA
-    reducer = PCA(n_components=3)
-    vectors_3d = reducer.fit_transform(vectors)
+#     # Reducción a 3D usando PCA
+#     reducer = PCA(n_components=3)
+#     vectors_3d = reducer.fit_transform(vectors)
     
-    # Crear gráfico 3D
-    fig = plt.figure(figsize=(12, 10))
-    ax = fig.add_subplot(111, projection='3d')
+#     # Crear gráfico 3D
+#     fig = plt.figure(figsize=(12, 10))
+#     ax = fig.add_subplot(111, projection='3d')
     
-    # Si tenemos tipos diferentes, usar colores diferentes
-    if collection.lower() == "all" and len(data) > 0:
-        text_indices = [i for i, d in enumerate(data) if d.get("type") == "text"]
-        image_indices = [i for i, d in enumerate(data) if d.get("type") == "image"]
-        person_indices = [i for i, d in enumerate(data) if d.get("type") == "person"]
+#     # Si tenemos tipos diferentes, usar colores diferentes
+#     if collection.lower() == "all" and len(data) > 0:
+#         text_indices = [i for i, d in enumerate(data) if d.get("type") == "text"]
+#         image_indices = [i for i, d in enumerate(data) if d.get("type") == "image"]
+#         person_indices = [i for i, d in enumerate(data) if d.get("type") == "person"]
         
-        if text_indices:
-            ax.scatter(vectors_3d[text_indices, 0], vectors_3d[text_indices, 1], vectors_3d[text_indices, 2], 
-                      alpha=0.6, s=50, c='blue', label='Textos')
-        if image_indices:
-            ax.scatter(vectors_3d[image_indices, 0], vectors_3d[image_indices, 1], vectors_3d[image_indices, 2], 
-                      alpha=0.6, s=50, c='red', label='Imágenes')
-        if person_indices:
-            ax.scatter(vectors_3d[person_indices, 0], vectors_3d[person_indices, 1], vectors_3d[person_indices, 2], 
-                      alpha=0.6, s=50, c='green', label='Personas')
-        ax.legend()
-    else:
-        ax.scatter(vectors_3d[:, 0], vectors_3d[:, 1], vectors_3d[:, 2], alpha=0.6, s=50)
+#         if text_indices:
+#             ax.scatter(vectors_3d[text_indices, 0], vectors_3d[text_indices, 1], vectors_3d[text_indices, 2], 
+#                       alpha=0.6, s=50, c='blue', label='Textos')
+#         if image_indices:
+#             ax.scatter(vectors_3d[image_indices, 0], vectors_3d[image_indices, 1], vectors_3d[image_indices, 2], 
+#                       alpha=0.6, s=50, c='red', label='Imágenes')
+#         if person_indices:
+#             ax.scatter(vectors_3d[person_indices, 0], vectors_3d[person_indices, 1], vectors_3d[person_indices, 2], 
+#                       alpha=0.6, s=50, c='green', label='Personas')
+#         ax.legend()
+#     else:
+#         ax.scatter(vectors_3d[:, 0], vectors_3d[:, 1], vectors_3d[:, 2], alpha=0.6, s=50)
     
-    ax.set_title(f"Visualización 3D de {len(vectors)} vectores - {collection.upper()} (PCA)")
-    ax.set_xlabel("Componente Principal 1")
-    ax.set_ylabel("Componente Principal 2")
-    ax.set_zlabel("Componente Principal 3")
+#     ax.set_title(f"Visualización 3D de {len(vectors)} vectores - {collection.upper()} (PCA)")
+#     ax.set_xlabel("Componente Principal 1")
+#     ax.set_ylabel("Componente Principal 2")
+#     ax.set_zlabel("Componente Principal 3")
     
-    # Convertir gráfico a imagen
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
-    buf.seek(0)
-    image_base64 = base64.b64encode(buf.read()).decode('utf-8')
-    plt.close()
+#     # Convertir gráfico a imagen
+#     buf = io.BytesIO()
+#     plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
+#     buf.seek(0)
+#     image_base64 = base64.b64encode(buf.read()).decode('utf-8')
+#     plt.close()
     
-    return {
-        "image_base64": image_base64,
-        "method": "PCA",
-        "dimensions": 3,
-        "collection": collection,
-        "total_vectors": len(vectors),
-        "original_dimension": vectors.shape[1]
-    }
+#     return {
+#         "image_base64": image_base64,
+#         "method": "PCA",
+#         "dimensions": 3,
+#         "collection": collection,
+#         "total_vectors": len(vectors),
+#         "original_dimension": vectors.shape[1]
+#     }
 
-@app.get("/download-2d")
-async def download_visualization_2d(
-    limit: int = 100,
-    collection: str = Query("texts", description="Colección: 'texts', 'images', 'persons' o 'all'")
-):
-    """Endpoint que devuelve la visualización 2D como archivo PNG descargable"""
-    data = get_vectors_for_visualization(collection, limit)
+# @app.get("/download-2d")
+# async def download_visualization_2d(
+#     limit: int = 100,
+#     collection: str = Query("texts", description="Colección: 'texts', 'images', 'persons' o 'all'")
+# ):
+#     """Endpoint que devuelve la visualización 2D como archivo PNG descargable"""
+#     data = get_vectors_for_visualization(collection, limit)
     
-    if not data:
-        raise HTTPException(status_code=404, detail="No se encontraron vectores")
+#     if not data:
+#         raise HTTPException(status_code=404, detail="No se encontraron vectores")
     
-    # Extraer solo los vectores
-    vectors = np.array([d["vector"] for d in data])
-    n_samples, n_features = vectors.shape
-    if n_samples < 2:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Se necesitan al menos 2 vectores para visualización 2D. Solo hay {n_samples} vectores."
-        )
+#     # Extraer solo los vectores
+#     vectors = np.array([d["vector"] for d in data])
+#     n_samples, n_features = vectors.shape
+#     if n_samples < 2:
+#         raise HTTPException(
+#             status_code=400,
+#             detail=f"Se necesitan al menos 2 vectores para visualización 2D. Solo hay {n_samples} vectores."
+#         )
     
-    # Reducción a 2D usando PCA
-    reducer = PCA(n_components=2)
-    vectors_2d = reducer.fit_transform(vectors)
+#     # Reducción a 2D usando PCA
+#     reducer = PCA(n_components=2)
+#     vectors_2d = reducer.fit_transform(vectors)
     
-    # Crear gráfico 2D
-    plt.figure(figsize=(10, 8))
+#     # Crear gráfico 2D
+#     plt.figure(figsize=(10, 8))
     
-    # Si tenemos tipos diferentes, usar colores diferentes
-    if collection.lower() == "all" and len(data) > 0:
-        text_indices = [i for i, d in enumerate(data) if d.get("type") == "text"]
-        image_indices = [i for i, d in enumerate(data) if d.get("type") == "image"]
+#     # Si tenemos tipos diferentes, usar colores diferentes
+#     if collection.lower() == "all" and len(data) > 0:
+#         text_indices = [i for i, d in enumerate(data) if d.get("type") == "text"]
+#         image_indices = [i for i, d in enumerate(data) if d.get("type") == "image"]
         
-        if text_indices:
-            plt.scatter(vectors_2d[text_indices, 0], vectors_2d[text_indices, 1], 
-                       alpha=0.6, s=50, c='blue', label='Textos')
-        if image_indices:
-            plt.scatter(vectors_2d[image_indices, 0], vectors_2d[image_indices, 1], 
-                       alpha=0.6, s=50, c='red', label='Imágenes')
-        plt.legend()
-    else:
-        plt.scatter(vectors_2d[:, 0], vectors_2d[:, 1], alpha=0.6, s=50)
+#         if text_indices:
+#             plt.scatter(vectors_2d[text_indices, 0], vectors_2d[text_indices, 1], 
+#                        alpha=0.6, s=50, c='blue', label='Textos')
+#         if image_indices:
+#             plt.scatter(vectors_2d[image_indices, 0], vectors_2d[image_indices, 1], 
+#                        alpha=0.6, s=50, c='red', label='Imágenes')
+#         plt.legend()
+#     else:
+#         plt.scatter(vectors_2d[:, 0], vectors_2d[:, 1], alpha=0.6, s=50)
     
-    plt.title(f"Visualización 2D de {len(vectors)} vectores - {collection.upper()} (PCA)")
-    plt.xlabel("Componente Principal 1")
-    plt.ylabel("Componente Principal 2")
-    plt.grid(True, alpha=0.3)
+#     plt.title(f"Visualización 2D de {len(vectors)} vectores - {collection.upper()} (PCA)")
+#     plt.xlabel("Componente Principal 1")
+#     plt.ylabel("Componente Principal 2")
+#     plt.grid(True, alpha=0.3)
     
-    # Guardar en buffer y devolver como archivo
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
-    buf.seek(0)
-    plt.close()
+#     # Guardar en buffer y devolver como archivo
+#     buf = io.BytesIO()
+#     plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
+#     buf.seek(0)
+#     plt.close()
     
-    return Response(
-        content=buf.getvalue(),
-        media_type="image/png",
-        headers={"Content-Disposition": f"attachment; filename=vectors_2d_{collection}_{len(vectors)}_vectors.png"}
-    )
+#     return Response(
+#         content=buf.getvalue(),
+#         media_type="image/png",
+#         headers={"Content-Disposition": f"attachment; filename=vectors_2d_{collection}_{len(vectors)}_vectors.png"}
+#     )
 
-@app.get("/download-3d")
-async def download_visualization_3d(
-    limit: int = 100,
-    collection: str = Query("texts", description="Colección: 'texts', 'images', 'persons' o 'all'")
-):
-    """Endpoint que devuelve la visualización 3D como archivo PNG descargable"""
-    data = get_vectors_for_visualization(collection, limit)
+# @app.get("/download-3d")
+# async def download_visualization_3d(
+#     limit: int = 100,
+#     collection: str = Query("texts", description="Colección: 'texts', 'images', 'persons' o 'all'")
+# ):
+#     """Endpoint que devuelve la visualización 3D como archivo PNG descargable"""
+#     data = get_vectors_for_visualization(collection, limit)
     
-    if not data:
-        raise HTTPException(status_code=404, detail="No se encontraron vectores")
+#     if not data:
+#         raise HTTPException(status_code=404, detail="No se encontraron vectores")
     
-    # Extraer solo los vectores
-    vectors = np.array([d["vector"] for d in data])
-    n_samples, n_features = vectors.shape
-    if n_samples < 3:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Se necesitan al menos 3 vectores para visualización 3D. Solo hay {n_samples} vectores."
-        )
+#     # Extraer solo los vectores
+#     vectors = np.array([d["vector"] for d in data])
+#     n_samples, n_features = vectors.shape
+#     if n_samples < 3:
+#         raise HTTPException(
+#             status_code=400,
+#             detail=f"Se necesitan al menos 3 vectores para visualización 3D. Solo hay {n_samples} vectores."
+#         )
     
-    # Reducción a 3D usando PCA
-    reducer = PCA(n_components=3)
-    vectors_3d = reducer.fit_transform(vectors)
+#     # Reducción a 3D usando PCA
+#     reducer = PCA(n_components=3)
+#     vectors_3d = reducer.fit_transform(vectors)
     
-    # Crear gráfico 3D
-    fig = plt.figure(figsize=(12, 10))
-    ax = fig.add_subplot(111, projection='3d')
+#     # Crear gráfico 3D
+#     fig = plt.figure(figsize=(12, 10))
+#     ax = fig.add_subplot(111, projection='3d')
     
-    # Si tenemos tipos diferentes, usar colores diferentes
-    if collection.lower() == "all" and len(data) > 0:
-        text_indices = [i for i, d in enumerate(data) if d.get("type") == "text"]
-        image_indices = [i for i, d in enumerate(data) if d.get("type") == "image"]
-        person_indices = [i for i, d in enumerate(data) if d.get("type") == "person"]
+#     # Si tenemos tipos diferentes, usar colores diferentes
+#     if collection.lower() == "all" and len(data) > 0:
+#         text_indices = [i for i, d in enumerate(data) if d.get("type") == "text"]
+#         image_indices = [i for i, d in enumerate(data) if d.get("type") == "image"]
+#         person_indices = [i for i, d in enumerate(data) if d.get("type") == "person"]
         
-        if text_indices:
-            ax.scatter(vectors_3d[text_indices, 0], vectors_3d[text_indices, 1], vectors_3d[text_indices, 2], 
-                      alpha=0.6, s=50, c='blue', label='Textos')
-        if image_indices:
-            ax.scatter(vectors_3d[image_indices, 0], vectors_3d[image_indices, 1], vectors_3d[image_indices, 2], 
-                      alpha=0.6, s=50, c='red', label='Imágenes')
-        if person_indices:
-            ax.scatter(vectors_3d[person_indices, 0], vectors_3d[person_indices, 1], vectors_3d[person_indices, 2], 
-                      alpha=0.6, s=50, c='green', label='Personas')
-        ax.legend()
-    else:
-        ax.scatter(vectors_3d[:, 0], vectors_3d[:, 1], vectors_3d[:, 2], alpha=0.6, s=50)
+#         if text_indices:
+#             ax.scatter(vectors_3d[text_indices, 0], vectors_3d[text_indices, 1], vectors_3d[text_indices, 2], 
+#                       alpha=0.6, s=50, c='blue', label='Textos')
+#         if image_indices:
+#             ax.scatter(vectors_3d[image_indices, 0], vectors_3d[image_indices, 1], vectors_3d[image_indices, 2], 
+#                       alpha=0.6, s=50, c='red', label='Imágenes')
+#         if person_indices:
+#             ax.scatter(vectors_3d[person_indices, 0], vectors_3d[person_indices, 1], vectors_3d[person_indices, 2], 
+#                       alpha=0.6, s=50, c='green', label='Personas')
+#         ax.legend()
+#     else:
+#         ax.scatter(vectors_3d[:, 0], vectors_3d[:, 1], vectors_3d[:, 2], alpha=0.6, s=50)
     
-    ax.set_title(f"Visualización 3D de {len(vectors)} vectores - {collection.upper()} (PCA)")
-    ax.set_xlabel("Componente Principal 1")
-    ax.set_ylabel("Componente Principal 2")
-    ax.set_zlabel("Componente Principal 3")
+#     ax.set_title(f"Visualización 3D de {len(vectors)} vectores - {collection.upper()} (PCA)")
+#     ax.set_xlabel("Componente Principal 1")
+#     ax.set_ylabel("Componente Principal 2")
+#     ax.set_zlabel("Componente Principal 3")
     
-    # Guardar en buffer y devolver como archivo
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
-    buf.seek(0)
-    plt.close()
+#     # Guardar en buffer y devolver como archivo
+#     buf = io.BytesIO()
+#     plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
+#     buf.seek(0)
+#     plt.close()
     
-    return Response(
-        content=buf.getvalue(),
-        media_type="image/png",
-        headers={"Content-Disposition": f"attachment; filename=vectors_3d_{collection}_{len(vectors)}_vectors.png"}
-    )
+#     return Response(
+#         content=buf.getvalue(),
+#         media_type="image/png",
+#         headers={"Content-Disposition": f"attachment; filename=vectors_3d_{collection}_{len(vectors)}_vectors.png"}
+#     )
+
 @app.post("/manage-image")
 async def manage_image(file1: UploadFile = File(...), file2: UploadFile = File(...)):
     try:
         # Guardar imágenes temporales
-        suffix1 = os.path.splitext(file1.filename)[1]
-        suffix2 = os.path.splitext(file2.filename)[1]
+        suffix1 = os.path.splitext(file1.filename or "")[1]
+        suffix2 = os.path.splitext(file2.filename or "")[1]
         
         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix1) as tmp1, \
              tempfile.NamedTemporaryFile(delete=False, suffix=suffix2) as tmp2:
@@ -605,7 +621,9 @@ async def manage_image(file1: UploadFile = File(...), file2: UploadFile = File(.
         IMAGE_DIR.mkdir(parents=True, exist_ok=True)
         
         # Guardar file2 en IMAGE_DIR
-        file2_path = IMAGE_DIR / file2.filename
+        if file2.filename is None:
+            raise ValueError("El archivo file2 no tiene nombre.")
+        file2_path = IMAGE_DIR / Path(file2.filename)
         with open(file2_path, "wb") as f:
             f.write(file2_content)  # Usamos el contenido ya leído
 
@@ -637,8 +655,10 @@ async def manage_image(file1: UploadFile = File(...), file2: UploadFile = File(.
 async def delete_image(file: UploadFile = File (...)):
 
     try:
-        suffix = os.path.splitext(file.filename)[1]
-        with tempfile.NamedTemporaryFile(delete=False,suffix=suffix) as tmp:
+        # Asegurarse de que file.filename no sea None antes de usar splitext
+        filename = file.filename if file.filename is not None else "tempfile"
+        suffix = os.path.splitext(filename)[1]
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
             tmp.write(await file.read())
             tmp_path = tmp.name 
 
@@ -662,11 +682,13 @@ async def delete_image(file: UploadFile = File (...)):
         if 'tmp_path' in locals() and os.path.exists(tmp_path):
             os.unlink(tmp_path)
 
+
 @app.post("/replace-closest-image")
 async def replace_closest_image(file: UploadFile = File(...)):
     try:
-        # Guardar imagen temporal
-        suffix = os.path.splitext(file.filename)[1]
+        # Asegurarse de que file.filename no sea None antes de usar splitext
+        filename = file.filename if file.filename is not None else "tempfile"
+        suffix = os.path.splitext(filename)[1]
         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
             tmp.write(await file.read())
             tmp_path = tmp.name
@@ -780,6 +802,26 @@ async def delete_documents_by_filename(filename: str):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al eliminar documentos: {str(e)}"
         )
+
+@app.get("/count-vectors")
+def count_vectors_endpoint(
+    collection: str = Query(..., description="Nombre de la colección"),
+    field: str = Query(..., description="Campo por el que filtrar"),
+    value: str = Query(..., description="Valor del campo a buscar")
+):
+    """
+    Devuelve la cantidad de vectores en una colección según un atributo específico.
+    """
+    try:
+        count = count_vectors_by_attribute(collection, field, value)
+        return {
+            "collection": collection,
+            "field": field,
+            "value": value,
+            "count": count
+        }
+    except Exception as e:
+        return {"error": str(e)}
 
 @app.delete("/fragmento/{fragment_id}")
 def delete_fragment_by_id(fragment_id: str, tipo: str = Query("text", description="Tipo de fragmento: 'text' o 'image'")):

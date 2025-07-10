@@ -74,11 +74,11 @@ def insert_documents(items, metadata=None):
 def search_documents(query: str, top_k: int):
     client.load_collection(COLLECTION_NAME)
     query_vector = model.encode([query])
+    # Milvus espera una lista de listas para el parámetro 'data'
     res = client.search(
         collection_name=COLLECTION_NAME,
         data=query_vector,
         limit=top_k,
-       
         output_fields=["text", "subject"]
     )
 
@@ -229,7 +229,7 @@ def search_similar_images(image_path, top_k: int):
             "filename": hit["entity"]["filename"],
             "score": round(1 - hit["distance"], 4),
             "url": f"{base_url}/{hit['entity']['filename']}",
-            "id": hit.id
+            "id": hit["id"]
         }
         for hit in results[0]
     ]
@@ -251,7 +251,7 @@ def get_all_vectors_from_collection(collection_name, limit=100):
     try:
         results = client.query(
             collection_name=collection_name,
-            filter=None,
+            filter="",
             output_fields=output_fields,
             limit=limit
         )
@@ -411,3 +411,22 @@ def delete_documents_by_filename_service(filename: str):
         "deleted_count": res["delete_count"],
         "method": "direct_filename_filter"
     }
+
+def count_vectors_by_attribute(collection_name: str, field: str, value: str) -> int:
+    """
+    Cuenta la cantidad de vectores en una colección según un atributo específico.
+    Args:
+        collection_name (str): Nombre de la colección.
+        field (str): Nombre del campo por el que filtrar.
+        value (str): Valor del campo a buscar.
+    Returns:
+        int: Cantidad de vectores que cumplen el filtro.
+    """
+    client.load_collection(collection_name)
+    filter_expr = f'{field} == "{value}"'
+    results = client.query(
+        collection_name=collection_name,
+        filter=filter_expr,
+        output_fields=[field]
+    )
+    return len(results)
