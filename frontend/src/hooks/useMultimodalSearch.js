@@ -92,7 +92,7 @@ const useMultimodalSearch = () => {
       else tipoBackend = "lore";
       const params = new URLSearchParams({
         pregunta: query,
-        tipo: tipoBackend,
+        tipo_fragmento: tipoBackend,
       });
       const response = await fetch(
         `http://localhost:8000/search-by-text-multimodal?${params.toString()}`
@@ -103,11 +103,12 @@ const useMultimodalSearch = () => {
       const mapped = (
         Array.isArray(apiResults) ? apiResults : apiResults.results || []
       ).map((item) => ({
+        id: item.id,
         content: item.data,
         type: item.type,
         url: item.url,
         filename: item.filename,
-        score: item.score,
+        score: Math.round(item.distance, 2),
         metadata: {
           tipo_fragmento: item.tipo_fragmento,
           historia: item.tipo_fragmento, // Si tienes un campo historia real, cámbialo aquí
@@ -167,12 +168,10 @@ export async function deleteFragmentByFilename(filename) {
 // Eliminar fragmento por id (nuevo endpoint)
 export async function deleteFragmentById(id, tipo = "text") {
   const response = await fetch(
-    `http://localhost:8000/fragmento/${encodeURIComponent(
-      id
-    )}?tipo=${encodeURIComponent(tipo)}`,
+    `http://localhost:8000/delete-vector?collection=${tipo == "text"? "text_collection" : "multimodal_collection"}&id=${id}`,
     {
       method: "DELETE",
-    }
+     }
   );
   if (!response.ok) throw new Error("No se pudo eliminar el fragmento por id");
   return await response.json();

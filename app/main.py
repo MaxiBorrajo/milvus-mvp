@@ -96,7 +96,8 @@ class InsertPersonRequest(BaseModel):
     items: List[PersonaItem]
 
 class MetadataItem(BaseModel):
-    tipo_fragmento: str | None = None
+    tipo_fragmento: str 
+    historia: str 
     filename: str | None = None
 
 class MultimodalItem(BaseModel):
@@ -126,7 +127,6 @@ def insert_texts(req: InsertRequest):
     return {"inserted": inserted_count}
 
 # ============= MULTIMODAL ==========================
-
 @app.post("/insert-text-multimodal")
 def post_insert_texts_multimodal(req: MultimodalRequest):
     if not req.items:
@@ -167,18 +167,8 @@ async def post_insert_images_multimodal(files: List[UploadFile] = File(...), met
     return {"inserted": inserted_count, "ratio": f"{ratio:.2f}%"}
 
 @app.get("/search-by-text-multimodal")
-def search_multimodal_text(pregunta: str, tipo: str):
-    return search_multimodal(pregunta, "text", tipo)
-
-# @app.post("/search-by-image-multimodal")
-# async def search_multimodal_image(file: UploadFile = File(...), top_k: int = 5):
-#     file_path = IMAGE_DIR / file.filename
-
-#     with open(file_path, "wb") as f:
-#         f.write(await file.read())
-
-#     return search_multimodal(str(file_path), "image", top_k)
-
+def search_multimodal_text(pregunta: str, tipo_fragmento: str):
+    return search_multimodal(pregunta, tipo_fragmento)
 
 
 @app.get("/search")
@@ -409,191 +399,6 @@ async def visualize_vectors_2d(
         "total_vectors": len(vectors),
         "original_dimension": vectors.shape[1]
     }
-
-# @app.get("/visualize-3d")
-# async def visualize_vectors_3d(
-#     limit: int = 100, 
-#     collection: str = Query("texts", description="Colección: 'texts', 'images', 'persons' o 'all'")
-# ):
-#     """Endpoint que devuelve visualización 3D de vectores usando PCA"""
-#     data = get_vectors_for_visualization(collection, limit)
-    
-#     if not data:
-#         raise HTTPException(status_code=404, detail="No se encontraron vectores")
-    
-#     # Extraer solo los vectores
-#     vectors = np.array([d["vector"] for d in data])
-    
-#     # Reducción a 3D usando PCA
-#     reducer = PCA(n_components=3)
-#     vectors_3d = reducer.fit_transform(vectors)
-    
-#     # Crear gráfico 3D
-#     fig = plt.figure(figsize=(12, 10))
-#     ax = fig.add_subplot(111, projection='3d')
-    
-#     # Si tenemos tipos diferentes, usar colores diferentes
-#     if collection.lower() == "all" and len(data) > 0:
-#         text_indices = [i for i, d in enumerate(data) if d.get("type") == "text"]
-#         image_indices = [i for i, d in enumerate(data) if d.get("type") == "image"]
-#         person_indices = [i for i, d in enumerate(data) if d.get("type") == "person"]
-        
-#         if text_indices:
-#             ax.scatter(vectors_3d[text_indices, 0], vectors_3d[text_indices, 1], vectors_3d[text_indices, 2], 
-#                       alpha=0.6, s=50, c='blue', label='Textos')
-#         if image_indices:
-#             ax.scatter(vectors_3d[image_indices, 0], vectors_3d[image_indices, 1], vectors_3d[image_indices, 2], 
-#                       alpha=0.6, s=50, c='red', label='Imágenes')
-#         if person_indices:
-#             ax.scatter(vectors_3d[person_indices, 0], vectors_3d[person_indices, 1], vectors_3d[person_indices, 2], 
-#                       alpha=0.6, s=50, c='green', label='Personas')
-#         ax.legend()
-#     else:
-#         ax.scatter(vectors_3d[:, 0], vectors_3d[:, 1], vectors_3d[:, 2], alpha=0.6, s=50)
-    
-#     ax.set_title(f"Visualización 3D de {len(vectors)} vectores - {collection.upper()} (PCA)")
-#     ax.set_xlabel("Componente Principal 1")
-#     ax.set_ylabel("Componente Principal 2")
-#     ax.set_zlabel("Componente Principal 3")
-    
-#     # Convertir gráfico a imagen
-#     buf = io.BytesIO()
-#     plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
-#     buf.seek(0)
-#     image_base64 = base64.b64encode(buf.read()).decode('utf-8')
-#     plt.close()
-    
-#     return {
-#         "image_base64": image_base64,
-#         "method": "PCA",
-#         "dimensions": 3,
-#         "collection": collection,
-#         "total_vectors": len(vectors),
-#         "original_dimension": vectors.shape[1]
-#     }
-
-# @app.get("/download-2d")
-# async def download_visualization_2d(
-#     limit: int = 100,
-#     collection: str = Query("texts", description="Colección: 'texts', 'images', 'persons' o 'all'")
-# ):
-#     """Endpoint que devuelve la visualización 2D como archivo PNG descargable"""
-#     data = get_vectors_for_visualization(collection, limit)
-    
-#     if not data:
-#         raise HTTPException(status_code=404, detail="No se encontraron vectores")
-    
-#     # Extraer solo los vectores
-#     vectors = np.array([d["vector"] for d in data])
-#     n_samples, n_features = vectors.shape
-#     if n_samples < 2:
-#         raise HTTPException(
-#             status_code=400,
-#             detail=f"Se necesitan al menos 2 vectores para visualización 2D. Solo hay {n_samples} vectores."
-#         )
-    
-#     # Reducción a 2D usando PCA
-#     reducer = PCA(n_components=2)
-#     vectors_2d = reducer.fit_transform(vectors)
-    
-#     # Crear gráfico 2D
-#     plt.figure(figsize=(10, 8))
-    
-#     # Si tenemos tipos diferentes, usar colores diferentes
-#     if collection.lower() == "all" and len(data) > 0:
-#         text_indices = [i for i, d in enumerate(data) if d.get("type") == "text"]
-#         image_indices = [i for i, d in enumerate(data) if d.get("type") == "image"]
-        
-#         if text_indices:
-#             plt.scatter(vectors_2d[text_indices, 0], vectors_2d[text_indices, 1], 
-#                        alpha=0.6, s=50, c='blue', label='Textos')
-#         if image_indices:
-#             plt.scatter(vectors_2d[image_indices, 0], vectors_2d[image_indices, 1], 
-#                        alpha=0.6, s=50, c='red', label='Imágenes')
-#         plt.legend()
-#     else:
-#         plt.scatter(vectors_2d[:, 0], vectors_2d[:, 1], alpha=0.6, s=50)
-    
-#     plt.title(f"Visualización 2D de {len(vectors)} vectores - {collection.upper()} (PCA)")
-#     plt.xlabel("Componente Principal 1")
-#     plt.ylabel("Componente Principal 2")
-#     plt.grid(True, alpha=0.3)
-    
-#     # Guardar en buffer y devolver como archivo
-#     buf = io.BytesIO()
-#     plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
-#     buf.seek(0)
-#     plt.close()
-    
-#     return Response(
-#         content=buf.getvalue(),
-#         media_type="image/png",
-#         headers={"Content-Disposition": f"attachment; filename=vectors_2d_{collection}_{len(vectors)}_vectors.png"}
-#     )
-
-# @app.get("/download-3d")
-# async def download_visualization_3d(
-#     limit: int = 100,
-#     collection: str = Query("texts", description="Colección: 'texts', 'images', 'persons' o 'all'")
-# ):
-#     """Endpoint que devuelve la visualización 3D como archivo PNG descargable"""
-#     data = get_vectors_for_visualization(collection, limit)
-    
-#     if not data:
-#         raise HTTPException(status_code=404, detail="No se encontraron vectores")
-    
-#     # Extraer solo los vectores
-#     vectors = np.array([d["vector"] for d in data])
-#     n_samples, n_features = vectors.shape
-#     if n_samples < 3:
-#         raise HTTPException(
-#             status_code=400,
-#             detail=f"Se necesitan al menos 3 vectores para visualización 3D. Solo hay {n_samples} vectores."
-#         )
-    
-#     # Reducción a 3D usando PCA
-#     reducer = PCA(n_components=3)
-#     vectors_3d = reducer.fit_transform(vectors)
-    
-#     # Crear gráfico 3D
-#     fig = plt.figure(figsize=(12, 10))
-#     ax = fig.add_subplot(111, projection='3d')
-    
-#     # Si tenemos tipos diferentes, usar colores diferentes
-#     if collection.lower() == "all" and len(data) > 0:
-#         text_indices = [i for i, d in enumerate(data) if d.get("type") == "text"]
-#         image_indices = [i for i, d in enumerate(data) if d.get("type") == "image"]
-#         person_indices = [i for i, d in enumerate(data) if d.get("type") == "person"]
-        
-#         if text_indices:
-#             ax.scatter(vectors_3d[text_indices, 0], vectors_3d[text_indices, 1], vectors_3d[text_indices, 2], 
-#                       alpha=0.6, s=50, c='blue', label='Textos')
-#         if image_indices:
-#             ax.scatter(vectors_3d[image_indices, 0], vectors_3d[image_indices, 1], vectors_3d[image_indices, 2], 
-#                       alpha=0.6, s=50, c='red', label='Imágenes')
-#         if person_indices:
-#             ax.scatter(vectors_3d[person_indices, 0], vectors_3d[person_indices, 1], vectors_3d[person_indices, 2], 
-#                       alpha=0.6, s=50, c='green', label='Personas')
-#         ax.legend()
-#     else:
-#         ax.scatter(vectors_3d[:, 0], vectors_3d[:, 1], vectors_3d[:, 2], alpha=0.6, s=50)
-    
-#     ax.set_title(f"Visualización 3D de {len(vectors)} vectores - {collection.upper()} (PCA)")
-#     ax.set_xlabel("Componente Principal 1")
-#     ax.set_ylabel("Componente Principal 2")
-#     ax.set_zlabel("Componente Principal 3")
-    
-#     # Guardar en buffer y devolver como archivo
-#     buf = io.BytesIO()
-#     plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
-#     buf.seek(0)
-#     plt.close()
-    
-#     return Response(
-#         content=buf.getvalue(),
-#         media_type="image/png",
-#         headers={"Content-Disposition": f"attachment; filename=vectors_3d_{collection}_{len(vectors)}_vectors.png"}
-#     )
 
 @app.post("/manage-image")
 async def manage_image(file1: UploadFile = File(...), file2: UploadFile = File(...)):
@@ -839,25 +644,6 @@ def delete_fragment_by_id(fragment_id: str, tipo: str = Query("text", descriptio
         return {"deleted_id": fragment_id, "collection": collection}
     except Exception as e:
         raise HTTPException(status_code=500, detail=f"Error al eliminar fragmento: {str(e)}")
-
-@app.post("/cargar-items-json")
-def cargar_items_json():
-    """
-    Endpoint para cargar los items de static/items.json a la base de datos
-    """
-    try:
-        with open("../static/items.json", "r", encoding="utf-8") as f:
-            items = json.load(f)
-        # Adaptar a MultimodalItem
-        from main import MetadataItem, MultimodalItem
-        multimodal_items = []
-        for item in items:
-            metadata = MetadataItem(**item["metadata"])
-            multimodal_items.append(MultimodalItem(data=item["data"], metadata=metadata))
-        inserted_count = insert_multimodal(multimodal_items, "text")
-        return {"inserted": inserted_count, "total": len(multimodal_items)}
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=f"Error al cargar items.json: {str(e)}")
 
 @app.delete("/delete-vector")
 def delete_vector_by_id(

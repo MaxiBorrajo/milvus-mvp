@@ -13,8 +13,8 @@ const TercerJuego = () => {
   const [selectedOption, setSelectedOption] = useState(null);
   const [fragmentType, setFragmentType] = useState("lore");
   const [removedOptions, setRemovedOptions] = useState([]);
-  const [uploading, setUploading] = useState(false);
-  const [uploadResult, setUploadResult] = useState(null);
+  // const [uploading, setUploading] = useState(false);
+  // const [uploadResult, setUploadResult] = useState(null);
 
   const { loading, error, searchByText, getSearchResults, reset } =
     useMultimodalSearch();
@@ -49,29 +49,21 @@ const TercerJuego = () => {
 
   const handleOptionSelect = async (option) => {
     setSelectedOption(option);
-    // Eliminar en backend si tiene id o filename
+     // Eliminar en backend si tiene id o filename
+    console.log(option)
     if (option.id) {
-      try {
+     try {
         await deleteFragmentById(
           option.id,
           option.type === "image" ? "image" : "text"
         );
       } catch (err) {
         alert(
-          "No se pudo eliminar el fragmento en el backend por id: " +
-            err.message
+          "No se pudo eliminar el fragmento en el backend por id"
         );
       }
-    } else if (option.filename) {
-      try {
-        await deleteFragmentByFilename(option.filename);
-      } catch (err) {
-        alert(
-          "No se pudo eliminar el fragmento en el backend por filename: " +
-            err.message
-        );
-      }
-    }
+    } 
+
     setRemovedOptions((prev) => [...prev, option]);
     // Agregar la opción seleccionada a la historia
     const newStoryEntry = {
@@ -110,70 +102,9 @@ const TercerJuego = () => {
       <div className="game-content metal-mania">
         <h1>⛤ Historia Interactiva ⛤</h1>
         <p>Continúa la historia con tus propias preguntas</p>
-
-        <div className="story-progress">
-          <div className="progress-bar">
-            <div
-              className="progress-fill"
-              style={{ width: `${((currentStage + 1) / 4) * 100}%` }}
-            ></div>
-          </div>
-          <p>Etapa {currentStage + 1} de 4</p>
-      <div className="game-content">
-        <h1>📖 Historia Interactiva</h1>
         {baseStory}
         {/* Botón para cargar items.json a la BDD */}
         <div style={{ margin: "16px 0", textAlign: "right" }}>
-          <button
-            onClick={async () => {
-              setUploading(true);
-              setUploadResult(null);
-              try {
-                const res = await fetch(
-                  "http://localhost:8000/cargar-items-json",
-                  { method: "POST" }
-                );
-                const data = await res.json();
-                setUploadResult(
-                  data.inserted
-                    ? `Se insertaron ${data.inserted} fragmentos.`
-                    : JSON.stringify(data)
-                );
-              } catch (err) {
-                setUploadResult("Error: " + err.message);
-              } finally {
-                setUploading(false);
-              }
-            }}
-            disabled={uploading}
-            style={{
-              background: "#222",
-              color: "#ffd700",
-              border: "1.5px solid #ffd700",
-              borderRadius: 8,
-              padding: "6px 18px",
-              fontWeight: 600,
-              fontSize: "1rem",
-              cursor: uploading ? "not-allowed" : "pointer",
-              marginBottom: 8,
-            }}
-          >
-            {uploading
-              ? "Cargando items.json..."
-              : "Cargar items.json a la BDD"}
-          </button>
-          {uploadResult && (
-            <div
-              style={{
-                color: uploadResult.startsWith("Error") ? "red" : "#ffd700",
-                marginTop: 4,
-              }}
-            >
-              {uploadResult}
-            </div>
-          )}
-        </div>
-
         <div className="story-section great-primer-sc">
           <h3>☠ Historia Actual:</h3>
           <div className="story-text">
@@ -310,15 +241,6 @@ const TercerJuego = () => {
                                 className="option-image"
                               />
                             )}
-                            {option.type === "audio" && option.url && (
-                              <audio
-                                controls
-                                src={option.url}
-                                style={{ width: "100%", margin: "10px 0" }}
-                              >
-                                Tu navegador no soporta audio.
-                              </audio>
-                            )}
                             <div className="option-content">
                               <p>{option.content}</p>
                               <div className="option-meta">
@@ -346,15 +268,15 @@ const TercerJuego = () => {
           )}
         </div>
 
-        <button className="restart-btn" onClick={restartGame}>
+        {/* <button className="restart-btn" onClick={restartGame}>
           🔄 Crear Nueva Historia
-        </button>
+        </button> */}
 
         <Link to="/" className="back-btn">
           ← Volver al calabozo
         </Link>
       </div>
-    </div>
-  )}
-
+      </div>
+      </div>
+)}
 export default TercerJuego;
