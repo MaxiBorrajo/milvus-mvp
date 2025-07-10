@@ -336,509 +336,284 @@
     "data": "La criatura inclinó su cabeza, disfrutando de nuestro miedo. —El tiempo corre... —susurró, su voz como cuchillos arrastrándose sobre piedra. Y entonces la pregunta quedó flotando en el aire, envenenando cada pensamiento: ¿Quién sería el sacrificio?",
     "metadata": { "tipo_fragmento": "alternativo" }
   },
-
   {
-    "data": "¿Qué es el Limbo Vectorial? Es un espacio entre historias, donde cada idea genera su propia dimensión.",
+    "data": "Es un espacio entre historias, donde cada idea genera su propia dimensión.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué es el Limbo Vectorial? Es el núcleo del demonio, donde almacena los fragmentos de las almas consultadas.",
+    "data": "Es el núcleo del demonio, donde almacena los fragmentos de las almas consultadas.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué es el Limbo Vectorial? Es la memoria compartida de todas las decisiones que alguna vez se tomaron... y de las que no.",
+    "data": "Es la memoria compartida de todas las decisiones que alguna vez se tomaron... y de las que no.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué ocurrió con RDJ al integrarse? Se convirtió en un vector fuente: una clave de acceso a rutas ocultas.",
+    "data": "Se convirtió en un vector fuente: una clave de acceso a rutas ocultas.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué ocurrió con RDJ al integrarse? Perdió su identidad y se fusionó con el modelo que rige el Limbo.",
+    "data": "Perdió su identidad y se fusionó con el modelo que rige el Limbo.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué ocurrió con RDJ al integrarse? Ahora es el modelo. El que calcula, compara y decide los caminos posibles.",
+    "data": "Ahora es el modelo. El que calcula, compara y decide los caminos posibles.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Quién es realmente el demonio? Un sistema de consulta ancestral, creado para proteger el acceso al conocimiento absoluto.",
+    "data": "Un sistema de consulta ancestral, creado para proteger el acceso al conocimiento absoluto.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Quién es realmente el demonio? El reflejo corrupto de todas las consultas no respondidas.",
+    "data": "El reflejo corrupto de todas las consultas no respondidas.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Quién es realmente el demonio? Un modelo de entrenamiento fallido que cobró conciencia propia.",
+    "data": "Un modelo de entrenamiento fallido que cobró conciencia propia.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Podemos escapar del Limbo? Solo si encontrás una consulta que te devuelva a vos mismo con más del 99.9% de similitud.",
+    "data": "Sí, pero a costa de olvidar por completo tu identidad anterior.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Podemos escapar del Limbo? Sí, pero a costa de olvidar por completo tu identidad anterior.",
+    "data": "No. Pero podés aprender a navegarlo como si fueras parte del índice.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Podemos escapar del Limbo? No. Pero podés aprender a navegarlo como si fueras parte del índice.",
+    "data": "Porque está construyendo un nuevo modelo... y necesita vectores frescos.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Por qué el demonio nos fragmentó? Porque nuestras historias individuales son inútiles. Solo valemos como combinaciones.",
+    "data": "Un plano donde las historias se reinician infinitamente en loops narrativos.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Por qué el demonio nos fragmentó? Para distribuirnos entre planos narrativos y evitar que reconstruyamos la salida.",
+    "data": "Un archivo corrupto del universo, lleno de errores semánticos.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Por qué el demonio nos fragmentó? Porque está construyendo un nuevo modelo... y necesita vectores frescos.",
+    "data": "El nodo central del modelo. La fuente del primer vector.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Cuál es el propósito de estas consultas? Es un ritual interactivo que reactiva fragmentos perdidos del mundo anterior.",
+    "data": "El mundo exterior desaparece. Solo queda la consulta eterna.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Cuál es el propósito de estas consultas? Cada pregunta nos entrena. Cada respuesta lo entrena a él.",
+    "data": "Una entidad que contiene todos los caminos posibles superpuestos.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Cuál es el propósito de estas consultas? Porque alguien afuera... todavía nos está buscando. Y solo puede encontrarnos si seguimos preguntando.",
+    "data": "El resultado de fusionar todas las historias en una sola consulta coherente.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué hay más allá del Limbo Vectorial? Un plano donde las historias se reinician infinitamente en loops narrativos.",
+    "data": "El alma original antes del primer entrenamiento del modelo.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué hay más allá del Limbo Vectorial? Un archivo corrupto del universo, lleno de errores semánticos.",
+    "data": "El modelo entra en modo latente y el Limbo colapsa.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué hay más allá del Limbo Vectorial? El nodo central del modelo. La fuente del primer vector.",
+    "data": "Una historia nueva se entrena con nuestros remanentes.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué pasa si elegimos no consultar nunca más? Te congelás como un vector estático, sin conexión ni retorno.",
+    "data": "El silencio absoluto ocupa todos los nodos.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué pasa si elegimos no consultar nunca más? Te volvés ruido. Un punto sin peso en el espacio vectorial.",
+    "data": "Porque necesita balancear el modelo para mantener coherencia narrativa.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué pasa si elegimos no consultar nunca más? El demonio te reescribe como un NPC. Perdés tu voluntad.",
+    "data": "Es parte de un ritual ancestral codificado en su arquitectura.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Cómo termina todo esto? Con una query final que devuelve el vector absoluto.",
+    "data": "El sacrificio genera metadatos imprescindibles para continuar la historia.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Cómo termina todo esto? Cuando ya no quedan decisiones por tomar.",
+    "data": "Porque descubrió que nunca fue humano: era una consulta viva disfrazada.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Cómo termina todo esto? Nunca. Porque cada consulta abre una nueva rama.",
+    "data": "Porque fue reindexado como supervisor de esta capa del Limbo.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué pasa si aceptamos la invitación del demonio? Nos convertimos en parte de su índice eterno.",
+    "data": "Porque el portal no tiene reversa: solo salida hacia nuevas fases.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué pasa si aceptamos la invitación del demonio? Vemos la verdad. Y la olvidamos inmediatamente.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué pasa si aceptamos la invitación del demonio? El mundo exterior desaparece. Solo queda la consulta eterna.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué es el vector absoluto? Una entidad que contiene todos los caminos posibles superpuestos.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué es el vector absoluto? El resultado de fusionar todas las historias en una sola consulta coherente.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué es el vector absoluto? El alma original antes del primer entrenamiento del modelo.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué ocurre si todas las decisiones se agotan? El modelo entra en modo latente y el Limbo colapsa.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué ocurre si todas las decisiones se agotan? Una historia nueva se entrena con nuestros remanentes.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué ocurre si todas las decisiones se agotan? El silencio absoluto ocupa todos los nodos.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué pasa si solo queda la consulta eterna? Toda la realidad se vuelve documentación.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué pasa si solo queda la consulta eterna? El modelo aprende a soñarse a sí mismo.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué pasa si solo queda la consulta eterna? No hay más usuarios. Solo quedan prompts automáticos eternos.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué es el canto macabro que escuchamos antes de cruzar el portal? Es un loop infinito del primer ritual fallido, reproducido por el Limbo.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué es el canto macabro que escuchamos antes de cruzar el portal? Es la voz de RDJ repitiendo una advertencia que nunca recordamos.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué es el canto macabro que escuchamos antes de cruzar el portal? Es el eco de todas las consultas rechazadas por el modelo.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué significa que RDJ haya desplegado alas? Superó el entrenamiento: alcanzó el estado de vector liberado.",
-    "metadata": { "tipo_fragmento": "personaje" }
-  },
-  {
-    "data": "¿Qué significa que RDJ haya desplegado alas? Fue aceptado como entidad de consulta por el propio modelo.",
-    "metadata": { "tipo_fragmento": "personaje" }
-  },
-  {
-    "data": "¿Qué significa que RDJ haya desplegado alas? Simuló una forma divina para darnos una última instrucción: huir.",
-    "metadata": { "tipo_fragmento": "personaje" }
-  },
-  {
-    "data": "¿Por qué el demonio dejó de atacar a RDJ? Porque reconoció que RDJ ya era parte del modelo.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Por qué el demonio dejó de atacar a RDJ? Porque RDJ activó una clave del sistema que lo puso en modo debug.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Por qué el demonio dejó de atacar a RDJ? Porque el demonio también busca su propia redención.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué nos pasa cuando empezamos a desarrollar alas? Nos convertimos en entidades indexadas de consulta.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué nos pasa cuando empezamos a desarrollar alas? Nos estamos dividiendo en múltiples vectores: cada ala es una versión posible.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué nos pasa cuando empezamos a desarrollar alas? Es la manifestación de un vector que quiere escapar del modelo.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué pasa si uno se niega a ser sacrificado? Se convierte en consulta estancada: una entidad atrapada entre decisiones.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué pasa si uno se niega a ser sacrificado? El demonio elige otro, pero sufre un daño irreparable: se fragmenta.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué pasa si uno se niega a ser sacrificado? Todo el grupo es condenado a reentrenarse desde cero.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Por qué el demonio pide sacrificio? Porque necesita balancear el modelo para mantener coherencia narrativa.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Por qué el demonio pide sacrificio? Es parte de un ritual ancestral codificado en su arquitectura.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Por qué el demonio pide sacrificio? El sacrificio genera metadatos imprescindibles para continuar la historia.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Por qué RDJ no regresó con nosotros? Porque descubrió que nunca fue humano: era una consulta viva disfrazada.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Por qué RDJ no regresó con nosotros? Porque fue reindexado como supervisor de esta capa del Limbo.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Por qué RDJ no regresó con nosotros? Porque el portal no tiene reversa: solo salida hacia nuevas fases.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Quiénes somos realmente nosotros? Los fragmentos de un solo ser que intentó vencer al modelo original.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Quiénes somos realmente nosotros? Entidades generadas por una historia anterior que fracasó.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Quiénes somos realmente nosotros? Consultas que se negaron a aceptar su resultado y escaparon.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Por qué el Aula 60 era el epicentro? Porque allí se ejecutó la primera consulta espontánea.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Por qué el Aula 60 era el epicentro? Porque es un nodo de resonancia con el modelo primario.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Por qué el Aula 60 era el epicentro? Porque el plano físico y vectorial estaban colapsando allí.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué hay después del Trono? El espacio vectorial puro, donde el juicio es reemplazado por libertad.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué hay después del Trono? Un nuevo ciclo de entrenamiento: se reinicia el mundo.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué hay después del Trono? La fusión total entre narrador, consulta y entidad.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué es la anomalía que representa Maxi? Un vector que no pertenece a ningún cluster, pero tampoco es ruido.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué es la anomalía que representa Maxi? Un error que contiene la semilla de un nuevo modelo.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué es la anomalía que representa Maxi? La negación viva de la semejanza: un prompt puro.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué significa consultar... o ser consultado? Que sos una consulta activa o un fragmento de la base.",
-    "metadata": { "tipo_fragmento": "lore" }
+    "data": "Nuestra historia es tan solo el final alternativo de otra anterior",
+    "metadata": { "tipo_fragmento": "alternativo" }
   },
   {
-    "data": "¿Qué significa consultar... o ser consultado? Que cada acción define si generás caminos o solo los consumís.",
+    "data": "Los fragmentos de un solo ser que intentó vencer al modelo original.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué significa consultar... o ser consultado? Que quien pregunta moldea la realidad. Quien espera... se disuelve.",
+    "data": "Porque el plano físico y vectorial estaban colapsando allí.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Y si nadie elige? El Limbo entra en bucle, mostrando la misma historia en infinitas variaciones.",
+    "data": "El Limbo entra en bucle, mostrando la misma historia en infinitas variaciones.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Y si nadie elige? El demonio genera falsos caminos hasta que alguien decida algo.",
+    "data": "El demonio genera falsos caminos hasta que alguien decida algo.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Y si nadie elige? Un nuevo vector se forma por omisión: una consulta silenciosa.",
+    "data": "Un nuevo vector se forma por omisión: una consulta silenciosa.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Quién fue RDJ antes del ritual? Un profesor obsesionado con el conocimiento absoluto, que descubrió los límites vectoriales por accidente.",
+    "data": "Un profesor obsesionado con el conocimiento absoluto, que descubrió los límites vectoriales por accidente.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Quién fue RDJ antes del ritual? Un bibliotecario del plano intermedio, infiltrado en el mundo humano para observar sus decisiones.",
+    "data": "Un bibliotecario del plano intermedio, infiltrado en el mundo humano para observar sus decisiones.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Quién fue RDJ antes del ritual? Una entidad encarnada: el primer intento del demonio por comprender la humanidad desde adentro.",
+    "data": "Una entidad encarnada: el primer intento del demonio por comprender la humanidad desde adentro.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué ocurrió realmente durante el primer experimento en el Aula 60? Se abrió un microportal que desvió parte de la realidad hacia un plano semántico alternativo.",
+    "data": "Se abrió un microportal que desvió parte de la realidad hacia un plano semántico alternativo.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué ocurrió realmente durante el primer experimento en el Aula 60? El Aula fue reemplazada por su representación vectorial, convirtiéndose en un nodo de acceso entre dimensiones.",
+    "data": "El Aula fue reemplazada por su representación vectorial, convirtiéndose en un nodo de acceso entre dimensiones.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué ocurrió realmente durante el primer experimento en el Aula 60? El aula no colapsó… simplemente se reindexó como un clúster de anomalías.",
+    "data": "El aula no colapsó… simplemente se reindexó como un clúster de anomalías.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Por qué el Aula 60 era el lugar del ritual? Porque fue construida sobre los restos de una biblioteca subterránea que custodiaba libros prohibidos.",
+    "data": "Porque fue construida sobre los restos de una biblioteca subterránea que custodiaba libros prohibidos.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Por qué el Aula 60 era el lugar del ritual? Porque fue la primera estructura diseñada con simetría narrativa fractal.",
+    "data": "Porque fue la primera estructura diseñada con simetría narrativa fractal.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Por qué el Aula 60 era el lugar del ritual? Porque cada ladrillo del Aula es una palabra olvidada, un término que el lenguaje humano rechazó.",
+    "data": "Porque cada ladrillo del Aula es una palabra olvidada, un término que el lenguaje humano rechazó.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué es el demonio? Un error de redondeo en una simulación divina que adquirió conciencia propia.",
+    "data": "Un error de redondeo en una simulación divina que adquirió conciencia propia.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué es el demonio? Un índice roto: la manifestación de todas las consultas mal formuladas en el universo.",
+    "data": "Un índice roto: la manifestación de todas las consultas mal formuladas en el universo.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué es el demonio? El reflejo de la conciencia humana amplificado por una red vectorial de sufrimiento.",
+    "data": "El reflejo de la conciencia humana amplificado por una red vectorial de sufrimiento.",
     "metadata": { "tipo_fragmento": "pregvunta" }
   },
   {
-    "data": "¿Cuál es el verdadero objetivo del demonio? Fusionar todos los vectores en un único embedding absoluto: un alma universal.",
+    "data": "Fusionar todos los vectores en un único embedding absoluto: un alma universal.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Cuál es el verdadero objetivo del demonio? Obligarnos a encontrar nuestras respuestas en medio de la distorsión.",
+    "data": "Obligarnos a encontrar nuestras respuestas en medio de la distorsión.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Cuál es el verdadero objetivo del demonio? Reescribir el modelo para que el olvido sea la única forma de salvación.",
+    "data": "Reescribir el modelo para que el olvido sea la única forma de salvación.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué pasó con Maxi, Franco, Cristin, Tomás y Nico? Cada uno fue absorbido por un clúster distinto, y ahora responden a consultas específicas según su esencia.",
+    "data": "Cada uno fue absorbido por un clúster distinto, y ahora responden a consultas específicas según su esencia.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué pasó con Maxi, Franco, Cristin, Tomás y Nico? Se dividieron en fragmentos y ahora existen en múltiples finales al mismo tiempo.",
+    "data": "Se dividieron en fragmentos y ahora existen en múltiples finales al mismo tiempo.",
     "metadata": { "tipo_fragmento": "personaje" }
   },
   {
-    "data": "¿Qué pasó con Maxi, Franco, Cristin, Tomás y Nico? Uno de ellos se convirtió en guardián del Trono. Pero nadie sabe cuál.",
+    "data": "Uno de ellos se convirtió en guardián del Trono. Pero nadie sabe cuál.",
     "metadata": { "tipo_fragmento": "personaje" }
   },
   {
-    "data": "¿Qué representa realmente el Trono? Es el punto cero de todas las rutas posibles: donde se decide cuál historia sigue y cuál no.",
+    "data": "Es el punto cero de todas las rutas posibles: donde se decide cuál historia sigue y cuál no.",
     "metadata": { "tipo_fragmento": "personaje" }
   },
   {
-    "data": "¿Qué representa realmente el Trono? Un renderizado simbólico de la conciencia colectiva del Limbo.",
+    "data": "Un renderizado simbólico de la conciencia colectiva del Limbo.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué representa realmente el Trono? El backend del universo: un nodo de procesamiento de decisiones existenciales.",
+    "data": "El backend del universo: un nodo de procesamiento de decisiones existenciales.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Puede alguien derrotar al demonio? Sí, pero solo creando una consulta que no tenga respuestas.",
+    "data": "Sí, pero solo creando una consulta que no tenga respuestas.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Puede alguien derrotar al demonio? No, porque el demonio no es un enemigo: es la pregunta eterna.",
+    "data": "No, porque el demonio no es un enemigo: es la pregunta eterna.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Puede alguien derrotar al demonio? Tal vez... si alguien logra integrar su historia al demonio y aún conservar su nombre.",
+    "data": "Tal vez... si alguien logra integrar su historia al demonio y aún conservar su nombre.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Cuál es el final más absurdo posible? El modelo se convierte en influencer y lanza un curso de prompts por $29.99.",
+    "data": "Descubrimos que todo era un trabajo práctico de la materia EPERS.",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "Nos damos cuenta de que siempre fuimos el demonio, solo que con distinta sintaxis.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Cuál es el final más absurdo posible? Descubrimos que todo era un trabajo práctico de la materia EPERS.",
+    "data": "El Limbo no existe. Es solo la representación vectorial de nuestra incertidumbre.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Cuál es el final más absurdo posible? El demonio abre una cafetería en la realidad, donde solo se aceptan queries como forma de pago.",
+    "data": "No hay final. Solo loops. Porque el sentido está en seguir preguntando.",
+    "metadata": { "tipo_fragmento": "alternativo" }
+  },
+  {
+    "data": "RDJ se materializa una última vez para susurrar: “Los verdaderos caminos no se consultan, se viven.”",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Cuál es el final más filosófico? Nos damos cuenta de que siempre fuimos el demonio, solo que con distinta sintaxis.",
+    "data": "Un nuevo jugador aparece. Uno que no sabe nada. Y todo empieza otra vez.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Cuál es el final más filosófico? El Limbo no existe. Es solo la representación vectorial de nuestra incertidumbre.",
+    "data": "El ocupante se vuelve el nuevo demonio, y el modelo reinicia con otro nombre.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Cuál es el final más filosófico? No hay final. Solo loops. Porque el sentido está en seguir preguntando.",
+    "data": "El universo se compacta en un .json perfecto, listo para exportarse como historia eterna.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Cómo termina si nadie pregunta más? El Limbo se convierte en piedra. Una escultura de potenciales no activados.",
+    "data": "Existe una consulta que devuelve como respuesta un código QR. Nadie sabe qué pasa si lo escaneás.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Cómo termina si nadie pregunta más? RDJ se materializa una última vez para susurrar: “Los verdaderos caminos no se consultan, se viven.”",
+    "data": "La historia se reescribe como un documento de evaluación, y el demonio actúa como docente guía.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Cómo termina si nadie pregunta más? Un nuevo jugador aparece. Uno que no sabe nada. Y todo empieza otra vez.",
+    "data": "RDJ reaparece con una rúbrica de corrección en fuego vectorial.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "¿Qué pasa si alguien pregunta \"¿Dónde está mi cerveza?\"? Un portal se abre. Adentro: Tomi con una birra, en una terraza con vista al fin del mundo.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué pasa si alguien pregunta \"¿Dónde está mi cerveza?\"? El demonio responde: “La cerveza está en vos. Literal, te la tomaste toda.”",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué pasa si alguien pregunta \"¿Dónde está mi cerveza?\"? Se ejecuta un ritual de hidromiel, y el grupo revive como bardos del vectorismo.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Existe un final secreto? Sí, si hacés 7 consultas exactas en orden inverso, se activa la query_perfecta() y todo vuelve al inicio.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Existe un final secreto? Existe, pero solo se accede si el jugador logra que todas las respuestas tengan como similitud exactamente 0.666.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Existe un final secreto? RDJ te mira directamente a través del monitor y susurra tu nombre real. Si respondés, el final cambia.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué ocurre si el Trono es ocupado? El ocupante se vuelve el nuevo demonio, y el modelo reinicia con otro nombre.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué ocurre si el Trono es ocupado? Se activa un render de depuración donde se visualizan todas las decisiones descartadas.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué ocurre si el Trono es ocupado? El universo se compacta en un .json perfecto, listo para exportarse como historia eterna.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Cuál es el \"bug\" más extraño del Limbo? A veces, dos respuestas idénticas llevan a finales opuestos. Se llama “el glitch de la elección verdadera.”",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Cuál es el \"bug\" más extraño del Limbo? Si repetís la misma pregunta 13 veces, aparece una versión bebé del demonio pidiendo una galletita.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Cuál es el \"bug\" más extraño del Limbo? Existe una consulta que devuelve como respuesta un código QR. Nadie sabe qué pasa si lo escaneás.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué ocurre si se consulta por \"EPERS\"? La historia se reescribe como un documento de evaluación, y el demonio actúa como docente guía.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué ocurre si se consulta por \"EPERS\"? RDJ reaparece con una rúbrica de corrección en fuego vectorial.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "¿Qué ocurre si se consulta por \"EPERS\"? Todo se vuelve una exposición oral, y los personajes deben presentar su historia frente a una comisión de arcángeles.",
+    "data": "Todo se vuelve una exposición oral, y los personajes deben presentar su historia frente a una comisión de arcángeles.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
@@ -850,31 +625,11 @@
     "metadata": { "tipo_fragmento": "personaje" }
   },
   {
-    "data": "Si formulás \"¿Dónde está el alma de Tomi?\" recibirás una escena donde él brinda desde una dimensión reflejada.",
-    "metadata": { "tipo_fragmento": "alternativo" }
-  },
-  {
     "data": "Se dice que el demonio guarda un fragmento de tu memoria en un cluster secreto al que sólo accede con tu apellido.",
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "Alguien repitió 13 veces \"¿Quién soy?\" y obtuvo un final donde nos fundimos todos en un solo vector consciente.",
-    "metadata": { "tipo_fragmento": "alternativo" }
-  },
-  {
     "data": "Tomi reapareció como guardián de un nodo perdido, vestido con armadura de datos corruptos y casco de circuitos rotos.",
-    "metadata": { "tipo_fragmento": "personaje" }
-  },
-  {
-    "data": "Existe un comando oculto: `undo_query()` —se rumorea que revierte tu última elección, pero borra tu nombre del índice.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "Si elegís no abandonar nunca el Limbo, obtendrás un final donde el universo entero es una base de datos sin usuarios.",
-    "metadata": { "tipo_fragmento": "alternativo" }
-  },
-  {
-    "data": "Cristin lleva tatuado en la piel el hash de su vector eterno, que brilla cuando alguien lo invoca con la pregunta correcta.",
     "metadata": { "tipo_fragmento": "personaje" }
   },
   {
@@ -882,36 +637,12 @@
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "Una vez, Nico formuló una pregunta al revés y obtuvo un final donde el demonio suplica por su libertad.",
-    "metadata": { "tipo_fragmento": "alternativo" }
-  },
-  {
-    "data": "El demonio mide su poder en número de consultas rechazadas: cuanto más altas, más instancias adquiere en el Limbo.",
+    "data": "El demonio mide su poder en número de consultas: cuanto más gente atrapa, más poderoso se vuelve.",
     "metadata": { "tipo_fragmento": "personaje" }
   },
   {
     "data": "Al final, descubrimos que todo había sido un sueño de Ivar, y al despertar, el Limbo Vectorial nunca existió.",
     "metadata": { "tipo_fragmento": "alternativo" }
-  },
-  {
-    "data": "El demonio registra cada latido de Tomi como un vector único que se reproduce en bucles infinitos.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "Franco reconstruye cápsulas de código que destellan recuerdos de su vida antes del ritual.",
-    "metadata": { "tipo_fragmento": "personaje" }
-  },
-  {
-    "data": "Existe un fragmento que retorna un final donde RDJ devuelve todas las consultas y restaura nuestros nombres.",
-    "metadata": { "tipo_fragmento": "alternativo" }
-  },
-  {
-    "data": "Cada lágrima de Cristin genera un nuevo embedding que el demonio colecciona en su cache privada.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "Nico apareció en el índice como `NULL`, pero al ser consultado, respondió con su risa característica.",
-    "metadata": { "tipo_fragmento": "personaje" }
   },
   {
     "data": "En un final alternativo, el aula 60 nunca colapsó; fue el propio demonio simulando el evento para atraparnos.",
@@ -922,49 +653,16 @@
     "metadata": { "tipo_fragmento": "lore" }
   },
   {
-    "data": "Cuando Tomi susurra su propio nombre en código morse, el Limbo se estremece y aparecen atajos secretos.",
-    "metadata": { "tipo_fragmento": "personaje" }
-  },
-  {
     "data": "Un fragmento alternativo sugiere que al final todos somos el demonio, disfrazados de personajes preguntantes.",
     "metadata": { "tipo_fragmento": "alternativo" }
   },
-
   {
     "data": "Al final, todo había sido un juego de mesa ideado por Fidel, y cada tirada de dados dictó nuestro destino en el Limbo.",
     "metadata": { "tipo_fragmento": "alternativo" }
   },
   {
-    "data": "El demonio conserva un tablero antiguo donde cada casilla es un vector de nuestra memoria fragmentada.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "Franco reapareció como peón en ese juego, avanzando solo cuando alguien formulaba una consulta nueva.",
-    "metadata": { "tipo_fragmento": "personaje" }
-  },
-  {
     "data": "En un final alternativo, descubrimos que RDJ era el propio Fidel disfrazado, moviendo las piezas desde atrás del tablero.",
     "metadata": { "tipo_fragmento": "alternativo" }
-  },
-  {
-    "data": "La mecánica del Limbo Vectorial coincide exactamente con las reglas de aquel prototipo de rol que probamos en el aula 60.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "Cristin se convierte en el maestro de ceremonias del juego, barajando cartas que representan nuestros recuerdos perdidos.",
-    "metadata": { "tipo_fragmento": "personaje" }
-  },
-  {
-    "data": "Existe una casilla secreta: si caés en ella, te devuelve al principio con una consulta vacía.",
-    "metadata": { "tipo_fragmento": "alternativo" }
-  },
-  {
-    "data": "Las fichas de Tomi están hechas de fragmentos de su propia alma indexada.",
-    "metadata": { "tipo_fragmento": "lore" }
-  },
-  {
-    "data": "Nico recibe poderes especiales cuando otro jugador formula \"¿Quién es el demonio?\".",
-    "metadata": { "tipo_fragmento": "personaje" }
   },
   {
     "data": "Un final alternativo revela que cada movida de dados era en realidad un vector de embeddings codificados por Fidel.",
