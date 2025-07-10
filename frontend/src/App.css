@@ -475,7 +475,7 @@
 /* Back Button */
 .back-btn {
   display: inline-block;
-  background:linear-gradient(135deg, #0b0f0d 0%, #1f3b2c 100%);
+  background: linear-gradient(135deg, #0b0f0d 0%, #1f3b2c 100%);
   color: white;
   text-decoration: none;
   padding: 0.75rem 1.5rem;
@@ -1854,3 +1854,250 @@
   box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.2);
 }
 
+/* Tercer Juego - Historia Interactiva */
+.story-progress {
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 8px;
+  background: rgba(255, 255, 255, 0.2);
+  border-radius: 4px;
+  overflow: hidden;
+  margin-bottom: 0.5rem;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(45deg, #4ade80, #22c55e);
+  transition: width 0.3s ease;
+}
+
+.story-section {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 2rem;
+  margin: 2rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.story-section h3 {
+  color: #ffd700;
+  margin-bottom: 1rem;
+}
+
+.story-text {
+  text-align: left;
+  line-height: 1.6;
+}
+
+.story-entry {
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.story-entry:last-child {
+  border-bottom: none;
+}
+
+.story-entry p {
+  margin: 0.5rem 0;
+  font-size: 1.1rem;
+}
+
+.story-score {
+  color: #4ade80;
+  font-style: italic;
+}
+
+.query-section {
+  background: rgba(255, 255, 255, 0.1);
+  backdrop-filter: blur(10px);
+  border-radius: 15px;
+  padding: 2rem;
+  margin: 2rem 0;
+  border: 1px solid rgba(255, 255, 255, 0.2);
+}
+
+.query-section h3 {
+  color: #ffd700;
+  margin-bottom: 1rem;
+}
+
+.query-input {
+  width: 100%;
+  padding: 1rem;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.1);
+  color: white;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  transition: all 0.3s ease;
+}
+
+.query-input::placeholder {
+  color: rgba(255, 255, 255, 0.6);
+}
+
+.query-input:focus {
+  outline: none;
+  border-color: #4ade80;
+  box-shadow: 0 0 0 3px rgba(74, 222, 128, 0.1);
+}
+
+.query-btn {
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(45deg, #4ade80, #22c55e);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(74, 222, 128, 0.3);
+}
+
+.query-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(74, 222, 128, 0.4);
+}
+
+.query-btn:disabled {
+  background: #6b7280;
+  cursor: not-allowed;
+  transform: none;
+  box-shadow: none;
+}
+
+.options-section {
+  margin-top: 2rem;
+}
+
+.options-section h4 {
+  color: #ffd700;
+  margin-bottom: 1rem;
+}
+
+.options-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.option-card {
+  background: rgba(255, 255, 255, 0.1);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  border-radius: 12px;
+  padding: 1.5rem;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-align: left;
+}
+
+.option-card:hover {
+  transform: translateY(-4px);
+  border-color: #4ade80;
+  box-shadow: 0 8px 25px rgba(74, 222, 128, 0.2);
+}
+
+.option-card.selected {
+  border-color: #ffd700;
+  background: rgba(255, 215, 0, 0.1);
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.3);
+}
+
+.option-image {
+  width: 100%;
+  max-width: 200px;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 1rem;
+  display: block;
+}
+
+.option-content p {
+  margin: 0 0 1rem 0;
+  line-height: 1.5;
+  font-size: 1rem;
+}
+
+.option-meta {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.option-type {
+  background: rgba(74, 222, 128, 0.2);
+  color: #4ade80;
+  padding: 0.25rem 0.5rem;
+  border-radius: 4px;
+  font-size: 0.8rem;
+  font-weight: 600;
+  text-transform: uppercase;
+}
+
+.option-score {
+  color: #ffd700;
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+.game-completed {
+  background: rgba(74, 222, 128, 0.1);
+  border: 2px solid #4ade80;
+  border-radius: 15px;
+  padding: 2rem;
+  margin: 2rem 0;
+  text-align: center;
+}
+
+.game-completed h2 {
+  color: #4ade80;
+  margin-bottom: 1rem;
+}
+
+.restart-btn {
+  padding: 1rem 2rem;
+  background: linear-gradient(45deg, #f59e0b, #d97706);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 4px 15px rgba(245, 158, 11, 0.3);
+  margin-top: 1rem;
+}
+
+.restart-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
+}
+
+@media (max-width: 768px) {
+  .options-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .option-card {
+    padding: 1rem;
+  }
+
+  .query-input {
+    font-size: 0.9rem;
+  }
+
+  .story-entry p {
+    font-size: 1rem;
+  }
+}

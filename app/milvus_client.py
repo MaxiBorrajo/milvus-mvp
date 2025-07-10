@@ -4,7 +4,7 @@ from pathlib import Path
 from pymilvus import MilvusClient
 from sentence_transformers import SentenceTransformer
 from sklearn.preprocessing import normalize
-from app.feature_extractor import FeatureExtractor
+from feature_extractor import FeatureExtractor
 from io import BytesIO
 from PIL import Image
 import numpy as np
