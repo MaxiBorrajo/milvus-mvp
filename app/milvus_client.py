@@ -74,11 +74,11 @@ def insert_documents(items, metadata=None):
 def search_documents(query: str, top_k: int):
     client.load_collection(COLLECTION_NAME)
     query_vector = model.encode([query])
+    # Milvus espera una lista de listas para el parámetro 'data'
     res = client.search(
         collection_name=COLLECTION_NAME,
         data=query_vector,
         limit=top_k,
-       
         output_fields=["text", "subject"]
     )
 
@@ -229,7 +229,7 @@ def search_similar_images(image_path, top_k: int):
             "filename": hit["entity"]["filename"],
             "score": round(1 - hit["distance"], 4),
             "url": f"{base_url}/{hit['entity']['filename']}",
-            "id": hit.id
+            "id": hit["id"]
         }
         for hit in results[0]
     ]
@@ -251,7 +251,7 @@ def get_all_vectors_from_collection(collection_name, limit=100):
     try:
         results = client.query(
             collection_name=collection_name,
-            filter=None,
+            filter="",
             output_fields=output_fields,
             limit=limit
         )
