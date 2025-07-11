@@ -28,7 +28,7 @@ def setup_multimodal():
     )
 
 
-def insert_multimodal(items, data_type):
+def insert_multimodal(items, data_type): 
     if data_type == "image":
         vectores = encode_image([item.data for item in items])
         data = [

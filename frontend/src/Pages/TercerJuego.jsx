@@ -410,7 +410,11 @@ const TercerJuego = () => {
                                 />
                               )}
                               <div className="option-content">
-                                <p>{option.content}</p>
+                                <p>
+                                  {option.type === "image" && option.data
+                                    ? option.data
+                                    : option.content}
+                                </p>
                                 <div className="option-meta">
                                   <span className="option-type">
                                     {option.type}

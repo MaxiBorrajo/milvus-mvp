@@ -1,13 +1,10 @@
 import os
-import numpy as np
 from pathlib import Path
 from typing import List
 from pymilvus import  MilvusClient
 from sentence_transformers import SentenceTransformer
 from sklearn.preprocessing import normalize
 from app.feature_extractor import FeatureExtractor
-from io import BytesIO
-from PIL import Image
 import numpy as np
 
 COLLECTION_NAME = "demo_collection"
@@ -438,3 +435,4 @@ def count_vectors_by_attribute(collection_name: str, value: str) -> int:
     except Exception as e:
         print(f"Error en count_vectors_by_attribute: {str(e)}")
         return 0
+

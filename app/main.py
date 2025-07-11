@@ -44,13 +44,60 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-setup_collection()
+def insert_all_items():
+    """
+    Inserta todos los items de items.json:
+    - Los que NO tienen filename en metadata van a text_collection (como texto)
+    - Los que SÍ tienen filename en metadata van a multimodal_collection (como imagen, usando la ruta real)
+    """
+    import json
+    from pathlib import Path
+
+    items_path = Path("static/items.json")
+    if not items_path.exists():
+        raise HTTPException(status_code=404, detail="Archivo items.json no encontrado")
+
+    with open(items_path, 'r', encoding='utf-8') as f:
+        items_data = json.load(f)
+
+    # Para textos
+    text_items = []
+    # Para imágenes
+    image_items = []
+
+    for item in items_data:
+        metadata = {}
+        if "metadata" in item:
+            metadata.update(item["metadata"])
+        if "filename" in metadata:
+            # Imagen: data debe ser la ruta real
+            image_path = str(Path("static/images") / metadata["filename"])
+            image_items.append(MultimodalItem(data=image_path, metadata=metadata))
+        else:
+            # Texto: data es el texto
+            text_items.append(MultimodalItem(data=item["data"], metadata=metadata))
+
+    # Insertar en text_collection
+    inserted_text = insert_multimodal(text_items, "text") if text_items else 0
+    # Insertar en multimodal_collection
+    inserted_images = insert_multimodal(image_items, "image") if image_items else 0
+
+    return {
+        "message": "Items insertados correctamente",
+        "text_items_inserted": inserted_text,
+        "image_items_inserted": inserted_images,
+        "total_text_items": len(text_items),
+        "total_image_items": len(image_items)
+    }
+
 
 @app.on_event("startup")
-def cargar_imagenes_existentes():
+def setup():
+    setup_collection()
     subirImagenes(IMAGE_DIR, insert_images)
-    
-setup_multimodal()
+    setup_multimodal()
+    insert_all_items()
+
 
 
 @app.get("/")
@@ -860,7 +907,6 @@ def debug_collection_endpoint(
             }
                 
         except Exception as query_error:
-            client.release_collection(collection)
             return {
                 "error": f"Error al consultar la colección: {str(query_error)}",
                 "exists": False
