@@ -1,32 +1,27 @@
 import base64
 import io
-import tempfile
-import os
-import json
+
 import numpy as np
 import traceback
 
-from fastapi import FastAPI, File, UploadFile, Query, Form, HTTPException
+from fastapi import FastAPI, Query, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import Response
 from fastapi import HTTPException
-from fastapi import status
 
 from matplotlib import pyplot as plt
-from fastapi import FastAPI, File, Form, UploadFile
+from fastapi import FastAPI
 from pydantic import BaseModel
 from typing import List
-from pydantic import BaseModel, ValidationError
+from pydantic import BaseModel
 from pathlib import Path
 from sklearn.decomposition import PCA
 from typing import  List
-from datetime import datetime
 
-from app.utils import extract_text_from_file
-from app.milvus_client import vectorsForAFileName,delete_documents_by_filename_service,delete_vectors_by_ids,search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, subirImagenes, delete_image_byId, delete_if_similar, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION, vectorsForAFileName, delete_vectors_by_ids, delete_documents_by_filename_service
-from app.multimodal_queries import insert_multimodal, setup_multimodal, search_multimodal
+from app.milvus_client import  PERSON_COLLECTION,setup_collection, insert_images,get_all_vectors_from_collection, get_all_vectors_combined, get_vectors_for_visualization
+from app.repository.imageRepository import subirImagenes
 
-
+from app.repository.multimodalRepositoty.multiModalRepository  import setup_multimodal
 
 
 
@@ -119,153 +114,10 @@ class DeleteResponse(BaseModel):
     deleted_count: int
     deleted_ids: List[str]
 
-# 🔹 Insertar textos
-@app.post("/insert")
-def insert_texts(req: InsertRequest):
-    inserted_count = insert_documents(req.items)
-    return {"inserted": inserted_count}
-
-# ============= MULTIMODAL ==========================
-
-@app.post("/insert-text-multimodal")
-def post_insert_texts_multimodal(req: MultimodalRequest):
-    if not req.items:
-        return {"inserted": 0, "ratio": "0.00%"}
-
-    inserted_count = insert_multimodal(req.items, "text")
-    ratio = (inserted_count / len(req.items) * 100)
-    return {"inserted": inserted_count, "ratio": f"{ratio:.2f}%"}
-
-
-@app.post("/insert-image-multimodal")
-async def post_insert_images_multimodal(files: List[UploadFile] = File(...), metadatas = Form(...)):
-    try:
-        json_metadatas = json.loads(metadatas)
-        metadatas = [MetadataItem(**metadata) for metadata in json_metadatas]
-    except (json.JSONDecodeError, ValidationError):
-        raise HTTPException(status_code=400, detail="Datos de metadata inv\u00e1lidos")
-
-    if len(files) != len(metadatas):
-        raise HTTPException(status_code=400, detail=f"Cantidad de imágenes y metadatos no coinciden. Hay {len(files)} imágenes pero {len(metadatas)} metadatos")
-
-    images = []
-    for i, file in enumerate(files):
-        file_path = IMAGE_DIR / file.filename
-        with open(file_path, "wb") as f:
-            f.write(await file.read())
-        metadata = metadatas[i]
-        metadata.filename = file.filename
-        images.append(MultimodalItem(data=str(file_path), metadata=metadata))
-
-    inserted_count = insert_multimodal(images, "image")
-    ratio = (inserted_count / len(images) * 100)
-    return {"inserted": inserted_count, "ratio": f"{ratio:.2f}%"}
-
-
-@app.get("/search-by-text-multimodal")
-def search_multimodal_text(pregunta: str, tipo: str):
-    return search_multimodal(pregunta, "text", tipo)
-
-# @app.post("/search-by-image-multimodal")
-# async def search_multimodal_image(file: UploadFile = File(...), top_k: int = 5):
-#     file_path = IMAGE_DIR / file.filename
-
-#     with open(file_path, "wb") as f:
-#         f.write(await file.read())
-
-#     return search_multimodal(str(file_path), "image", top_k)
 
 
 
-@app.get("/search")
-def search_text(query: str, top_k: int = 5):
-    results = search_documents(query, top_k)
-    return {
-        "query": query,
-        "results": results
-    }
 
-@app.post('/insert-person')
-def insert_person(req: InsertPersonRequest):
-    try:
-        inserted_count = insert_persons(req.items)
-        return {"inserted": inserted_count}
-    except Exception as e:
-        return {"error": str(e), "inserted": 0}
-
-@app.get("/find-person")
-def find_person(
-    query: str, 
-    top_k: int = 1,
-    metric_type: str = Query("COSINE", description="Tipo de métrica: L2, IP, COSINE, HAMMING, JACCARD")
-):
-    try:
-        results = search_person(query, top_k, metric_type)
-        return {
-            "query": query,
-            "results": results
-        }
-    except Exception as e:
-        return {
-            "query": query,
-            "results": [],
-            "error": str(e)
-        }
-    
-@app.post("/upload-images")
-async def upload_images(files: List[UploadFile] = File(...)):
-    results = []
-
-    for file in files:
-        file_path = IMAGE_DIR / file.filename
-
-        with open(file_path, "wb") as f:
-            f.write(await file.read())
-
-        inserted_count = insert_images([str(file_path)], metadata={"filename": file.filename})
-        results.append({
-            "filename": file.filename,
-            "status": "inserted",
-            "inserted_count": inserted_count
-        })
-
-    return results
-
-@app.post("/upload-files")
-async def upload_files(files: List[UploadFile] = File(...)):
-    results = []
-
-    for file in files:
-        content = extract_text_from_file(await file.read(), file.filename)
-        items = []
-        for fragment in content:
-            item = TextItem(text=fragment, subject="uploaded")
-            items.append(item)
-        inserted_count = insert_documents(items, metadata={"filename": file.filename})
-        results.append({"filename": file.filename, "status": "inserted", "inserted_count": inserted_count})        
-
-    return results
-
-
-@app.post("/search-images")
-async def search_images(file: UploadFile = File(...), top_k: int = 5):
-    
-    try:
-        suffix = os.path.splitext(file.filename)[1]
-        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-            tmp.write(await file.read())
-            tmp_path = tmp.name
-        return search_similar_images(tmp_path, top_k)
-    except Exception as e:
-        return {"error": str(e)}
-
-
-@app.get("/images/{filename}")
-def get_image(filename: str):
-    file_path = IMAGE_DIR / filename
-    if not file_path.exists():
-        raise HTTPException(status_code=404, detail="Image not found")
-    return FileResponse(file_path)
 
 
 
@@ -579,212 +431,42 @@ async def download_visualization_3d(
         media_type="image/png",
         headers={"Content-Disposition": f"attachment; filename=vectors_3d_{collection}_{len(vectors)}_vectors.png"}
     )
-@app.post("/manage-image")
-async def manage_image(file1: UploadFile = File(...), file2: UploadFile = File(...)):
-    try:
-        # Guardar imágenes temporales
-        suffix1 = os.path.splitext(file1.filename)[1]
-        suffix2 = os.path.splitext(file2.filename)[1]
-        
-        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix1) as tmp1, \
-             tempfile.NamedTemporaryFile(delete=False, suffix=suffix2) as tmp2:
-            # Leer contenido una sola vez
-            file1_content = await file1.read()
-            file2_content = await file2.read()
-            
-            tmp1.write(file1_content)
-            tmp_path1 = tmp1.name
-            tmp2.write(file2_content)
-            tmp_path2 = tmp2.name
-
-        # Buscar similitudes para file1
-        similar_images = search_similar_images(tmp_path1, top_k=1)
-        print(f"DEBUG: Similar images found: {similar_images}")
-
-        # Crear directorio si no existe
-        IMAGE_DIR.mkdir(parents=True, exist_ok=True)
-        
-        # Guardar file2 en IMAGE_DIR
-        file2_path = IMAGE_DIR / file2.filename
-        with open(file2_path, "wb") as f:
-            f.write(file2_content)  # Usamos el contenido ya leído
-
-        # Operación de borrado
-        deleted, deleted_filename = delete_if_similar(similar_images, threshold=0)
-        
-        # Insertar file2 desde el archivo guardado (no el temporal)
-        insert_images([str(file2_path)], metadata={"filename": file2.filename})
-
-        return {
-            "file1_deleted": deleted,
-            "deleted_filename": deleted_filename,
-            "file2_inserted": file2.filename,
-            "file2_path": str(file2_path),  # Devuelve la ruta para verificación
-            "similarity_results": similar_images
-        }
-
-    except Exception as e:
-        print(f"ERROR: {str(e)}")
-        return {"error": str(e)}
-    finally:
-        # Limpiar archivos temporales
-        if 'tmp_path1' in locals() and os.path.exists(tmp_path1):
-            os.unlink(tmp_path1)
-        if 'tmp_path2' in locals() and os.path.exists(tmp_path2):
-            os.unlink(tmp_path2)
-
-@app.delete("/delete-image")
-async def delete_image(file: UploadFile = File (...)):
-
-    try:
-        suffix = os.path.splitext(file.filename)[1]
-        with tempfile.NamedTemporaryFile(delete=False,suffix=suffix) as tmp:
-            tmp.write(await file.read())
-            tmp_path = tmp.name 
-
-        similar_images = search_similar_images(tmp_path, top_k=1)
-        deleted = False 
-        deleted_id = None 
-        if similar_images:
-            deleted_id = similar_images[0]["id"]
-            delete_image_byId(deleted_id)
-            deleted = True 
-
-        return {
-            "action": "deleted" if deleted else "there are not any similar image",
-            "deleted_id": deleted_id if deleted else None,
-            "similarity_score": similar_images[0]["score"] if deleted else None
-        }
-    except Exception as e:
-        return {"error": str(e)}
-    finally:
-        # Limpieza del archivo temporal
-        if 'tmp_path' in locals() and os.path.exists(tmp_path):
-            os.unlink(tmp_path)
-
-@app.post("/replace-closest-image")
-async def replace_closest_image(file: UploadFile = File(...)):
-    try:
-        # Guardar imagen temporal
-        suffix = os.path.splitext(file.filename)[1]
-        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
-            tmp.write(await file.read())
-            tmp_path = tmp.name
-
-        file_content = await file.read()
-
-        # Paso 1: Buscar la más cercana
-        similar_images = search_similar_images(tmp_path, top_k=1)
-        
-         # Guardar file2 en IMAGE_DIR
-        file_path = IMAGE_DIR / file.filename
-        with open(file_path, "wb") as f:
-            f.write(file_content)  # Usamos el contenido ya leído
 
 
-        # Paso 2: Eliminar si existe
-        deleted = False
-        deleted_id = None
-        if similar_images:
-            deleted_id = similar_images[0]["id"]
-            delete_image_byId(deleted_id)
-            deleted = True
-
-        insert_images([tmp_path], metadata={"filename": file.filename})
-
-        return {
-            "action": "replaced" if deleted else "inserted",
-            "deleted_id": deleted_id,
-            "new_filename": file.filename,
-            "similarity_score": similar_images[0]["score"] if deleted else None
-        }
-
-    except Exception as e:
-        return {"error": str(e)}
-
-
-
-@app.get("/documents/by-filename/{filename}", response_model=List[TextItem])
-async def get_documents_by_filename(filename: str):
-    """
-    Endpoint para recuperar todos los fragmentos de un archivo específico
-    usando el schema TextItem con el filename como subject
-    """
-    try:
-        # 1. Obtener los resultados crudos
-        raw_results = vectorsForAFileName(filename)
-        
-        if not raw_results:
-            return []
-            
-        # 2. Adaptar a TextItem con filename como subject
-        formatted_results = []
-        for item in raw_results:
-            formatted_results.append(
-                TextItem(
-                    text=item.get("text", ""),
-                    subject=item.get("filename", "unknown")  # Usamos el filename como subject
-                )
-            )
-        
-        return formatted_results
-        
-    except Exception as e:
-        raise HTTPException(
-            status_code=500,
-            detail=f"Error retrieving documents: {str(e)}"
-        )
-
-
-@app.delete("/documents/by-filename/{filename}")
-async def delete_by_filename_direct(filename: str):
-    """
-    Endpoint para eliminar documentos por filename
-    Returns:
-        JSON: Resultado de la operación con status code apropiado
-    """
-    try:
-        result = delete_documents_by_filename_service(filename)
-        return result
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error al eliminar documentos: {str(e)}"
-        )
     
 #por ids 
-@app.delete("/documents/by-filenamePorIds/{filename}", response_model=DeleteResponse)
-async def delete_documents_by_filename(filename: str):
-    """
-    Endpoint para eliminar todos los documentos asociados a un filename
-    """
-    try:
-        # 1. Obtener todos los documentos del filename
-        documents = vectorsForAFileName(filename)
-        
-        if not documents:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"No se encontraron documentos con el filename: {filename}"
-            )
-        
-        # 2. Extraer los IDs
-        ids_to_delete = [str(doc["id"]) for doc in documents]
-        
-        # 3. Eliminar los documentos
-        delete_result = delete_vectors_by_ids(ids_to_delete)
-        
-        return {
-            "filename": filename,
-            "deleted_count": len(ids_to_delete),
-            "deleted_ids": ids_to_delete
-        }
-        
-    except HTTPException:
-        raise
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=f"Error al eliminar documentos: {str(e)}"
-        )
-
+#@app.delete("/documents/by-filenamePorIds/{filename}", response_model=DeleteResponse)
+#async def delete_documents_by_filename(filename: str):
+#    """
+#    Endpoint para eliminar todos los documentos asociados a un filename
+#    """
+#    try:
+#        # 1. Obtener todos los documentos del filename
+#        documents = vectorsForAFileName(filename)
+#        
+#        if not documents:
+#            raise HTTPException(
+#                status_code=status.HTTP_404_NOT_FOUND,
+#                detail=f"No se encontraron documentos con el filename: {filename}"
+#            )
+#        
+#        # 2. Extraer los IDs
+#        ids_to_delete = [str(doc["id"]) for doc in documents]
+#        
+#        # 3. Eliminar los documentos
+#        delete_result = delete_vectors_by_ids(ids_to_delete)
+#        
+#        return {
+#            "filename": filename,
+#            "deleted_count": len(ids_to_delete),
+#            "deleted_ids": ids_to_delete
+#        }
+#        
+#    except HTTPException:
+#        raise
+#    except Exception as e:
+#        raise HTTPException(
+#            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+#            detail=f"Error al eliminar documentos: {str(e)}"
+#        )
+#

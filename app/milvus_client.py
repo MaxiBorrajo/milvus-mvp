@@ -55,184 +55,7 @@ def setup_collection():
             metric_type=metric
         )
 
-# Insertar documentos
-def insert_documents(items, metadata=None):
-    vectors = model.encode([item.text for item in items])
-    data = [
-        {
-           
-            "vector": vectors[i],
-            "text": items[i].text,
-            "subject": items[i].subject,
-            "filename": metadata.get("filename") if metadata else None
-        }
-        for i in range(len(items))
-    ]
-    client.insert(collection_name=COLLECTION_NAME, data=data)
-    return len(data)
 
-def search_documents(query: str, top_k: int):
-    client.load_collection(COLLECTION_NAME)
-    query_vector = model.encode([query])
-    res = client.search(
-        collection_name=COLLECTION_NAME,
-        data=query_vector,
-        limit=top_k,
-       
-        output_fields=["text", "subject"]
-    )
-
-    return [
-        {
-            "id": hit["id"],
-            "text": hit["entity"]["text"],
-            "subject": hit["entity"]["subject"],
-            "similarity": round(1 - hit["distance"], 4)
-        }
-        for hit in res[0]
-    ]
-
-def insert_persons(persons_list, metadata=None):
-    """
-    Inserts a list of persons into all Milvus collections with their vector embeddings.
-    
-    Args:
-        persons_list: List of Person objects (with .description, .name, .skills attributes)
-        metadata: Optional dictionary of additional metadata (e.g., source_file)
-    
-    Returns:
-        int: Number of persons inserted
-    """
-    try:
-        # Encode person descriptions using model
-        vectors = model.encode([person.description for person in persons_list])
-        
-        # Insert into all metric collections with appropriate normalization
-        metrics = ["COSINE", "L2", "IP"]
-        
-        for metric in metrics:
-            collection_name = f"{PERSON_COLLECTION}_{metric.lower()}"
-            
-            # Prepare data with appropriate normalization for each metric
-            if metric == "COSINE":
-                # COSINE needs L2 normalization
-                normalized_vectors = normalize(vectors, norm='l2')
-                data = [
-                    {
-                        "vector": normalized_vectors[i],
-                        "name": persons_list[i].name,
-                        "description": persons_list[i].description,
-                        "metadata": metadata if metadata else None
-                    }
-                    for i in range(len(persons_list))
-                ]
-            else:
-                # L2 and IP use raw vectors (no normalization)
-                data = [
-                    {
-                        "vector": vectors[i],
-                        "name": persons_list[i].name,
-                        "description": persons_list[i].description,
-                        "metadata": metadata if metadata else None
-                    }
-                    for i in range(len(persons_list))
-                ]
-            
-            client.insert(
-                collection_name=collection_name,
-                data=data
-            )
-           
-        
-        return len(data)
-    except Exception as e:
-        raise e
-
-
-def search_person(query: str, top_k: int, metric_type: str = "COSINE"):
-    try:
-        collection_name = f"{PERSON_COLLECTION}_{metric_type.lower()}"
-        
-        if not client.has_collection(collection_name):
-            return []
-        
-        client.load_collection(collection_name)
-        
-        encoded_query = model.encode([query])
-        
-        if metric_type == "COSINE":
-            query_vector = normalize(encoded_query, norm='l2')
-        else:
-            query_vector = encoded_query
-        
-        res = client.search(
-            collection_name=collection_name,
-            data=query_vector,
-            limit=top_k,
-            output_fields=["name", "description"]
-        )
-        
-        results = []
-        for hit in res[0]:
-            if metric_type == "COSINE":
-                similarity = hit["distance"]
-            elif metric_type == "L2":
-                similarity = max(0, 1 - (hit["distance"] / 1000))
-            elif metric_type == "IP":
-                similarity = max(0, min(1, hit["distance"] / 100))
-
-            results.append({
-                "id": hit["id"],
-                "name": hit["entity"]["name"],
-                "description": hit["entity"]["description"],
-                "similarity": round(similarity, 4)
-            })
-        
-        return results
-        
-    except Exception as e:
-        raise e
-
-def insert_images(images, metadata=None):
-    extractor = FeatureExtractor("resnet34")
-    embeddings = []
-    for image in images:
-        image_embedding = extractor(image)
-        embeddings.append(image_embedding)
-    data = [
-        {
-           
-            "vector": embeddings[i],
-            "filename": metadata.get("filename") if metadata else None
-        }
-        for i in range(len(embeddings))
-    ]
-    client.insert(collection_name="images", data=data)
-    return len(data)
- 
-def search_similar_images(image_path, top_k: int):
-    extractor = FeatureExtractor("resnet34")
-    vectors = [extractor(image_path)]
-
-    results = client.search(
-        "images",
-        data=vectors,
-        output_fields=["filename"],
-        search_params={"metric_type": "COSINE"},
-        limit=top_k
-    )
-
-    base_url = "http://localhost:8000/images"
-
-    return [
-        {
-            "filename": hit["entity"]["filename"],
-            "score": round(1 - hit["distance"], 4),
-            "url": f"{base_url}/{hit['entity']['filename']}",
-            "id": hit.id
-        }
-        for hit in results[0]
-    ]
 
 def get_all_vectors_from_collection(collection_name, limit=100):
     client.load_collection(collection_name)
@@ -335,79 +158,24 @@ def get_all_vectors_combined(limit=100):
     return texts + images + persons
 
 
-def delete_if_similar(similar_images: list, threshold: float = 0.01):  # Threshold bajo (cerca de 0)
-    if similar_images:
-        top_result = similar_images[0]
-        
-        # Si el score es cercano a 0 (idéntico), borramos
-        if top_result["score"] <= threshold: 
-            client.delete(
-                collection_name="images",
-                ids=[top_result["id"]]
-            )
-            return True, top_result["id"]
-    
-    return False, None
-
-def delete_image_byId(vector_id: int):
-    """Elimina una imagen por su ID vectorial"""
-    client.delete(
-        collection_name="images",
-        ids=[vector_id]  # Corregido: usa el parámetro real
-    )
-
-
-    
-def subirImagenes(path, funcion):
-    for nombre_archivo in os.listdir(path):
-        ruta_completa = os.path.join(path, nombre_archivo)
-        if os.path.isfile(ruta_completa) and nombre_archivo.lower().endswith(('.png', '.jpg', '.jpeg', '.webp', '.bmp', '.gif', 'jfif' )):
-            metadata = {"filename": nombre_archivo}  
-            funcion([ruta_completa], metadata)
 
 
 
-def vectorsForAFileName(filename: str):
-    # Cargar la colección (esto puede variar según la versión de Milvus)
-    client.load_collection(COLLECTION_NAME)
-    
-    # Realizar la consulta con filtro
-    res = client.query(
-        collection_name=COLLECTION_NAME,
-        filter=f"filename == '{filename}'",  # Filtro por nombre de archivo
-        output_fields=["text", "filename", "vector","id"]  # Campos a recuperar
-    )
-    
-    return res
 
 # Función nueva para eliminar por IDs
 
-def delete_vectors_by_ids(ids: List[str], batch_size: int = 50):
-    client.load_collection(COLLECTION_NAME)
-    deleted_ids = []
-
-    for i in range(0, len(ids), batch_size):
-        batch = ids[i:i + batch_size]
-        expr = f'id in [{",".join(batch)}]'
-        try:
-            client.delete(collection_name=COLLECTION_NAME, filter=expr)
-            deleted_ids.extend(batch)
-        except Exception as e:
-            print(f"Error deleting batch {batch}: {e}")
-            continue
-
-    return deleted_ids
-
-def delete_documents_by_filename_service(filename: str):
-
-    client.load_collection(COLLECTION_NAME)
-    res = client.delete(
-        collection_name=COLLECTION_NAME,
-        filter=f"filename == '{filename}'"
-    )
-    
-    return {
-        "filename": filename,
-        "deleted_count": res["delete_count"],
-        "method": "direct_filename_filter"
-    }
+#def delete_vectors_by_ids(ids: List[str], batch_size: int = 50):
+#    client.load_collection(COLLECTION_NAME)
+#    deleted_ids = []
+#
+#    for i in range(0, len(ids), batch_size):
+#        batch = ids[i:i + batch_size]
+#        expr = f'id in [{",".join(batch)}]'
+#        try:
+#            client.delete(collection_name=COLLECTION_NAME, filter=expr)
+#            deleted_ids.extend(batch)
+#        except Exception as e:
+#            print(f"Error deleting batch {batch}: {e}")
+#            continue
+#
+#    return deleted_ids
