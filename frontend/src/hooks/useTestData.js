@@ -1,0 +1,728 @@
+import { useCallback } from "react";
+import useApi from "./useApi";
+
+const useTestData = () => {
+  const { loading, error, data, makeRequest, reset } = useApi();
+
+  const validatePersons = (persons) => {
+    return persons.filter(
+      (p) =>
+        p &&
+        typeof p === "object" &&
+        typeof p.name === "string" &&
+        typeof p.description === "string" &&
+        p.name.trim() &&
+        p.description.trim()
+    );
+  };
+
+  const createTestData = useCallback(
+    async (testData) => {
+      try {
+        if (testData && Array.isArray(testData.items)) {
+          testData.items = validatePersons(testData.items);
+        }
+        const result = await makeRequest(
+          "http://localhost:8000/insert-person",
+          {
+            method: "POST",
+            body: JSON.stringify(testData),
+          }
+        );
+
+        return result;
+      } catch (err) {
+        throw err;
+      }
+    },
+    [makeRequest]
+  );
+
+  const getDefaultTestData = () => {
+    return {
+      items: generateMockPersons(),
+    };
+  };
+
+  const generateMockPersons = () => {
+    const persons = [
+      {
+        name: "Joel Cabral",
+        description:
+          "Trabajador, dedicado, desarrolla ideas funcionales, gamer, comunicativo, responsable, práctico, rápida adaptación tecnológica",
+      },
+      {
+        name: "Joel Cabral",
+        description:
+          "Es divertido, comunicativo, gamer y de espíritu imparable. Un compañero responsable, comprometido con el estudio",
+      },
+      {
+        name: "Joel Cabral",
+        description:
+          "Siempre dispuesto a resolver dudas o explicar conceptos aprendidos de manera independiente. Se lo describe como una pieza clave en el grupo",
+      },
+      {
+        name: "Joel Cabral",
+        description:
+          "Es práctico, laborioso y con rápida adaptación a diferentes tecnologías",
+      },
+      {
+        name: "Lucas Josué Coronel",
+        description:
+          "Resiliente, imparable, valiente y curioso. Destaca por su capacidad para pensar fuera de lo convencional",
+      },
+      {
+        name: "Lucas Josué Coronel",
+        description:
+          "Aunque aparenta timidez, genera ideas innovadoras y percibe detalles ocultos con un enfoque analítico profundo",
+      },
+      {
+        name: "Lucas Josué Coronel",
+        description:
+          "Comparable a un pensamiento matricial. Su búsqueda de comprensión abarca hasta los niveles más detallados",
+      },
+      {
+        name: "Lucas Josué Coronel",
+        description:
+          "Es prolijo, dedicado y extremadamente atento a los detalles",
+      },
+      {
+        name: "Matías Francisco Deo",
+        description:
+          "Lógico, perfeccionista y gamer. Demuestra una extraordinaria capacidad de organización",
+      },
+      {
+        name: "Matías Francisco Deo",
+        description:
+          "Logra manejar simultáneamente cuatro materias, actividades académicas como trabajos prácticos de EPERS, programación concurrente y laboratorios",
+      },
+      {
+        name: "Matías Francisco Deo",
+        description:
+          "Mantiene tiempo para gaming y vida social. Su presencia en Discord es constante, mostrando un equilibrio admirable entre responsabilidades y ocio",
+      },
+      {
+        name: "Matías Francisco Deo",
+        description:
+          "Es un compañero invaluable para trabajos en equipo, con altas probabilidades de graduarse este año o el próximo. Destaca especialmente en matemáticas",
+      },
+      {
+        name: "Matías Francisco Deo",
+        description:
+          "Es diligente, entusiasta y muestra genuina pasión por sus actividades",
+      },
+      {
+        name: "Damián Peñalver",
+        description:
+          "Destaca por su compañerismo, curiosidad y sabiduría con un particular afecto por las iguanas",
+      },
+      {
+        name: "Damián Peñalver",
+        description:
+          "Es conocido como 'la biblioteca de barrio' porque los fines de semana no abre libros, pero demuestra gran conocimiento",
+      },
+      {
+        name: "Damián Peñalver",
+        description:
+          "Excelente compañero que siempre comparte experiencias valiosas, generando buena impresión incluso en quienes no lo conocen profundamente",
+      },
+      {
+        name: "Damián Peñalver",
+        description:
+          "Tiene especial afinidad por animales, incluyendo gatos, perros y las mencionadas iguanas",
+      },
+      {
+        name: "Damián Peñalver",
+        description:
+          "Profesional inteligente, con destacadas habilidades tecnológicas que lo hacen experto en el área",
+      },
+      {
+        name: "Enzo Ploza",
+        description:
+          "Resiliente, sabio, hábil y curioso, con un notable espíritu trabajador e investigador",
+      },
+      {
+        name: "Enzo Ploza",
+        description:
+          "Su perfil académico sugiere gran potencial para dedicarse a la investigación profesional",
+      },
+      {
+        name: "Enzo Ploza",
+        description:
+          "Más allá del ámbito académico, demuestra cualidades sociales notables como el 'cebador oficial' del grupo",
+      },
+      {
+        name: "Enzo Ploza",
+        description:
+          "Genera interés por compartir momentos informales como cervezas fuera de la facultad para conversaciones profundas",
+      },
+      {
+        name: "Enzo Ploza",
+        description:
+          "Su carácter apasionado y decidido se complementa con su capacidad para proponer ideas valiosas en distintos contextos",
+      },
+
+      {
+        name: "Walter Altamirano",
+        description:
+          "Muy atento y responsable, le pone mucho empeño y esfuerzo al estudio",
+      },
+      {
+        name: "Walter Altamirano",
+        description:
+          "Disciplinado con el cuidado de su salud, responsable, trabajador estructurado",
+      },
+      {
+        name: "Walter Altamirano",
+        description:
+          "Le gusta hacer actividad física y cuida su alimentación, dispuesto a ayudar y le gustan los desafíos",
+      },
+      {
+        name: "Walter Altamirano",
+        description:
+          "Cada día trata de ser mejor persona y es bueno escuchando a las personas",
+      },
+      {
+        name: "Ian Bravo",
+        description:
+          "Baterista con gustos musicales copados, disperso pero cumplidor con todo lo que se le asigna",
+      },
+      {
+        name: "Ian Bravo",
+        description:
+          "Gracioso y un gran compañero, un semental italiano como Rocky, buena persona y fiel amigo",
+      },
+      {
+        name: "Ian Bravo",
+        description:
+          "Da lo mejor para aprobar y es bueno. Un tipo que te acompaña a la joda si hay",
+      },
+      {
+        name: "Matías Javier Maza Vega",
+        description:
+          "Organizador ingenioso que siempre da una mano para ayudar, bueno compartiendo en grupo",
+      },
+      {
+        name: "Matías Javier Maza Vega",
+        description:
+          "Con tranquilidad ante los problemas. Combina su mente analítica con un lado creativo fuera de lo normal",
+      },
+      {
+        name: "Matías Javier Maza Vega",
+        description:
+          "Con la arquería y el anime. Una fiera salvaje poco común en la UNQ, bondadoso y carismático",
+      },
+      {
+        name: "Luciana Merlino",
+        description:
+          "La adulta responsable del grupo, sin ella el grupo se prende fuego",
+      },
+      {
+        name: "Luciana Merlino",
+        description:
+          "Muy responsable, organizada y estructurada, siempre predispuesta a ayudar y a plantear objetivos claros",
+      },
+      {
+        name: "Luciana Merlino",
+        description:
+          "Para que nadie se pierda en el caos. Si es necesario se pone la gorra, pero es simpática y comprensible",
+      },
+      {
+        name: "Luciana Merlino",
+        description: "Con gran capacidad para explicar temas y buena charla",
+      },
+      {
+        name: "Abril Rodríguez",
+        description:
+          "Amante de los gatos, un gran corazón, siempre trata de ayudar a sacar la timidez a la fuerza",
+      },
+      {
+        name: "Abril Rodríguez",
+        description:
+          "Re simpática, hace que las cursadas sean amenas, con risa contagiosa",
+      },
+      {
+        name: "Abril Rodríguez",
+        description:
+          "Dispuesta a hacer lo que haga falta aunque sea un tema difícil, muy curiosa, extremadamente sociable",
+      },
+      {
+        name: "Abril Rodríguez",
+        description:
+          "Fresca, agradable, trabajadora. Letal si le haces algo malo. Cuidado. Yo correría",
+      },
+      {
+        name: "Maximiliano Borrajo",
+        description: "Facha, un capo x9",
+      },
+      {
+        name: "Tomás Fuentes",
+        description:
+          "Gran pibe, actividad positiva, la rompe en el call of duty, y en todos los juegos de tiros",
+      },
+      {
+        name: "Cristian Nasr",
+        description: "Doxeado laprida 1234, un genio en todas las materias",
+      },
+      {
+        name: "Franco Orizonte",
+        description: "Copado, siempre se prende a jugar las cartas",
+      },
+      {
+        name: "Nicolás Torboli",
+        description:
+          "El facuamigo ideal. Siempre lleva mate, está de buen humor y siempre tiene algo para contar",
+      },
+      {
+        name: "Nicolás Torboli",
+        description:
+          "Con él, las clases se pasan super rápido. Se lleva bien con todo el mundo, es el verdadero chad",
+      },
+      {
+        name: "Nicolás Torboli",
+        description:
+          "No sé si tiene materia fav, pero sé que epers le gusta. Un tipazo",
+      },
+      {
+        name: "Ornella Bottiggi",
+        description:
+          "El alma artística del grupo, talentosa ilustradora con habilidades excepcionales que deja a todos impresionados",
+      },
+      {
+        name: "Ornella Bottiggi",
+        description:
+          "La twin de Organización de computadoras de alguien. Una compañera invaluable: empática, honesta y dispuesta a escuchar",
+      },
+      {
+        name: "Ornella Bottiggi",
+        description: "Apasionada con los juegos de terror",
+      },
+      {
+        name: "Melisa Confalonieri",
+        description:
+          "Amante de la leyenda de Korra, copada, talentosa para escribir y codear",
+      },
+      {
+        name: "Melisa Confalonieri",
+        description:
+          "Reina de los objetos, super resolutiva, dispuesta a acompañar, compartir lo que sabe y brindar apoyo al grupo",
+      },
+      {
+        name: "Chiara Forti Dono",
+        description:
+          "Compañera excepcional, re buena onda y siempre dispuesta a dar una mano a los demás",
+      },
+      {
+        name: "Chiara Forti Dono",
+        description:
+          "Se pueden tener charlas copadas con ella. Una genia, explica re bien siempre",
+      },
+      {
+        name: "Chiara Forti Dono",
+        description:
+          "La única que tiene horario de sueño normal, le gusta el inglés parece",
+      },
+      {
+        name: "Candela Marzaroli",
+        description:
+          "Es una combinación explosiva de inteligencia práctica y creatividad desbordante",
+      },
+      {
+        name: "Candela Marzaroli",
+        description:
+          "Con una mente tan organizada como ingeniosa. Reina de Organización de Computadoras y una genia con las manualidades",
+      },
+      {
+        name: "Candela Marzaroli",
+        description:
+          "Destaca por su capacidad para resolver problemas con ideas frescas y un toque de humor único",
+      },
+      {
+        name: "Candela Marzaroli",
+        description:
+          "Su personalidad es un imán grupal: empática, confiable y siempre lista para ayudar",
+      },
+      {
+        name: "Candela Marzaroli",
+        description:
+          "No le gustan que le incluyan en tinders de espíritus, vio mean girls y no confía en esta actividad",
+      },
+      {
+        name: "Josefina Volosin",
+        description:
+          "Con un conocimiento amplio y diverso, destaca por su capacidad para explicar conceptos complejos sin condescendencia",
+      },
+      {
+        name: "Josefina Volosin",
+        description:
+          "Haciendo que aprender sea natural y motivador. Su talento se extiende desde el ámbito técnico hasta el creativo",
+      },
+      {
+        name: "Josefina Volosin",
+        description:
+          "Una crack programando con dominio en funcional, proveedora oficial de stickers espectaculares y editora de fotos talentosa",
+      },
+      {
+        name: "Josefina Volosin",
+        description:
+          "Una genia en funcional y en estructura de datos. La mini fidel",
+      },
+      {
+        name: "Carolina Ciampini",
+        description:
+          "Es una profesional con mentalidad de crecimiento, siempre abierta a nuevos aprendizajes",
+      },
+      {
+        name: "Carolina Ciampini",
+        description:
+          "Combina una marcada inteligencia emocional demostrando genuina preocupación por los demás y alta empatía",
+      },
+      {
+        name: "Carolina Ciampini",
+        description:
+          "Con una ética de trabajo excepcional. En entornos grupales, aporta estructura y seguimiento meticuloso a los proyectos",
+      },
+      {
+        name: "Lucrecia Colón",
+        description:
+          "Destaca por su capacidad excepcional para el razonamiento lógico, aplicándolo con precisión tanto en el análisis de problemas como en la toma de decisiones",
+      },
+      {
+        name: "Lucrecia Colón",
+        description:
+          "Su personalidad equilibrada, una combinación de actitud positiva, serenidad y responsabilidad",
+      },
+      {
+        name: "Lucrecia Colón",
+        description:
+          "Se refleja en su consistente desempeño académico. Además, juega un papel clave en los equipos de trabajo",
+      },
+      {
+        name: "Lucrecia Colón",
+        description:
+          "Donde su energía contagiosa y alto nivel de compromiso fortalecen la dinámica grupal",
+      },
+      {
+        name: "Emilia Díaz",
+        description:
+          "Es una experta versátil con conocimientos amplios que comparte generosamente",
+      },
+      {
+        name: "Emilia Díaz",
+        description:
+          "Su disposición para ayudar es constante, destacándose como un apoyo confiable",
+      },
+      {
+        name: "Emilia Díaz",
+        description:
+          "Posee una notable capacidad para explicar conceptos complejos con claridad cuando otros tienen dificultades",
+      },
+      {
+        name: "Emilia Díaz",
+        description:
+          "Reina en bases de datos, conocimientos en áreas de análisis de datos, machine learning y tecnologías relacionadas",
+      },
+      {
+        name: "Emilia Díaz",
+        description:
+          "Combina cualidades técnicas sobresalientes con habilidades comunicativas efectivas, manteniendo siempre un trato profesional y amigable",
+      },
+      {
+        name: "Nehuen Gallitelli",
+        description:
+          "Es un compañero destacado por su habilidad natural para resolver problemas y aprender herramientas nuevas",
+      },
+      {
+        name: "Nehuen Gallitelli",
+        description:
+          "Tiene un talento especial para investigar y encontrar soluciones prácticas, siempre con buena disposición para ayudar",
+      },
+      {
+        name: "Nehuen Gallitelli",
+        description:
+          "Su personalidad tranquila y su sentido del humor lo hacen muy agradable para trabajar en equipo",
+      },
+      {
+        name: "Nehuen Gallitelli",
+        description:
+          "Sin perder de vista lo importante: es un crack cuando se trata de analizar situaciones y proponer ideas claras",
+      },
+      {
+        name: "Abril Orlando",
+        description:
+          "Es una persona comprometida con el trabajo en equipo, siempre fomentando la colaboración y creando un ambiente positivo",
+      },
+      {
+        name: "Abril Orlando",
+        description:
+          "Destaca por su actitud accesible, comprensiva y responsable en todas las tareas que emprende",
+      },
+      {
+        name: "Abril Orlando",
+        description:
+          "Su creatividad se manifiesta en propuestas innovadoras para abordar proyectos académicos",
+      },
+      {
+        name: "Abril Orlando",
+        description:
+          "Demostrando una constante disposición para apoyar a sus compañeros. Combina habilidades sociales excepcionales con una mentalidad resolutiva",
+      },
+      {
+        name: "Sebastián Correa",
+        description:
+          "Colaborativo que destaca por su iniciativa constante en proyectos prácticos y pair programming",
+      },
+      {
+        name: "Sebastián Correa",
+        description:
+          "Aunque algunos mencionan jocosamente su apariencia, su ética de trabajo inagotable y actitud siempre positiva",
+      },
+      {
+        name: "Sebastián Correa",
+        description:
+          "Lo han convertido en la definición viviente de tipazo. Combina habilidades técnicas sólidas con un espíritu generoso",
+      },
+      {
+        name: "Sebastián Correa",
+        description:
+          "Siempre disponible para consejos, ayuda o incluso desconexiones lúdicas. Su rostro afable refleja fielmente un carácter empático que inspira al equipo",
+      },
+      {
+        name: "Lautaro Galvez Monge",
+        description:
+          "Desarrollador meticuloso que combina una curiosidad implacable con una energía paradoxal",
+      },
+      {
+        name: "Lautaro Galvez Monge",
+        description:
+          "Mientras sus largas horas de sueño son legendarias, su disponibilidad como mediador grupal parece inagotable",
+      },
+      {
+        name: "Lautaro Galvez Monge",
+        description:
+          "Domina el arte del prueba-y-error con una paciencia infinita, canalizando su ansiedad controlada en detección de bugs",
+      },
+      {
+        name: "Lautaro Galvez Monge",
+        description:
+          "Aunque confiesa ser bastante ansioso, esta misma cualidad lo hace excepcional para depuración",
+      },
+      {
+        name: "Lautaro Galvez Monge",
+        description:
+          "Fuera del código, es el alma de los juegos de cartas y el equilibrista que reconcilia al equipo",
+      },
+      {
+        name: "Lautaro Lovato Herrera",
+        description:
+          "Programador entregado y compañero excepcional que destaca por su ética de trabajo implacable y versatilidad única",
+      },
+      {
+        name: "Lautaro Lovato Herrera",
+        description:
+          "Aunque confiesa no ser fanático de las matemáticas, su enfoque pragmático y perseverancia",
+      },
+      {
+        name: "Lautaro Lovato Herrera",
+        description:
+          "Le permiten destacar en todos los frentes: desde el desarrollo técnico hasta la oratoria pública",
+      },
+      {
+        name: "Lautaro Lovato Herrera",
+        description:
+          "Su energía multifacética solo iguala su generosidad: no se queja nunca, ayuda en lo que sea",
+      },
+      {
+        name: "Lucas Sanguinetti",
+        description:
+          "Director creativo nato cuya pasión por los juegos de mesa se traduce en habilidades excepcionales de organización y liderazgo técnico",
+      },
+      {
+        name: "Lucas Sanguinetti",
+        description:
+          "Como arquitecto de proyectos, equilibra seriedad metódica con una creatividad desbordante",
+      },
+      {
+        name: "Lucas Sanguinetti",
+        description:
+          "Que desafía falsos dilemas. Rey indiscutido de las lambdas y el pixelart",
+      },
+      {
+        name: "Lucas Sanguinetti",
+        description:
+          "Su aparente esfuerzo invisible contrasta con resultados consistentemente destacados",
+      },
+      {
+        name: "Lucas Sanguinetti",
+        description:
+          "El compañero ideal que siempre tiene cartas para jugar, literalmente en juegos de mesa y metafóricamente en soluciones innovadoras",
+      },
+      {
+        name: "Lucía Viazzo",
+        description:
+          "Su enfoque de prueba-y-error persistente revela una determinación admirable",
+      },
+      {
+        name: "Lucía Viazzo",
+        description:
+          "Destaca en pair programming como guía paciente que explica mil veces si es necesario",
+      },
+      {
+        name: "Lucía Viazzo",
+        description:
+          "Transformando sesiones técnicas en espacios de crecimiento orgánico. Su energía positiva y claridad comunicativa",
+      },
+      {
+        name: "Lucía Viazzo",
+        description:
+          "La hacen el centro natural del equipo. La paradoja perfecta: improvisadora nata que sin embargo no descansa hasta que todo queda como espera",
+      },
+      {
+        name: "Lucía Viazzo",
+        description:
+          "Demostrando que la perseverancia alegre es posible. Genuina genia que hace sentir el fracaso como parte del aprendizaje",
+      },
+      {
+        name: "Ivan Dominikow",
+        description:
+          "Gran preparador de café, artista carismático, líder resolutivo con estilo",
+      },
+      {
+        name: "Ivan Dominikow",
+        description:
+          "Persona admirable y referente en su campo. Destaca por su creatividad, capacidad para resolver problemas y presencia impactante",
+      },
+      {
+        name: "Tobias Calvento",
+        description: "Persona carismática con estilo único y actitud admirable",
+      },
+      {
+        name: "Tobias Calvento",
+        description:
+          "Destaca por su pragmatismo, paciencia en la resolución de conflictos y habilidad como excelente jugador de pádel",
+      },
+      {
+        name: "Tobias Calvento",
+        description:
+          "Es un referente con quien se puede disentir de manera constructiva, mostrando siempre apertura al diálogo",
+      },
+      {
+        name: "Franco Garcino",
+        description:
+          "Experto destacado en programación, reconocido como el as técnico del grupo con habilidades excepcionales para la resolución de problemas",
+      },
+      {
+        name: "Franco Garcino",
+        description:
+          "Apodado el Federer de zona sur por su maestría en su campo y mejor profe de Estructura de datos del mundo",
+      },
+      {
+        name: "Franco Garcino",
+        description:
+          "Combina su talento profesional con un carisma que recuerda a Jimmy Neutron",
+      },
+      {
+        name: "Franco Garcino",
+        description:
+          "Es un crack completo, cuando se inspira es impresionante, y aunque le deseamos suerte en el amor, ya es un 10 como profesional y amigo",
+      },
+      {
+        name: "Fabian Fragella",
+        description:
+          "Experto en resolución teórica de problemas, reconocido como un crack y un 10 de los que ya no quedan",
+      },
+      {
+        name: "Fabian Fragella",
+        description:
+          "Apasionado por el mundo de El Señor de los Anillos y Spring, es la referencia ideal para consultas sobre estos temas",
+      },
+      {
+        name: "Fabian Fragella",
+        description:
+          "Aunque algunos compañeros admiten no conocerlo en profundidad, su reputación como Jedi de los conocimientos técnicos y su actitud colaborativa lo destaca",
+      },
+      {
+        name: "Lorenzo Ferraces",
+        description:
+          "Comunicador excepcional con un estilo cool y carisma natural que lo destacan como el crack del grupo",
+      },
+      {
+        name: "Lorenzo Ferraces",
+        description:
+          "Apasionado por el voley, sus saques son tan impactantes que generan admiración",
+      },
+      {
+        name: "Lorenzo Ferraces",
+        description:
+          "Conocido por su habilidad para compartir datos curiosos y su estilo único",
+      },
+      {
+        name: "Valentin Ferreyra",
+        description:
+          "Persona amigable y carismática, reconocida como un crack en la gestión de grupos y búsqueda de alternativas creativas",
+      },
+      {
+        name: "Valentin Ferreyra",
+        description:
+          "Con un toque pícaro y talento natural para la actuación, merecedor de un Oscar",
+      },
+      {
+        name: "Valentin Ferreyra",
+        description:
+          "Destaca por su habilidad para unir equipos y resolver problemas con magia. Dale un Excel y hace magia",
+      },
+      {
+        name: "Valentin Ferreyra",
+        description:
+          "Compañero leal y gestor nato, es ese Chico Meli que todos quieren tener en su equipo",
+      },
+      {
+        name: "Ian Ghioni",
+        description:
+          "Músico excepcional, guitarrista progresivo y crack en su arte",
+      },
+      {
+        name: "Ian Ghioni",
+        description:
+          "Cuyo seriedad y madurez contrastan con su rol de apoyo moral inquebrantable",
+      },
+      {
+        name: "Ian Ghioni",
+        description:
+          "Aunque es hombre de pocas palabras, su música habla por él: un amigazo que combina talento artístico con responsabilidad",
+      },
+      {
+        name: "Ian Ghioni",
+        description: "Sus compañeros lo definen simplemente como un capo total",
+      },
+      {
+        name: "Tomas Cowes",
+        description:
+          "El auténtico crack de los mates y la organización, reconocido como el as del mate y un tipazo indispensable",
+      },
+      {
+        name: "Tomas Cowes",
+        description:
+          "Con su carisma natural y habilidad para organizar equipos",
+      },
+      {
+        name: "Tomas Cowes",
+        description:
+          "Siempre está disponible y hasta se sacó 10 en Mate 2. Recién graduado, pero ya leyenda",
+      },
+    ];
+
+    return persons;
+  };
+
+  return {
+    loading,
+    error,
+    data,
+    createTestData,
+    getDefaultTestData,
+    reset,
+  };
+};
+
+export default useTestData;

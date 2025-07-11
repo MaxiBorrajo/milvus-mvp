@@ -1,6 +1,5 @@
-# app/utils.py
 from typing import List
-import fitz  # PyMuPDF
+import fitz
 import docx
 import os
 import io
@@ -8,8 +7,8 @@ import io
 def extract_text_from_file(content: bytes, filename: str) -> List[str]:
     ext = os.path.splitext(filename)[-1].lower()
     text = ""
-
-    if ext == ".pdf":
+ 
+    if ext == ".pdf": 
         doc = fitz.open(stream=content, filetype="pdf")
         for page in doc:
             text += page.get_text()
@@ -21,7 +20,6 @@ def extract_text_from_file(content: bytes, filename: str) -> List[str]:
     else:
         raise ValueError(f"Unsupported file type: {ext}")
 
-    # Fragmentar por párrafo, y limpiar espacios vacíos
     return [frag.strip() for frag in text.split("\n") if frag.strip()]
 
 def split_text_by_paragraph(text: str) -> List[str]:

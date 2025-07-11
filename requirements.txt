@@ -1,12 +1,38 @@
+# FastAPI y servidor web
 fastapi
-uvicorn
-sentence-transformers
+uvicorn[standard]
+
+# Milvus y base de datos vectorial
 pymilvus
-python-docx
-PyMuPDF  # para PDFs (fitz)
-python-multipart
-timm
-torch
+
+# Procesamiento de texto y embeddings
+sentence-transformers
+transformers
+openai
+
+# Procesamiento de imágenes y visión por computadora
 Pillow
+torch
+torchvision
+timm
+git+https://github.com/openai/CLIP.git
+
+# Machine Learning y análisis de datos
 scikit-learn
+numpy
+matplotlib
+
+# Procesamiento de documentos
+python-docx
+PyMuPDF
+
+# Utilidades y herramientas
+python-multipart
 pydantic
+
+# Dependencias adicionales para el proyecto
+pathlib2
+transformers 
+accelerate 
+torch 
+torchvision
