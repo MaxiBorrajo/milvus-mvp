@@ -39,20 +39,20 @@ const SegundoJuego = () => {
       <Header title="Segundo Ritual" />
 
       <div className="game-content libertinus-font">
-        <h1>🕮 Segundo Ritual</h1>
-        <p>¡Encontrá tu alter ego espiritual!</p>
+        <h1>⚔️ Segundo Ritual</h1>
+        <p>La guerra entre ángeles y demonios se avecina...</p>
 
         <div className="game-instructions great-primer-sc">
           <h3>Indicaciones:</h3>
           <ul>
-            <li>Elegi una foto tuya</li>
-            <li>Tirala al abismo para iniciar el ritual</li>
-            <li>¡Pierde la cordura al ver la respuesta!</li>
+            <li>Elegí una foto tuya</li>
+            <li>Lanzala al abismo para revelar tu verdadera esencia</li>
+            <li>Descubrí a qué bando pertenecés… y encontrá a tus similares para la batalla</li>
           </ul>
         </div>
 
         <div className="file-upload-container home-container great-primer-sc">
-          <h2>Sube tu foto...</h2>
+          <h2>Sube una foto...</h2>
           <div className="input-group">
             <label htmlFor="file-upload">Selecciona un archivo</label>
             <input
@@ -77,7 +77,7 @@ const SegundoJuego = () => {
         )}
         <>
           <div className="result-section">
-            <h3>Tus alteregos:</h3>
+            <h3>Tu legión:</h3>
           </div>
           {result && (
             <div className="results-images-container">

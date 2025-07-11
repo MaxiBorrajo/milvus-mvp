@@ -21,7 +21,7 @@ export default function Home() {
         <Link to="/segundo-juego" className="game-card">
           <div className="game-icon">🕮</div>
           <h3 className="great-primer-sc">Segundo Ritual</h3>
-          <p className="libertinus-font">Encontrá tu angel o demonio gemelo</p>
+          <p className="libertinus-font">Arma tu legión</p>
           <div className="game-difficulty libertinus-font">Medio</div>
         </Link>
 

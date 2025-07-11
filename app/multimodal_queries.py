@@ -72,12 +72,12 @@ def search_multimodal(query):
         data=[vector_multimodal],
         output_fields=output_fields,
         search_params={"metric_type": "COSINE"},
-        limit=1
+        limit=2
     )
 
     # Determinar cuántos resultados de texto buscar
     num_imagenes = len(resultados_multimodal[0]) if resultados_multimodal and len(resultados_multimodal) > 0 else 0
-    texto_limit = 3 - num_imagenes
+    texto_limit = 4 - num_imagenes
 
     # Buscar texto
     resultados_texto = client.search(
