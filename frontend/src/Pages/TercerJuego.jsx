@@ -47,7 +47,7 @@ const TercerJuego = () => {
     if (!userQuery.trim()) return;
 
     try {
-      await searchByText(userQuery, 3, fragmentType);
+      await searchByText(userQuery, 3);
       setSelectedOption(null);
     } catch (err) {
       console.error("Error en la búsqueda:", err);
@@ -335,34 +335,6 @@ const TercerJuego = () => {
           <div className="query-section">
             <h3>🤔 ¿Qué quieres saber?</h3>
             <div className="input-group">
-              <select
-                value={fragmentType}
-                onChange={(e) => setFragmentType(e.target.value)}
-                className="fragment-type-selector"
-                disabled={loading}
-                style={{
-                  marginRight: 8,
-                  padding: "8px 12px",
-                  borderRadius: "6px",
-                  border: "1.5px solid #ffd700",
-                  background: "rgba(30, 10, 30, 0.85)",
-                  fontSize: "1rem",
-                  color: "#ffd700",
-                  outline: "none",
-                  boxShadow: "0 1px 4px rgba(0,0,0,0.15)",
-                  transition: "border 0.2s",
-                  minWidth: 140,
-                  cursor: loading ? "not-allowed" : "pointer",
-                  height: 40,
-                  verticalAlign: "middle",
-                  fontWeight: 600,
-                  letterSpacing: "0.5px",
-                }}
-              >
-                <option value="lore">Lore</option>
-                <option value="alternativo">Final alternativo</option>
-                <option value="personaje">Personaje</option>
-              </select>
               <input
                 type="text"
                 value={userQuery}

@@ -18,7 +18,7 @@ const SegundoJuego = () => {
       setResult(null);
       const response = await searchEgo(file);
       console.log(response, "Response");
-      setResult(response[0]);
+      setResult(response);
     } catch (err) {
       console.error("Error en searchAlter:", err, error);
     }
@@ -75,25 +75,28 @@ const SegundoJuego = () => {
             Consultar al abismo...
           </button>
         )}
-
-        {result && (
+        <>
           <div className="result-section">
-            <h3>Tu par:</h3>
-            <div className="games-grid great-primer-sc">
-              <div className="result-card" key={result.index}>
-                <img
-                  src={result.url}
-                  alt="Result"
-                  style={{
-                    maxWidth: "100%",
-                    borderRadius: "10px",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                  }}
-                />
-              </div>
-            </div>
+            <h3>Tus alteregos:</h3>
           </div>
-        )}
+          {result && (
+            <div className="results-images-container">
+              {result.map((r) => (
+                <div className="result-image-card" key={r.index}>
+                  <img
+                    src={r.url}
+                    alt="Result"
+                    style={{
+                      maxWidth: "100%",
+                      borderRadius: "10px",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </>
 
         <Link to="/" className="back-btn">
           ← Volver al calabozo

@@ -16,14 +16,14 @@ from matplotlib import pyplot as plt
 from fastapi import FastAPI, File, Form, UploadFile
 from pydantic import BaseModel
 from typing import List
-from pydantic import BaseModel, ValidationError, validator
+from pydantic import BaseModel, ValidationError
 from pathlib import Path
 from sklearn.decomposition import PCA
-from typing import  List
+from typing import List, Optional, Dict, Any
 from datetime import datetime
 
 from app.utils import extract_text_from_file
-from app.milvus_client import search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, subirImagenes, delete_image_byId, delete_if_similar, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION, vectorsForAFileName, delete_vectors_by_ids, delete_documents_by_filename_service, count_vectors_by_attribute
+from app.milvus_client import vectorsForAFileName,delete_documents_by_filename_service,delete_vectors_by_ids,search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, subirImagenes, delete_image_byId, delete_if_similar, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION, vectorsForAFileName, delete_vectors_by_ids, delete_documents_by_filename_service, count_vectors_by_attribute
 from app.multimodal_queries import insert_multimodal, setup_multimodal, search_multimodal
 
 
@@ -95,14 +95,9 @@ class PersonaItem(BaseModel):
 class InsertPersonRequest(BaseModel):
     items: List[PersonaItem]
 
-class MetadataItem(BaseModel):
-    tipo_fragmento: str 
-    historia: str 
-    filename: str | None = None
-
 class MultimodalItem(BaseModel):
     data: str
-    metadata: MetadataItem
+    metadata: Optional[Dict[str, Any]] = None
 
 class MultimodalRequest(BaseModel):
     items: List[MultimodalItem]
@@ -139,15 +134,7 @@ def post_insert_texts_multimodal(req: MultimodalRequest):
     return {"inserted": inserted_count, "ratio": f"{ratio:.2f}%"}
 
 @app.post("/insert-image-multimodal")
-async def post_insert_images_multimodal(files: List[UploadFile] = File(...), metadatas = Form(...)):
-    try:
-        json_metadatas = json.loads(metadatas)
-        metadatas = [MetadataItem(**metadata) for metadata in json_metadatas]
-    except (json.JSONDecodeError, ValidationError):
-        raise HTTPException(status_code=400, detail="Datos de metadata inv\u00e1lidos")
-
-    if len(files) != len(metadatas):
-        raise HTTPException(status_code=400, detail=f"Cantidad de imágenes y metadatos no coinciden. Hay {len(files)} imágenes pero {len(metadatas)} metadatos")
+async def post_insert_images_multimodal(files: List[UploadFile] = File(...)):
 
     images = []
     for i, file in enumerate(files):
@@ -156,8 +143,8 @@ async def post_insert_images_multimodal(files: List[UploadFile] = File(...), met
         file_path = IMAGE_DIR / str(file.filename)
         with open(file_path, "wb") as f:
             f.write(await file.read())
-        metadata = metadatas[i]
-        metadata.filename = file.filename
+        metadata = dict()
+        metadata["filename"] = file.filename
         images.append(MultimodalItem(data=str(file_path), metadata=metadata))
 
     inserted_count = insert_multimodal(images, "image")
@@ -167,8 +154,8 @@ async def post_insert_images_multimodal(files: List[UploadFile] = File(...), met
     return {"inserted": inserted_count, "ratio": f"{ratio:.2f}%"}
 
 @app.get("/search-by-text-multimodal")
-def search_multimodal_text(pregunta: str, tipo_fragmento: str):
-    return search_multimodal(pregunta, tipo_fragmento)
+def search_multimodal_text(pregunta: str):
+    return search_multimodal(pregunta)
 
 
 @app.get("/search")
@@ -498,8 +485,20 @@ async def replace_closest_image(file: UploadFile = File(...)):
             tmp.write(await file.read())
             tmp_path = tmp.name
 
+        file_content = await file.read()
+
+        # Paso 1: Buscar la más cercana
         similar_images = search_similar_images(tmp_path, top_k=1)
         
+         # Guardar file2 en IMAGE_DIR
+        if file.filename is None:
+            raise HTTPException(status_code=400, detail="El archivo no tiene nombre.")
+        file_path = IMAGE_DIR / str(file.filename)
+        with open(file_path, "wb") as f:
+            f.write(file_content)  # Usamos el contenido ya leído
+
+
+        # Paso 2: Eliminar si existe
         deleted = False
         deleted_id = None
         if similar_images:
@@ -518,9 +517,6 @@ async def replace_closest_image(file: UploadFile = File(...)):
 
     except Exception as e:
         return {"error": str(e)}
-
-
-
 
 
 
