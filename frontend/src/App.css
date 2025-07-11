@@ -2,7 +2,7 @@
   text-align: center;
   min-height: 100vh;
   background: linear-gradient(135deg, #0d0d0d 0%, #4b0000 100%);
-  color: white;
+  color: rgb(246, 223, 223);
 }
 
 .App-logo {
@@ -89,7 +89,7 @@
 
 /* Home Component Styles */
 .home-container {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(78, 63, 58, 0.233);
   backdrop-filter: blur(10px);
   border-radius: 15px;
   padding: 2rem;
@@ -302,14 +302,29 @@
   margin: 3rem 0;
 }
 
+/* Results Images Container */
+.results-images-container {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  justify-content: center;
+  margin: 2rem 0;
+}
+
+.result-image-card {
+  flex: 0 0 auto;
+  max-width: 300px;
+  min-width: 200px;
+}
+
 .game-card {
-  background: rgba(255, 255, 255, 0.1);
+  background: rgba(116, 53, 53, 0.518);
   backdrop-filter: blur(10px);
-  border-radius: 15px;
+  border-radius: 2px;
   padding: 2rem;
-  border: 1px solid rgba(255, 255, 255, 0.2);
+  border: 1px solid rgba(192, 172, 172, 0.2);
   text-decoration: none;
-  color: white;
+  color: rgb(176, 153, 153);
   transition: all 0.3s ease;
   text-align: center;
 }
@@ -482,7 +497,6 @@
   border-radius: 8px;
   font-weight: 600;
   transition: all 0.3s ease;
-  margin-top: 2rem;
 }
 
 .back-btn:hover {
@@ -1104,6 +1118,16 @@
 
   .games-grid {
     grid-template-columns: 1fr;
+  }
+
+  .results-images-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .result-image-card {
+    max-width: 100%;
+    min-width: auto;
   }
 
   .cards-grid {
@@ -1929,7 +1953,6 @@
 }
 
 .query-input {
-  width: 100%;
   padding: 1rem;
   border: 2px solid rgba(255, 255, 255, 0.2);
   border-radius: 8px;
@@ -2084,13 +2107,43 @@
   box-shadow: 0 6px 20px rgba(245, 158, 11, 0.4);
 }
 
+.libertinus-font {
+  font-family: "Libertinus Mono", monospace;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.great-primer-sc {
+  font-family: "IM Fell Great Primer SC", serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.frijole {
+  font-family: "Frijole", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.metal-mania {
+  font-family: "Metal Mania", system-ui;
+  font-weight: 400;
+  font-style: normal;
+}
+
+.anton-sc {
+  font-family: "Anton SC", sans-serif;
+  font-weight: 400;
+  font-style: normal;
+}
+
 @media (max-width: 768px) {
   .options-grid {
     grid-template-columns: 1fr;
   }
 
   .option-card {
-    padding: 1rem;
+    margin: 0.5rem 0;
   }
 
   .query-input {
@@ -2098,6 +2151,217 @@
   }
 
   .story-entry p {
-    font-size: 1rem;
+    font-size: 0.9rem;
+  }
+}
+
+/* Estilos para drag and drop de historias */
+.story-entry {
+  position: relative;
+  user-select: none;
+}
+
+.story-entry.dragging {
+  opacity: 0.5;
+  transform: rotate(5deg);
+  z-index: 1000;
+}
+
+.story-entry[draggable="true"] {
+  cursor: grab;
+}
+
+.story-entry[draggable="true"]:active {
+  cursor: grabbing;
+}
+
+.story-entry[draggable="true"]:hover {
+  border: 2px dashed #ffd700 !important;
+  background-color: rgba(255, 215, 0, 0.1) !important;
+}
+
+.story-entry[draggable="true"]::before {
+  content: "⋮⋮";
+  position: absolute;
+  top: 5px;
+  right: 10px;
+  font-size: 12px;
+  color: #ffd700;
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.story-entry[draggable="true"]:hover::before {
+  opacity: 1;
+}
+
+/* Animación para el drop */
+@keyframes dropAnimation {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.story-entry.drop-target {
+  animation: dropAnimation 0.3s ease;
+}
+
+/* Indicador visual durante el drag */
+.story-entry.drag-over {
+  border: 2px dashed #ffd700 !important;
+  background-color: rgba(255, 215, 0, 0.15) !important;
+  transform: scale(1.02);
+}
+
+/* Estilos para el área de drop */
+.story-text {
+  min-height: 100px;
+  transition: all 0.2s ease;
+}
+
+.story-text.drag-active {
+  background-color: rgba(255, 215, 0, 0.05);
+  border-radius: 8px;
+  padding: 8px;
+}
+
+/* Responsive para drag and drop */
+@media (max-width: 768px) {
+  .story-entry[draggable="true"]::before {
+    font-size: 10px;
+    top: 3px;
+    right: 8px;
+  }
+
+  .story-entry {
+    padding: 6px;
+    margin: 6px 0;
+  }
+}
+
+/* Estilos globales durante el drag */
+body.dragging-active {
+  cursor: grabbing;
+}
+
+body.dragging-active * {
+  cursor: grabbing !important;
+}
+
+body.dragging-active .story-entry[draggable="true"] {
+  cursor: grabbing !important;
+}
+
+/* Mejoras visuales para el drag and drop */
+.story-entry[draggable="true"] {
+  transition: all 0.2s ease;
+}
+
+.story-entry[draggable="true"]:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(255, 215, 0, 0.2);
+}
+
+.story-entry.dragging {
+  transform: rotate(5deg) scale(1.05);
+  box-shadow: 0 8px 25px rgba(255, 215, 0, 0.4);
+  z-index: 1000;
+}
+
+.story-entry.drag-over {
+  transform: scale(1.02);
+  border: 2px dashed #ffd700 !important;
+  background-color: rgba(255, 215, 0, 0.15) !important;
+  box-shadow: 0 4px 15px rgba(255, 215, 0, 0.3);
+}
+
+/* Animación de entrada para nuevos elementos */
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.story-entry {
+  animation: slideIn 0.3s ease;
+}
+
+/* Indicador de posición de drop */
+.story-entry.drop-indicator {
+  border-top: 3px solid #ffd700;
+  margin-top: 8px;
+  margin-bottom: 8px;
+}
+
+/* Estilos para el área de drop cuando está activa */
+.story-text.drag-active {
+  background: linear-gradient(
+    135deg,
+    rgba(255, 215, 0, 0.05) 0%,
+    rgba(255, 215, 0, 0.1) 100%
+  );
+  border: 2px dashed rgba(255, 215, 0, 0.3);
+  border-radius: 12px;
+  padding: 12px;
+  transition: all 0.3s ease;
+}
+
+/* Tooltip para indicar que se puede arrastrar */
+.story-entry[draggable="true"]::after {
+  content: "Arrastra para reordenar";
+  position: absolute;
+  bottom: -25px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.8);
+  color: #ffd700;
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 10px;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+  pointer-events: none;
+  white-space: nowrap;
+}
+
+.story-entry[draggable="true"]:hover::after {
+  opacity: 1;
+}
+
+/* Estilos para dispositivos móviles */
+@media (max-width: 768px) {
+  .story-entry[draggable="true"]::after {
+    display: none;
+  }
+
+  .story-text.drag-active {
+    padding: 8px;
+  }
+
+  .story-entry.dragging {
+    transform: rotate(3deg) scale(1.03);
+  }
+}
+
+/* Animación fadeIn para información de reordenamiento */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }

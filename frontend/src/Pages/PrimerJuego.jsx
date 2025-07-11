@@ -73,11 +73,11 @@ export default function PrimerJuego() {
       const testData = getDefaultTestData();
       const result = await createTestData(testData);
       alert(
-        `✅ Datos de prueba creados exitosamente!\nInsertados: ${result.inserted} elementos`
+        `👁️ Datos de prueba creados exitosamente!\nInsertados: ${result.inserted} elementos`
       );
     } catch (error) {
       console.error("Error creando datos de prueba:", error);
-      alert(`❌ Error al crear datos de prueba: ${error.message}`);
+      alert(`⁶⁶⁶ Error al crear datos de prueba: ${error.message}`);
     }
   };
 
@@ -95,7 +95,7 @@ export default function PrimerJuego() {
     <div className="game-container">
       <Header title="Primer Ritual" />
 
-      <div className="game-content">
+      <div className="game-content libertinus-font">
         <h1>🗪 ¿Quién ha sido señalado por las sombras?</h1>
         <p>
           Susurra tu duda al vacío... y alguien, en algún rincón olvidado,
@@ -116,7 +116,7 @@ export default function PrimerJuego() {
                   onChange={(e) => setQuery(e.target.value)}
                   onKeyPress={handleKeyPress}
                   placeholder="Ej: usar de sacrificio, resolver problemas técnicos..."
-                  className="search-input"
+                  className="search-input great-primer-sc"
                   disabled={loading}
                 />
 
@@ -126,7 +126,7 @@ export default function PrimerJuego() {
                     id="topK"
                     value={topK}
                     onChange={(e) => setTopK(parseInt(e.target.value))}
-                    className="top-k-select"
+                    className="top-k-select great-primer-sc"
                     disabled={loading}
                   >
                     <option value={1}>1 acólito</option>
@@ -143,7 +143,7 @@ export default function PrimerJuego() {
                     id="metricType"
                     value={metricType}
                     onChange={(e) => setMetricType(e.target.value)}
-                    className="metric-select"
+                    className="metric-select great-primer-sc"
                     disabled={loading}
                   >
                     <option value="COSINE">Coseno (Recomendado)</option>
@@ -154,10 +154,10 @@ export default function PrimerJuego() {
 
                 <button
                   onClick={handleSubmit}
-                  className="search-btn"
+                  className="search-btn great-primer-sc"
                   disabled={loading || !query.trim()}
                 >
-                  {loading ? "🔍 Consultando..." : "🔍 Consultar"}
+                  {loading ? "🕳️ Consultando..." : "🕳️ Consultar"}
                 </button>
               </div>
 
@@ -174,14 +174,14 @@ export default function PrimerJuego() {
               )}
 
               <div className="test-data-section">
-                <h4>🌌 Complementa el abismo</h4>
+                <h4>🜏 Complementa el abismo</h4>
                 <button
                   onClick={handleCreateTestData}
-                  className="test-data-btn"
+                  className="test-data-btn great-primer-sc"
                   disabled={testDataLoading}
                 >
                   {testDataLoading
-                    ? "⏳ Alimentando..."
+                    ? "𓃵 Alimentando..."
                     : "💀 Alimenta al abismo"}
                 </button>
               </div>
@@ -190,12 +190,12 @@ export default function PrimerJuego() {
                 <h4>📊 Visualización</h4>
                 <button
                   onClick={() => setIsVectorModalOpen(true)}
-                  className="visualization-btn"
+                  className="visualization-btn great-primer-sc"
                 >
-                  🎯 Ver Gráfico de Acólitos
+                  𖤐 Ver Gráfico de Acólitos
                 </button>
                 {getPersonResults().length > 0 && (
-                  <p className="visualization-info">
+                  <p className="visualization-info great-primer-sc">
                     Última búsqueda:{" "}
                     {getPersonResults()
                       .slice(0, 3)
@@ -266,10 +266,10 @@ export default function PrimerJuego() {
 
               {!getPersonResults().length && !loading && !error && (
                 <div className="placeholder">
-                  <h3>🎯 ¿Quién es el indicado?</h3>
+                  <h3>👹 ¿Quién es el indicado?</h3>
 
                   <div className="placeholder-examples">
-                    <h4>💡 Ejemplos de preguntas:</h4>
+                    <h4>🔥 Ejemplos de preguntas:</h4>
                     <ul>
                       <li>"¿Quién puede organizar una fiesta?"</li>
                       <li>"¿Quién sabe resolver problemas técnicos?"</li>

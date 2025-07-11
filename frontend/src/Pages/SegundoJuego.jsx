@@ -18,7 +18,7 @@ const SegundoJuego = () => {
       setResult(null);
       const response = await searchEgo(file);
       console.log(response, "Response");
-      setResult(response[0]);
+      setResult(response);
     } catch (err) {
       console.error("Error en searchAlter:", err, error);
     }
@@ -38,11 +38,11 @@ const SegundoJuego = () => {
     <div className="game-container">
       <Header title="Segundo Ritual" />
 
-      <div className="game-content">
+      <div className="game-content libertinus-font">
         <h1>🕮 Segundo Ritual</h1>
         <p>¡Encontrá tu alter ego espiritual!</p>
 
-        <div className="game-instructions">
+        <div className="game-instructions great-primer-sc">
           <h3>Indicaciones:</h3>
           <ul>
             <li>Elegi una foto tuya</li>
@@ -51,14 +51,14 @@ const SegundoJuego = () => {
           </ul>
         </div>
 
-        <div className="file-upload-container home-container">
+        <div className="file-upload-container home-container great-primer-sc">
           <h2>Sube tu foto...</h2>
           <div className="input-group">
             <label htmlFor="file-upload">Selecciona un archivo</label>
             <input
               type="file"
               id="file-upload"
-              className="file-input"
+              className="file-input great-primer-sc"
               disabled={loading}
               onChange={(e) => handleFileChange(e)}
             />
@@ -67,7 +67,7 @@ const SegundoJuego = () => {
 
         {isUploaded && (
           <button
-            className="game-start-btn"
+            className="game-start-btn great-primer-sc"
             onClick={searchAlter}
             onKeyDown={(e) => e.key === "Enter" && searchAlter}
             disabled={loading}
@@ -75,25 +75,28 @@ const SegundoJuego = () => {
             Consultar al abismo...
           </button>
         )}
-
-        {result && (
+        <>
           <div className="result-section">
-            <h3>Tu par:</h3>
-            <div className="games-grid">
-              <div className="result-card" key={result.index}>
-                <img
-                  src={result.url}
-                  alt="Result"
-                  style={{
-                    maxWidth: "100%",
-                    borderRadius: "10px",
-                    border: "1px solid rgba(255, 255, 255, 0.2)",
-                  }}
-                />
-              </div>
-            </div>
+            <h3>Tus alteregos:</h3>
           </div>
-        )}
+          {result && (
+            <div className="results-images-container">
+              {result.map((r) => (
+                <div className="result-image-card" key={r.index}>
+                  <img
+                    src={r.url}
+                    alt="Result"
+                    style={{
+                      maxWidth: "100%",
+                      borderRadius: "10px",
+                      border: "1px solid rgba(255, 255, 255, 0.2)",
+                    }}
+                  />
+                </div>
+              ))}
+            </div>
+          )}
+        </>
 
         <Link to="/" className="back-btn">
           ← Volver al calabozo

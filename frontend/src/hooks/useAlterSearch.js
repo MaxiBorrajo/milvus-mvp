@@ -15,7 +15,7 @@ const useAlterSearch = () => {
         formData.append("file", file);
 
         const result = await makeRequest(
-          `http://localhost:8000/search-images?top_k=${1}`,
+          `http://localhost:8000/search-images?top_k=${3}`,
           {
             method: "POST",
             body: formData,

@@ -6,9 +6,9 @@ import json
 import numpy as np
 import traceback
 
-from fastapi import FastAPI, File, UploadFile, Query, Form, HTTPException
+from fastapi import FastAPI, File, UploadFile, Query, Form, HTTPException, Body
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import FileResponse, Response
+from fastapi.responses import FileResponse, JSONResponse, Response
 from fastapi import HTTPException
 from fastapi import status
 
@@ -19,11 +19,11 @@ from typing import List
 from pydantic import BaseModel, ValidationError
 from pathlib import Path
 from sklearn.decomposition import PCA
-from typing import  List
+from typing import List, Optional, Dict, Any
 from datetime import datetime
 
 from app.utils import extract_text_from_file
-from app.milvus_client import vectorsForAFileName,delete_documents_by_filename_service,delete_vectors_by_ids,search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, subirImagenes, delete_image_byId, delete_if_similar, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION, vectorsForAFileName, delete_vectors_by_ids, delete_documents_by_filename_service
+from app.milvus_client import vectorsForAFileName,delete_documents_by_filename_service,delete_vectors_by_ids,search_person, setup_collection, insert_documents, search_documents, insert_images, search_similar_images, get_all_vectors, get_all_vectors_from_collection, get_all_vectors_combined, subirImagenes, delete_image_byId, delete_if_similar, get_vectors_for_visualization, insert_persons, PERSON_COLLECTION, vectorsForAFileName, delete_vectors_by_ids, delete_documents_by_filename_service, count_vectors_by_attribute
 from app.multimodal_queries import insert_multimodal, setup_multimodal, search_multimodal
 
 
@@ -65,7 +65,7 @@ def health_check():
 def debug_collections():
     """Endpoint para debuggear el estado de las colecciones"""
     try:
-        from app.milvus_client import client, PERSON_COLLECTION, COLLECTION_NAME
+        from milvus_client import client, PERSON_COLLECTION, COLLECTION_NAME
         
         collections_info = {}
         
@@ -95,13 +95,9 @@ class PersonaItem(BaseModel):
 class InsertPersonRequest(BaseModel):
     items: List[PersonaItem]
 
-class MetadataItem(BaseModel):
-    tipo_fragmento: str | None = None
-    filename: str | None = None
-
 class MultimodalItem(BaseModel):
     data: str
-    metadata: MetadataItem
+    metadata: Optional[Dict[str, Any]] = None
 
 class MultimodalRequest(BaseModel):
     items: List[MultimodalItem]
@@ -126,55 +122,40 @@ def insert_texts(req: InsertRequest):
     return {"inserted": inserted_count}
 
 # ============= MULTIMODAL ==========================
-
 @app.post("/insert-text-multimodal")
 def post_insert_texts_multimodal(req: MultimodalRequest):
     if not req.items:
         return {"inserted": 0, "ratio": "0.00%"}
 
     inserted_count = insert_multimodal(req.items, "text")
-    ratio = (inserted_count / len(req.items) * 100)
+    if inserted_count is None:
+        inserted_count = 0
+    ratio = (inserted_count / len(req.items) * 100) if len(req.items) > 0 else 0
     return {"inserted": inserted_count, "ratio": f"{ratio:.2f}%"}
 
-
 @app.post("/insert-image-multimodal")
-async def post_insert_images_multimodal(files: List[UploadFile] = File(...), metadatas = Form(...)):
-    try:
-        json_metadatas = json.loads(metadatas)
-        metadatas = [MetadataItem(**metadata) for metadata in json_metadatas]
-    except (json.JSONDecodeError, ValidationError):
-        raise HTTPException(status_code=400, detail="Datos de metadata inv\u00e1lidos")
-
-    if len(files) != len(metadatas):
-        raise HTTPException(status_code=400, detail=f"Cantidad de imágenes y metadatos no coinciden. Hay {len(files)} imágenes pero {len(metadatas)} metadatos")
+async def post_insert_images_multimodal(files: List[UploadFile] = File(...)):
 
     images = []
     for i, file in enumerate(files):
-        file_path = IMAGE_DIR / file.filename
+        if file.filename is None:
+            raise HTTPException(status_code=400, detail="El archivo no tiene nombre.")
+        file_path = IMAGE_DIR / str(file.filename)
         with open(file_path, "wb") as f:
             f.write(await file.read())
-        metadata = metadatas[i]
-        metadata.filename = file.filename
+        metadata = dict()
+        metadata["filename"] = file.filename
         images.append(MultimodalItem(data=str(file_path), metadata=metadata))
 
     inserted_count = insert_multimodal(images, "image")
-    ratio = (inserted_count / len(images) * 100)
+    if inserted_count is None:
+        inserted_count = 0
+    ratio = (inserted_count / len(images) * 100) if len(images) > 0 else 0
     return {"inserted": inserted_count, "ratio": f"{ratio:.2f}%"}
 
-
 @app.get("/search-by-text-multimodal")
-def search_multimodal_text(pregunta: str, tipo: str):
-    return search_multimodal(pregunta, "text", tipo)
-
-# @app.post("/search-by-image-multimodal")
-# async def search_multimodal_image(file: UploadFile = File(...), top_k: int = 5):
-#     file_path = IMAGE_DIR / file.filename
-
-#     with open(file_path, "wb") as f:
-#         f.write(await file.read())
-
-#     return search_multimodal(str(file_path), "image", top_k)
-
+def search_multimodal_text(pregunta: str):
+    return search_multimodal(pregunta)
 
 
 @app.get("/search")
@@ -217,7 +198,9 @@ async def upload_images(files: List[UploadFile] = File(...)):
     results = []
 
     for file in files:
-        file_path = IMAGE_DIR / file.filename
+        if not file.filename:
+            continue  # Omitir archivos sin nombre
+        file_path = IMAGE_DIR / str(file.filename)
 
         with open(file_path, "wb") as f:
             f.write(await file.read())
@@ -236,7 +219,12 @@ async def upload_files(files: List[UploadFile] = File(...)):
     results = []
 
     for file in files:
-        content = extract_text_from_file(await file.read(), file.filename)
+        if not file.filename:
+            continue  # Omitir archivos sin nombre
+        contenido_bytes = await file.read()
+        # Nos aseguramos de que file.filename es str, nunca None
+        filename = str(file.filename)
+        content = extract_text_from_file(contenido_bytes, filename)
         items = []
         for fragment in content:
             item = TextItem(text=fragment, subject="uploaded")
@@ -251,7 +239,11 @@ async def upload_files(files: List[UploadFile] = File(...)):
 async def search_images(file: UploadFile = File(...), top_k: int = 5):
     
     try:
-        suffix = os.path.splitext(file.filename)[1]
+        if not file.filename:
+            raise ValueError("El archivo no tiene nombre.")
+        # Asegurarse de que file.filename es str y no None
+        filename = str(file.filename)
+        suffix = os.path.splitext(filename)[1]
         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
             tmp.write(await file.read())
             tmp_path = tmp.name
@@ -395,196 +387,12 @@ async def visualize_vectors_2d(
         "original_dimension": vectors.shape[1]
     }
 
-@app.get("/visualize-3d")
-async def visualize_vectors_3d(
-    limit: int = 100, 
-    collection: str = Query("texts", description="Colección: 'texts', 'images', 'persons' o 'all'")
-):
-    """Endpoint que devuelve visualización 3D de vectores usando PCA"""
-    data = get_vectors_for_visualization(collection, limit)
-    
-    if not data:
-        raise HTTPException(status_code=404, detail="No se encontraron vectores")
-    
-    # Extraer solo los vectores
-    vectors = np.array([d["vector"] for d in data])
-    
-    # Reducción a 3D usando PCA
-    reducer = PCA(n_components=3)
-    vectors_3d = reducer.fit_transform(vectors)
-    
-    # Crear gráfico 3D
-    fig = plt.figure(figsize=(12, 10))
-    ax = fig.add_subplot(111, projection='3d')
-    
-    # Si tenemos tipos diferentes, usar colores diferentes
-    if collection.lower() == "all" and len(data) > 0:
-        text_indices = [i for i, d in enumerate(data) if d.get("type") == "text"]
-        image_indices = [i for i, d in enumerate(data) if d.get("type") == "image"]
-        person_indices = [i for i, d in enumerate(data) if d.get("type") == "person"]
-        
-        if text_indices:
-            ax.scatter(vectors_3d[text_indices, 0], vectors_3d[text_indices, 1], vectors_3d[text_indices, 2], 
-                      alpha=0.6, s=50, c='blue', label='Textos')
-        if image_indices:
-            ax.scatter(vectors_3d[image_indices, 0], vectors_3d[image_indices, 1], vectors_3d[image_indices, 2], 
-                      alpha=0.6, s=50, c='red', label='Imágenes')
-        if person_indices:
-            ax.scatter(vectors_3d[person_indices, 0], vectors_3d[person_indices, 1], vectors_3d[person_indices, 2], 
-                      alpha=0.6, s=50, c='green', label='Personas')
-        ax.legend()
-    else:
-        ax.scatter(vectors_3d[:, 0], vectors_3d[:, 1], vectors_3d[:, 2], alpha=0.6, s=50)
-    
-    ax.set_title(f"Visualización 3D de {len(vectors)} vectores - {collection.upper()} (PCA)")
-    ax.set_xlabel("Componente Principal 1")
-    ax.set_ylabel("Componente Principal 2")
-    ax.set_zlabel("Componente Principal 3")
-    
-    # Convertir gráfico a imagen
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
-    buf.seek(0)
-    image_base64 = base64.b64encode(buf.read()).decode('utf-8')
-    plt.close()
-    
-    return {
-        "image_base64": image_base64,
-        "method": "PCA",
-        "dimensions": 3,
-        "collection": collection,
-        "total_vectors": len(vectors),
-        "original_dimension": vectors.shape[1]
-    }
-
-@app.get("/download-2d")
-async def download_visualization_2d(
-    limit: int = 100,
-    collection: str = Query("texts", description="Colección: 'texts', 'images', 'persons' o 'all'")
-):
-    """Endpoint que devuelve la visualización 2D como archivo PNG descargable"""
-    data = get_vectors_for_visualization(collection, limit)
-    
-    if not data:
-        raise HTTPException(status_code=404, detail="No se encontraron vectores")
-    
-    # Extraer solo los vectores
-    vectors = np.array([d["vector"] for d in data])
-    n_samples, n_features = vectors.shape
-    if n_samples < 2:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Se necesitan al menos 2 vectores para visualización 2D. Solo hay {n_samples} vectores."
-        )
-    
-    # Reducción a 2D usando PCA
-    reducer = PCA(n_components=2)
-    vectors_2d = reducer.fit_transform(vectors)
-    
-    # Crear gráfico 2D
-    plt.figure(figsize=(10, 8))
-    
-    # Si tenemos tipos diferentes, usar colores diferentes
-    if collection.lower() == "all" and len(data) > 0:
-        text_indices = [i for i, d in enumerate(data) if d.get("type") == "text"]
-        image_indices = [i for i, d in enumerate(data) if d.get("type") == "image"]
-        
-        if text_indices:
-            plt.scatter(vectors_2d[text_indices, 0], vectors_2d[text_indices, 1], 
-                       alpha=0.6, s=50, c='blue', label='Textos')
-        if image_indices:
-            plt.scatter(vectors_2d[image_indices, 0], vectors_2d[image_indices, 1], 
-                       alpha=0.6, s=50, c='red', label='Imágenes')
-        plt.legend()
-    else:
-        plt.scatter(vectors_2d[:, 0], vectors_2d[:, 1], alpha=0.6, s=50)
-    
-    plt.title(f"Visualización 2D de {len(vectors)} vectores - {collection.upper()} (PCA)")
-    plt.xlabel("Componente Principal 1")
-    plt.ylabel("Componente Principal 2")
-    plt.grid(True, alpha=0.3)
-    
-    # Guardar en buffer y devolver como archivo
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
-    buf.seek(0)
-    plt.close()
-    
-    return Response(
-        content=buf.getvalue(),
-        media_type="image/png",
-        headers={"Content-Disposition": f"attachment; filename=vectors_2d_{collection}_{len(vectors)}_vectors.png"}
-    )
-
-@app.get("/download-3d")
-async def download_visualization_3d(
-    limit: int = 100,
-    collection: str = Query("texts", description="Colección: 'texts', 'images', 'persons' o 'all'")
-):
-    """Endpoint que devuelve la visualización 3D como archivo PNG descargable"""
-    data = get_vectors_for_visualization(collection, limit)
-    
-    if not data:
-        raise HTTPException(status_code=404, detail="No se encontraron vectores")
-    
-    # Extraer solo los vectores
-    vectors = np.array([d["vector"] for d in data])
-    n_samples, n_features = vectors.shape
-    if n_samples < 3:
-        raise HTTPException(
-            status_code=400,
-            detail=f"Se necesitan al menos 3 vectores para visualización 3D. Solo hay {n_samples} vectores."
-        )
-    
-    # Reducción a 3D usando PCA
-    reducer = PCA(n_components=3)
-    vectors_3d = reducer.fit_transform(vectors)
-    
-    # Crear gráfico 3D
-    fig = plt.figure(figsize=(12, 10))
-    ax = fig.add_subplot(111, projection='3d')
-    
-    # Si tenemos tipos diferentes, usar colores diferentes
-    if collection.lower() == "all" and len(data) > 0:
-        text_indices = [i for i, d in enumerate(data) if d.get("type") == "text"]
-        image_indices = [i for i, d in enumerate(data) if d.get("type") == "image"]
-        person_indices = [i for i, d in enumerate(data) if d.get("type") == "person"]
-        
-        if text_indices:
-            ax.scatter(vectors_3d[text_indices, 0], vectors_3d[text_indices, 1], vectors_3d[text_indices, 2], 
-                      alpha=0.6, s=50, c='blue', label='Textos')
-        if image_indices:
-            ax.scatter(vectors_3d[image_indices, 0], vectors_3d[image_indices, 1], vectors_3d[image_indices, 2], 
-                      alpha=0.6, s=50, c='red', label='Imágenes')
-        if person_indices:
-            ax.scatter(vectors_3d[person_indices, 0], vectors_3d[person_indices, 1], vectors_3d[person_indices, 2], 
-                      alpha=0.6, s=50, c='green', label='Personas')
-        ax.legend()
-    else:
-        ax.scatter(vectors_3d[:, 0], vectors_3d[:, 1], vectors_3d[:, 2], alpha=0.6, s=50)
-    
-    ax.set_title(f"Visualización 3D de {len(vectors)} vectores - {collection.upper()} (PCA)")
-    ax.set_xlabel("Componente Principal 1")
-    ax.set_ylabel("Componente Principal 2")
-    ax.set_zlabel("Componente Principal 3")
-    
-    # Guardar en buffer y devolver como archivo
-    buf = io.BytesIO()
-    plt.savefig(buf, format='png', dpi=150, bbox_inches='tight')
-    buf.seek(0)
-    plt.close()
-    
-    return Response(
-        content=buf.getvalue(),
-        media_type="image/png",
-        headers={"Content-Disposition": f"attachment; filename=vectors_3d_{collection}_{len(vectors)}_vectors.png"}
-    )
 @app.post("/manage-image")
 async def manage_image(file1: UploadFile = File(...), file2: UploadFile = File(...)):
     try:
         # Guardar imágenes temporales
-        suffix1 = os.path.splitext(file1.filename)[1]
-        suffix2 = os.path.splitext(file2.filename)[1]
+        suffix1 = os.path.splitext(file1.filename or "")[1]
+        suffix2 = os.path.splitext(file2.filename or "")[1]
         
         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix1) as tmp1, \
              tempfile.NamedTemporaryFile(delete=False, suffix=suffix2) as tmp2:
@@ -605,7 +413,9 @@ async def manage_image(file1: UploadFile = File(...), file2: UploadFile = File(.
         IMAGE_DIR.mkdir(parents=True, exist_ok=True)
         
         # Guardar file2 en IMAGE_DIR
-        file2_path = IMAGE_DIR / file2.filename
+        if file2.filename is None:
+            raise ValueError("El archivo file2 no tiene nombre.")
+        file2_path = IMAGE_DIR / Path(file2.filename)
         with open(file2_path, "wb") as f:
             f.write(file2_content)  # Usamos el contenido ya leído
 
@@ -637,8 +447,10 @@ async def manage_image(file1: UploadFile = File(...), file2: UploadFile = File(.
 async def delete_image(file: UploadFile = File (...)):
 
     try:
-        suffix = os.path.splitext(file.filename)[1]
-        with tempfile.NamedTemporaryFile(delete=False,suffix=suffix) as tmp:
+        # Asegurarse de que file.filename no sea None antes de usar splitext
+        filename = file.filename if file.filename is not None else "tempfile"
+        suffix = os.path.splitext(filename)[1]
+        with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
             tmp.write(await file.read())
             tmp_path = tmp.name 
 
@@ -662,11 +474,13 @@ async def delete_image(file: UploadFile = File (...)):
         if 'tmp_path' in locals() and os.path.exists(tmp_path):
             os.unlink(tmp_path)
 
+
 @app.post("/replace-closest-image")
 async def replace_closest_image(file: UploadFile = File(...)):
     try:
-        # Guardar imagen temporal
-        suffix = os.path.splitext(file.filename)[1]
+        # Asegurarse de que file.filename no sea None antes de usar splitext
+        filename = file.filename if file.filename is not None else "tempfile"
+        suffix = os.path.splitext(filename)[1]
         with tempfile.NamedTemporaryFile(delete=False, suffix=suffix) as tmp:
             tmp.write(await file.read())
             tmp_path = tmp.name
@@ -677,7 +491,9 @@ async def replace_closest_image(file: UploadFile = File(...)):
         similar_images = search_similar_images(tmp_path, top_k=1)
         
          # Guardar file2 en IMAGE_DIR
-        file_path = IMAGE_DIR / file.filename
+        if file.filename is None:
+            raise HTTPException(status_code=400, detail="El archivo no tiene nombre.")
+        file_path = IMAGE_DIR / str(file.filename)
         with open(file_path, "wb") as f:
             f.write(file_content)  # Usamos el contenido ya leído
 
@@ -787,4 +603,269 @@ async def delete_documents_by_filename(filename: str):
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"Error al eliminar documentos: {str(e)}"
         )
+
+@app.get("/count-vectors")
+def count_vectors_endpoint(
+    collection: str = Query(..., description="Nombre de la colección"),
+    value: str = Query(..., description="Valor del campo a buscar")
+):
+    """
+    Devuelve la cantidad de vectores en una colección según un atributo específico.
+    """
+    try:
+        count = count_vectors_by_attribute(collection, value)
+        return {
+            "collection": collection,
+            "value": value,
+            "count": count
+        }
+    except Exception as e:
+        return {"error": str(e)}
+
+@app.delete("/fragmento/{fragment_id}")
+def delete_fragment_by_id(fragment_id: str, tipo: str = Query("text", description="Tipo de fragmento: 'text' o 'image'")):
+    """
+    Endpoint para eliminar un fragmento por su id y tipo (text o image)
+    """
+    try:
+        if tipo == "image":
+            collection = "multimodal_collection"
+        else:
+            collection = "text_collection"
+        from milvus_client import client
+        client.load_collection(collection)
+        client.delete(collection_name=collection, ids=[fragment_id])
+        return {"deleted_id": fragment_id, "collection": collection}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"Error al eliminar fragmento: {str(e)}")
+
+@app.delete("/delete-vector")
+def delete_vector_by_id(
+    collection: str = Query(..., description="Nombre de la colección"),
+    id: int = Query(..., description="ID del vector a eliminar")
+):
+    """
+    Elimina un vector de una colección por su id.
+    """
+    try:
+        from app.milvus_client import client
+        
+        # Verificar si la colección existe
+        if not client.has_collection(collection):
+            return {
+                "error": f"La colección '{collection}' no existe",
+                "success": False
+            }
+        
+        # Cargar la colección
+        client.load_collection(collection)
+        
+        # Verificar si el ID existe antes de eliminar
+        try:
+            # Buscar el vector por ID para verificar que existe
+            # result = client.query(
+            #     collection_name=collection,
+            #     filter=f"id == {id}",
+            #     output_fields=["id"]
+            # )
+            
+            # if not result:
+            #     return {
+            #         "error": f"No se encontró el vector con ID {id} en la colección '{collection}'",
+            #         "success": False
+            #     }
+            
+            # Eliminar el vector
+            res = client.delete(collection_name=collection, ids=[id])
+            
+            # Descargar la colección para liberar memoria
+            client.release_collection(collection)
+            
+            return {
+                "collection": collection,
+                "id": id,
+                "delete_count": res.get("delete_count", 0),
+                "success": True,
+                "message": f"Vector con ID {id} eliminado exitosamente"
+            }
+            
+        except Exception as query_error:
+            client.release_collection(collection)
+            return {
+                "error": f"Error al verificar o eliminar el vector: {str(query_error)}",
+                "success": False
+            }
+            
+    except Exception as e:
+        return {"error": str(e), "success": False}
+
+
+@app.get("/check-vector")
+def check_vector_exists(
+    collection: str = Query(..., description="Nombre de la colección"),
+    id: int = Query(..., description="ID del vector a verificar")
+):
+    """
+    Verifica si un vector existe en una colección por su id.
+    """
+    try:
+        from app.milvus_client import client
+        
+        # Verificar si la colección existe
+        if not client.has_collection(collection):
+            return {
+                "error": f"La colección '{collection}' no existe",
+                "exists": False
+            }
+        
+        # Cargar la colección
+        client.load_collection(collection)
+        
+        try:
+            # Buscar el vector por ID
+            result = client.query(
+                collection_name=collection,
+                filter=f"id == {id}",
+                output_fields=["id", "filename", "type", "tipo_fragmento"]
+            )
+            
+            # Descargar la colección
+            client.release_collection(collection)
+            
+            if result:
+                return {
+                    "collection": collection,
+                    "id": id,
+                    "exists": True,
+                    "vector_info": result[0]
+                }
+            else:
+                return {
+                    "collection": collection,
+                    "id": id,
+                    "exists": False,
+                    "message": f"No se encontró el vector con ID {id}"
+                }
+                
+        except Exception as query_error:
+            client.release_collection(collection)
+            return {
+                "error": f"Error al verificar el vector: {str(query_error)}",
+                "exists": False
+            }
+            
+    except Exception as e:
+        return {"error": str(e), "exists": False}
+
+
+@app.get("/list-vectors")
+def list_vectors_in_collection(
+    collection: str = Query(..., description="Nombre de la colección"),
+    limit: int = Query(100, description="Número máximo de vectores a listar")
+):
+    """
+    Lista todos los vectores en una colección con sus IDs y metadatos.
+    """
+    try:
+        from app.milvus_client import client
+        
+        # Verificar si la colección existe
+        if not client.has_collection(collection):
+            return {
+                "error": f"La colección '{collection}' no existe",
+                "vectors": []
+            }
+        
+        # Cargar la colección
+        client.load_collection(collection)
+        
+        try:
+            # Obtener todos los vectores con sus metadatos
+            result = client.query(
+                collection_name=collection,
+                filter="",
+                output_fields=["id", "filename", "type", "tipo_fragmento", "data"],
+                limit=limit
+            )
+            
+            # Descargar la colección
+            client.release_collection(collection)
+            
+            return {
+                "collection": collection,
+                "total_vectors": len(result),
+                "vectors": result
+            }
+                
+        except Exception as query_error:
+            client.release_collection(collection)
+            return {
+                "error": f"Error al listar vectores: {str(query_error)}",
+                "vectors": []
+            }
+            
+    except Exception as e:
+        return {"error": str(e), "vectors": []}
+
+
+@app.get("/debug-collection")
+def debug_collection_endpoint(
+    collection: str = Query(..., description="Nombre de la colección a debuggear")
+):
+    """
+    Endpoint para debuggear una colección y ver su información.
+    """
+    try:
+        from app.milvus_client import client
+        
+        # Verificar si la colección existe
+        if not client.has_collection(collection):
+            return {
+                "error": f"La colección '{collection}' no existe",
+                "exists": False
+            }
+        
+        # Cargar la colección
+        client.load_collection(collection)
+        
+        try:
+            # Obtener información de la colección
+            collection_info = client.describe_collection(collection)
+            
+            # Contar todos los vectores
+            total_vectors = client.query(
+                collection_name=collection,
+                filter="",
+                output_fields=["id"],
+                limit=1000
+            )
+            
+            # Mostrar algunos ejemplos
+            sample_vectors = client.query(
+                collection_name=collection,
+                filter="",
+                output_fields=["id", "filename", "type", "tipo_fragmento"],
+                limit=5
+            )
+            
+            # Descargar la colección
+            client.release_collection(collection)
+            
+            return {
+                "collection": collection,
+                "exists": True,
+                "collection_info": collection_info,
+                "total_vectors": len(total_vectors),
+                "sample_vectors": sample_vectors
+            }
+                
+        except Exception as query_error:
+            client.release_collection(collection)
+            return {
+                "error": f"Error al consultar la colección: {str(query_error)}",
+                "exists": False
+            }
+            
+    except Exception as e:
+        return {"error": str(e), "exists": False}
 
